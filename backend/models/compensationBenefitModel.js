@@ -1,0 +1,23 @@
+import mongoose from "mongoose";
+
+const compensationBenefitSchema = new mongoose.Schema({
+    benefitName: {
+        type: String,
+        required: true
+    },
+    benefitType: {
+        type: String,
+        enum: ["Paid Benefit", "Deductible Benefit"],
+        required: true
+    },
+    benefitAmount: {
+        type: Number,
+        required: true
+    },
+    isAvailable: {
+        type: Boolean,
+        default: true
+    }
+}, { timestamps: true });
+
+export const CompensationBenefit = mongoose.model("CompensationBenefit", compensationBenefitSchema);
