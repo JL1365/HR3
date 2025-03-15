@@ -12,6 +12,8 @@ import violationRoute from './routes/violationRoute.js';
 
 import incentiveRoute from './routes/incentiveRoute.js';
 import incentiveTrackingRoute from './routes/incentiveTrackingRoute.js';
+import benefitRoute from './routes/benefitRoute.js';
+import benefitRequestRoute from './routes/benefitRequestRoute.js';
 
 dotenv.config();
 connectDB();
@@ -27,7 +29,8 @@ app.use("/api/compensation",compensationPlanningRoute)
 app.use("/api/compensationBenefit",compensationBenefitRoute)
 app.use("/api/penalty",penaltyRoute)
 app.use("/api/violation",violationRoute)
-
+app.use("/api/benefit",benefitRoute)
+app.use("/api/benefitRequest",benefitRequestRoute);
 app.use("/api/incentive",incentiveRoute)
 app.use("/api/incentiveTracking",incentiveTrackingRoute);
 
