@@ -8,6 +8,7 @@ import authRoute from './routes/authRoute.js';
 import compensationPlanningRoute from './routes/compensationPlanningRoute.js';
 import compensationBenefitRoute from './routes/compensationBenefitRoute.js';
 import penaltyRoute from './routes/penaltyRoute.js';
+import violationRoute from './routes/violationRoute.js';
 
 dotenv.config();
 connectDB();
@@ -22,6 +23,7 @@ app.use("/api/auth",authRoute)
 app.use("/api/compensation",compensationPlanningRoute)
 app.use("/api/compensationBenefit",compensationBenefitRoute)
 app.use("/api/penalty",penaltyRoute)
+app.use("/api/violation",violationRoute)
 
 app.listen(PORT,() => {
     console.log(`Server is running at PORT: ${PORT}`);
