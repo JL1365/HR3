@@ -1,31 +1,20 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
-export const verifyToken = async (req, res, next) => {
-    let token = req.cookies.token;
-    
-    if (!token && req.headers.authorization) {
-        const authHeader = req.headers.authorization;
-        if (authHeader.startsWith("Bearer ")) {
-            token = authHeader.split(" ")[1]; // Extract token after 'Bearer'
-        }
-    }
+export const verifyToken = (req, res, next) => {
+    const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
 
     if (!token) {
-        console.log("No token provided");
         return res.status(401).json({ success: false, message: "No token provided" });
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = { _id: decoded.userId, role: decoded.role, Hr: decoded.Hr };
+        req.user = jwt.verify(token, process.env.JWT_SECRET);
         next();
-    } catch (error) {
-        console.log("Token verification error:", error.message);
-        return res.status(403).json({ success: false, message: "Token is not valid" });
+    } catch {
+        return res.status(403).json({ success: false, message: "Invalid token" });
     }
 };
 
-// VERIFY TOKEN FROM API GATEWAY
 export const serviceVerifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
@@ -38,7 +27,7 @@ export const serviceVerifyToken = (req, res, next) => {
         if (err) {
             return res.status(403).json({ message: "Invalid or expired token" });
         }
-        req.user = decoded; // Store decoded user data
+        req.user = decoded;
         next();
     });
 };
