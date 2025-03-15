@@ -14,6 +14,10 @@ const compensationBenefitSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    isNeedRequest:{
+        type: Boolean,
+        default: false
+    },
     isAvailable: {
         type: Boolean,
         default: true
