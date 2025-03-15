@@ -46,7 +46,7 @@ export const createEmployeeViolation = async (req, res) => {
 
     return res.status(201).json({ message: 'Violation created successfully', violation: newViolation });
   } catch (error) {
-    console.error(error);
+    console.log(`Error in creating employee violation : ${error.message}`)
     return res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
@@ -80,7 +80,7 @@ export const getEmployeeViolations = async (req, res) => {
 
     return res.status(200).json({ employeeViolations: updatedViolations });
   } catch (error) {
-    console.error(error);
+    console.log(`Error in retrieving employee violation : ${error.message}`)
     return res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
@@ -100,7 +100,7 @@ export const updateViolationStatus = async (req, res) => {
 
     return res.status(200).json({ message: 'Violation status updated', violation });
   } catch (error) {
-    console.error(error);
+    console.log(`Error in updating violatio status  : ${error.message}`)
     return res.status(500).json({ message: 'Server error', error });
   }
 };
@@ -116,7 +116,7 @@ export const deleteViolation = async (req, res) => {
 
     return res.status(200).json({ message: 'Violation deleted successfully' });
   } catch (error) {
-    console.error(error);
+    console.log(`Error in deleting violation : ${error.message}`)
     return res.status(500).json({ message: 'Server error', error });
   }
 };
@@ -135,7 +135,7 @@ export const getMyViolations = async (req, res) => {
 
     return res.status(200).json({ myViolations });
   } catch (error) {
-    console.error(error);
+    console.log(`Error in retrieving my violation : ${error.message}`)
     return res.status(500).json({ message: 'Server error', error });
   }
 };
