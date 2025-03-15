@@ -10,6 +10,9 @@ import compensationBenefitRoute from './routes/compensationBenefitRoute.js';
 import penaltyRoute from './routes/penaltyRoute.js';
 import violationRoute from './routes/violationRoute.js';
 
+import incentiveRoute from './routes/incentiveRoute.js';
+import incentiveTrackingRoute from './routes/incentiveTrackingRoute.js';
+
 dotenv.config();
 connectDB();
 
@@ -24,6 +27,9 @@ app.use("/api/compensation",compensationPlanningRoute)
 app.use("/api/compensationBenefit",compensationBenefitRoute)
 app.use("/api/penalty",penaltyRoute)
 app.use("/api/violation",violationRoute)
+
+app.use("/api/incentive",incentiveRoute)
+app.use("/api/incentiveTracking",incentiveTrackingRoute);
 
 app.listen(PORT,() => {
     console.log(`Server is running at PORT: ${PORT}`);
