@@ -136,3 +136,19 @@ export const deleteIncentiveTracking = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 };
+
+
+export const getMyIncentiveTracking = async (req, res) => {
+    try {
+        const userId = req.user && req.user.userId ? String(req.user.userId) : null;
+        if(!userId){
+            return res.status(401).json({message:'User not authenticated.'});
+        }
+        const myIncentivesTracking = await IncentiveTracking.find({ userId})
+            .populate("incentiveId", "incentiveName incentiveType amount dateGiven status");
+
+        res.status(200).json({ success: true, data: myIncentivesTracking });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
+};

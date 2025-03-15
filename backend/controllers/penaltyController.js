@@ -4,7 +4,6 @@ export const createPenaltyLevel = async (req, res) => {
     try {
       const { violationType, penaltyLevel, action, consequence } = req.body;
   
-      // Validate required fields
       if (!violationType || !penaltyLevel || !action || !consequence) {
         return res.status(400).json({ message: "All fields are required!" });
       }

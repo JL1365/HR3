@@ -123,11 +123,12 @@ export const deleteViolation = async (req, res) => {
 
 export const getMyViolations = async (req, res) => {
   try {
-    if (!req.user || !req.user._id) {
+    const userId = req.user && req.user.userId ? String(req.user.userId) : null;
+    if (!userId) {
       return res.status(401).json({ message: 'User not authenticated' });
     }
 
-    const myViolations = await Violation.find({ userId: req.user._id })
+    const myViolations = await Violation.find({ userId })
       .populate('penaltyLevel')
     if (!myViolations.length) {
       return res.status(404).json({ message: 'No violations found for this user' });
