@@ -470,3 +470,28 @@ export const finalizePayroll = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 };
+
+export const getAllPayrollHistory = async (req, res) => {
+    try {
+      const payrollHistory = await PayrollHistory.aggregate([
+        {
+          $group: {
+            _id: "$batch_id", 
+            payrolls: { $push: "$$ROOT" },
+          },
+        },
+        {
+          $sort: { "_id": -1 },
+        },
+      ]);
+  
+      if (payrollHistory.length === 0) {
+        return res.status(404).json({ message: "No payroll history found." });
+      }
+  
+      return res.status(200).json(payrollHistory);
+    } catch (error) {
+      console.error("Error fetching payroll history:", error);
+      return res.status(500).json({ message: "Failed to retrieve payroll history." });
+    }
+  };
