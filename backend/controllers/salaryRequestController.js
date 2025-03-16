@@ -171,13 +171,29 @@ const calculateNetPayroll = async () => {
             ...Object.keys(compensationMap),
         ]);
 
+        const serviceToken = generateServiceToken();
+        const response = await axios.get(
+            `${process.env.API_GATEWAY_URL}/admin/get-accounts`,
+            { headers: { Authorization: `Bearer ${serviceToken}` } }
+        );
+
+        const users = response.data;
+        const userMap = {};
+        users.forEach(user => {
+            userMap[user._id] = {
+                firstname: user.firstName || "Unknown", 
+                lastname: user.lastName || "Unknown", 
+                position: user.position || "Unknown" 
+            };
+        });
+
         payrollData = Array.from(employeeIds).map(employeeId => ({
             batch_id: "N/A",
             employees: [{
                 employee_id: employeeId,
-                employee_firstname: "Unknown",
-                employee_lastname: "Unknown",
-                position: "Unknown",
+                employee_firstname: userMap[employeeId]?.firstname || "Unknown",
+                employee_lastname: userMap[employeeId]?.lastname || "Unknown",
+                position:  userMap[employeeId]?.position || "Unknown",
                 totalWorkHours: 0,
                 totalOvertimeHours: 0,
                 dailyWorkHours: [],
