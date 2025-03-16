@@ -19,5 +19,5 @@ batchSchema.virtual('isExpired').get(function () {
     return Date.now() > this.expiration_date;
   });
 
-const Batch = mongoose.model('Batch', batchSchema);
-export default Batch;
+export const Batch = mongoose.model('Batch', batchSchema);
+

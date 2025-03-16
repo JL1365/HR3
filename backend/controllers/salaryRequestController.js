@@ -6,6 +6,8 @@ import { BenefitDeduction } from "../models/benefitDeductionModel.js";
 import { IncentiveTracking } from "../models/incentiveTrackingModel.js";
 import { EmployeeCompensation } from "../models/employeeCompensationModel.js";
 import { CompensationBenefit } from "../models/compensationBenefitModel.js";
+import {PayrollHistory} from '../models/payrollHistoryModel.js'
+import {Batch} from '../models/BatchModel.js'
 
 const calculateGrossPayroll = async () => {
     const serviceToken = generateServiceToken();
@@ -303,5 +305,168 @@ export const addEmployeeCompensation = async (req, res) => {
         res.status(201).json({ message: "Employee compensation added successfully.", data: newCompensation });
     } catch (error) {
         res.status(500).json({ message: "Server error.", error: error.message });
+    }
+};
+
+export const finalizePayroll = async (req, res) => {
+    try {
+        const { batch_id } = req.body;
+
+        if (!batch_id) {
+            return res.status(400).json({ success: false, message: "Batch ID is required" });
+        }
+
+        console.log("Provided batch ID:", batch_id); 
+
+        const serviceToken = generateServiceToken();
+
+        const payrollResponse = await axios.get(
+            "http://localhost:7687/api/salaryRequest/calculate-net-salary",
+            { headers: { Authorization: `Bearer ${serviceToken}` } }
+        );
+
+        const payrollData = payrollResponse.data.data;
+
+        console.log("Retrieved payroll data:", payrollData);
+
+
+        const batchData = payrollData.find(batch => batch.batch_id.trim().toLowerCase() === batch_id.trim().toLowerCase());
+
+        if (!batchData) {
+            console.warn(`Batch ID "${batch_id}" not found in payroll data.`);
+            return res.status(404).json({ 
+                success: false, 
+                message: `No payroll data found for batch ID: ${batch_id}` 
+            });
+        }
+
+        console.log(`Batch ID "${batch_id}" found. Processing payroll...`); 
+
+        const deductions = await BenefitDeduction.find({ isAlreadyAdded: false });
+        const approvedIncentives = await IncentiveTracking.find({ isAlreadyAdded: false });
+        const employeeCompensations = await EmployeeCompensation.find({ isAlreadyAdded: false });
+
+        const deductionsMap = {};
+        deductions.forEach(deduction => {
+            const key = `${deduction.userId}`;
+            deductionsMap[key] = (deductionsMap[key] || 0) + deduction.amount;
+        });
+
+        const incentivesMap = {};
+        approvedIncentives.forEach(incentive => {
+            const key = `${incentive.userId}`;
+            incentivesMap[key] = (incentivesMap[key] || 0) + incentive.amount;
+        });
+
+        const compensationMap = {};
+        employeeCompensations.forEach(compensation => {
+            const key = `${compensation.employeeId}`;
+            if (!compensationMap[key]) {
+                compensationMap[key] = { paidLeaveAmount: 0, deductibleAmount: 0 };
+            }
+            if (compensation.benefitType === "Paid Benefit") {
+                compensationMap[key].paidLeaveAmount += compensation.totalAmount || 0;
+            } else if (compensation.benefitType === "Deductible Benefit") {
+                compensationMap[key].deductibleAmount += compensation.deductionAmount || 0;
+            }
+        });
+
+        const payrollHistoryRecords = batchData.employees.map(emp => {
+            const key = `${emp.employee_id}`;
+            const benefitsDeductionsAmount = deductionsMap[key] || 0;
+            const incentiveAmount = incentivesMap[key] || 0;
+            const paidLeaveAmount = compensationMap[key]?.paidLeaveAmount || 0;
+            const deductibleAmount = compensationMap[key]?.deductibleAmount || 0;
+            const grossSalary = parseFloat(emp.grossSalary) || 0;
+            const netSalary = (
+                grossSalary +
+                incentiveAmount +
+                paidLeaveAmount -
+                benefitsDeductionsAmount -
+                deductibleAmount
+            ).toFixed(2);
+
+            return {
+                batch_id: batch_id,
+                employee_id: emp.employee_id,
+                employee_firstname: emp.employee_firstname || "Unknown",
+                employee_lastname: emp.employee_lastname || "Unknown",
+                position: emp.position,
+                totalWorkHours: emp.totalWorkHours,
+                totalOvertimeHours: emp.totalOvertimeHours,
+                dailyWorkHours: emp.dailyWorkHours,
+                dailyOvertimeHours: emp.dailyOvertimeHours,
+                hourlyRate: emp.hourlyRate,
+                overtimeRate: emp.overtimeRate,
+                holidayRate: emp.holidayRate,
+                holidayCount: emp.holidayCount,
+                grossSalary: emp.grossSalary,
+                benefitsDeductionsAmount,
+                incentiveAmount,
+                paidLeaveAmount,
+                deductibleAmount,
+                netSalary
+            };
+        });
+
+        const totalPayrollAmount = payrollHistoryRecords.reduce((sum, record) => {
+            return sum + parseFloat(record.netSalary || 0);
+        }, 0).toFixed(2);
+
+        await PayrollHistory.insertMany(payrollHistoryRecords);
+
+        const employeeIds = batchData.employees.map(emp => emp.employee_id);
+
+        await IncentiveTracking.updateMany(
+            { userId: { $in: employeeIds }, isAlreadyAdded: false },
+            { $set: { isAlreadyAdded: true } }
+        );
+
+        await BenefitDeduction.updateMany(
+            { userId: { $in: employeeIds }, isAlreadyAdded: false },
+            { $set: { isAlreadyAdded: true } }
+        );
+
+        await EmployeeCompensation.updateMany(
+            { employeeId: { $in: employeeIds }, isAlreadyAdded: false },
+            { $set: { isAlreadyAdded: true } }
+        );
+
+        await CompensationBenefit.updateMany(
+            { _id: { $in: employeeCompensations.map(comp => comp.benefit) }, isAlreadyAdded: false },
+            { $set: { isAlreadyAdded: true } }
+        );
+
+        const newBatchId = `batch-${Date.now()}`;
+
+        await Attendance.updateMany(
+            { batch_id: batch_id },
+            { $set: { isFinalized: true, batch_id: newBatchId } } 
+        );
+
+        const latestBatch = await Batch.findOne().sort({ created_at: -1 });
+
+        if (latestBatch) {
+            await Batch.deleteOne({ _id: latestBatch._id });
+        }
+
+        const newBatch = new Batch({
+            batch_id: newBatchId,
+            expiration_date: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
+            totalPayrollAmount: totalPayrollAmount
+        });
+
+        await newBatch.save();
+
+        res.status(200).json({
+            success: true,
+            message: `Payroll for batch ${batch_id} finalized successfully. New batch ${newBatchId} created.`,
+            new_batch_id: newBatchId,
+            totalPayrollAmount: totalPayrollAmount
+        });
+
+    } catch (error) {
+        console.error(`Error in finalizing payroll: ${error.message}`);
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 };

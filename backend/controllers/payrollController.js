@@ -1,6 +1,6 @@
 import axios from "axios";
 import { generateServiceToken } from "../middlewares/gatewayTokenGenerator.js";
-import Batch from "../models/batchModel.js";
+import { Batch } from "../models/BatchModel.js";
 import { EmployeeLeave } from "../models/employeeLeaveModel.js";
 import { Attendance } from "../models/attendanceModel.js";
 
@@ -97,34 +97,18 @@ export const getAttendanceFromHr1 = async (req, res) => {
         const batchId = await generateBatchId();
   
         for (const record of attendanceData) {
-            const { employee_id, employee_firstname, employee_lastname, position, time_in, time_out, total_hours, overtime_hours, entry_type, isHoliday } = record;
+            const { _id } = record;
   
-            const existingAttendance = await Attendance.findOne({
-                employee_id,
-                time_in,
-                time_out,
-            });
-  
-            if (existingAttendance) {
-                console.log(`Attendance for employee ${employee_id} on ${time_in} already exists. Updating hours...`);
-                existingAttendance.total_hours = `${parseFloat(existingAttendance.total_hours || 0) + parseFloat(total_hours || 0)}h`;
-                existingAttendance.overtime_hours = `${parseFloat(existingAttendance.overtime_hours || 0) + parseFloat(overtime_hours || 0)}h`;
-                await existingAttendance.save();
+            // Check for existing attendance with the same time tracking ID (_id)
+            const existingAttendanceById = await Attendance.findOne({ _id });
+            if (existingAttendanceById) {
+                console.log(`Attendance with ID ${_id} already exists. Skipping...`);
                 continue;
             }
   
             const newAttendance = new Attendance({
-                employee_id,
-                employee_firstname,
-                employee_lastname,
-                position,
-                time_in,
-                time_out,
-                total_hours,
-                overtime_hours,
-                entry_type,
+                ...record,
                 batch_id: batchId,
-                isHoliday,
             });
   
             await newAttendance.save();
@@ -189,31 +173,17 @@ export const getLeavesAndAttendance = async (req, res) => {
         const batchId = await generateBatchId();
 
         for (const record of attendanceData) {
-            const { employee_id, employee_firstname, employee_lastname, position, time_in, time_out, total_hours, overtime_hours, entry_type, isHoliday } = record;
+            const { _id } = record;
 
-            const existingAttendance = await Attendance.findOne({
-                employee_id,
-                time_in,
-                time_out,
-            });
-
-            if (existingAttendance) {
-                console.log(`Attendance for employee ${employee_id} on ${time_in} already exists. Skipping...`);
+            const existingAttendanceById = await Attendance.findOne({ _id });
+            if (existingAttendanceById) {
+                console.log(`Attendance with ID ${_id} already exists. Skipping...`);
                 continue;
             }
 
             const newAttendance = new Attendance({
-                employee_id,
-                employee_firstname,
-                employee_lastname,
-                position,
-                time_in,
-                time_out,
-                total_hours,
-                overtime_hours,
-                entry_type,
+                ...record,
                 batch_id: batchId,
-                isHoliday,
             });
 
             await newAttendance.save();
