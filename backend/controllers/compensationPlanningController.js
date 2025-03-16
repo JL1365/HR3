@@ -60,3 +60,24 @@ export const getCompensationPlan = async (req, res) => {
         res.status(500).json({message: "Internal Server error"});
     }
 };
+
+export const getAllGrievance = async (req, res) => {
+    try {
+      const serviceToken = generateServiceToken();
+  
+      const response = await axios.get(
+        `${process.env.API_GATEWAY_URL}/hr4/EmComplaint`,
+        {
+            headers: { Authorization: `Bearer ${serviceToken}` },
+
+        }
+      );
+  
+      console.log("Fetched data:", response.data);
+  
+      res.status(200).json(response.data);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      res.status(500).json({ message: "Server error" });
+    }
+};
