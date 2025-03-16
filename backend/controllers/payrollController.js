@@ -97,7 +97,7 @@ export const getAttendanceFromHr1 = async (req, res) => {
         const batchId = await generateBatchId();
   
         for (const record of attendanceData) {
-            const { employee_id, employee_firstname, employee_lastname, position, time_in, time_out, total_hours, overtime_hours, entry_type,isHoliday } = record;
+            const { employee_id, employee_firstname, employee_lastname, position, time_in, time_out, total_hours, overtime_hours, entry_type, isHoliday } = record;
   
             const existingAttendance = await Attendance.findOne({
                 employee_id,
@@ -106,10 +106,12 @@ export const getAttendanceFromHr1 = async (req, res) => {
             });
   
             if (existingAttendance) {
-                console.log(`Attendance for employee ${employee_id} on ${time_in} already exists. Skipping...`);
+                console.log(`Attendance for employee ${employee_id} on ${time_in} already exists. Updating hours...`);
+                existingAttendance.total_hours = `${parseFloat(existingAttendance.total_hours || 0) + parseFloat(total_hours || 0)}h`;
+                existingAttendance.overtime_hours = `${parseFloat(existingAttendance.overtime_hours || 0) + parseFloat(overtime_hours || 0)}h`;
+                await existingAttendance.save();
                 continue;
             }
-
   
             const newAttendance = new Attendance({
                 employee_id,
