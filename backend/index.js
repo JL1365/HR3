@@ -17,7 +17,7 @@ import benefitRoute from './routes/benefitRoute.js';
 import benefitRequestRoute from './routes/benefitRequestRoute.js';
 import benefitDeductionRoute from './routes/benefitDeductionRoute.js';
 
-import payrollRoute from './routes/payrollRoute.js';
+import attendanceRoute from './routes/attendanceRoute.js';
 import salaryRequestRoute from './routes/salaryRequestRoute.js';
 import integrationRoute from './routes/integrationRoute.js';
 
@@ -42,7 +42,7 @@ app.use("/api/benefitDeduction",benefitDeductionRoute);
 app.use("/api/incentive",incentiveRoute)
 app.use("/api/incentiveTracking",incentiveTrackingRoute);
 
-app.use("/api/payroll",payrollRoute);
+app.use("/api/attendance",attendanceRoute);
 app.use("/api/salaryRequest",salaryRequestRoute);
 
 app.use("/api/integration",integrationRoute);
