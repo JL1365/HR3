@@ -561,3 +561,32 @@ export const getMyCalculationNetSalary = async (req, res) => {
         return res.status(500).json({ message: "Failed to retrieve net salary calculation." });
     }
 };
+
+export const getMyPayrollHistoryByBatch = async (req, res) => {
+    try {
+        const userId = req.user && req.user.userId ? String(req.user.userId) : null;
+        if (!userId) {
+            return res.status(401).json({ message: 'User not authenticated' });
+        }
+
+        const payrollHistory = await PayrollHistory.aggregate([
+            { $match: { employee_id: userId } },
+            {
+                $group: {
+                    _id: "$batch_id",
+                    payrolls: { $push: "$$ROOT" },
+                },
+            },
+            { $sort: { "_id": -1 } },
+        ]);
+
+        if (!payrollHistory || payrollHistory.length === 0) {
+            return res.status(404).json({ message: "No payroll history found for the user." });
+        }
+
+        return res.status(200).json({ success: true, data: payrollHistory });
+    } catch (error) {
+        console.error("Error fetching user payroll history by batch:", error);
+        return res.status(500).json({ message: "Failed to retrieve payroll history by batch." });
+    }
+};

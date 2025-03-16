@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { addEmployeeCompensation, calculateGrossSalary, calculateNetSalary, finalizePayroll, getAllPayrollHistory, getMyCalculationGrossSalary, getMyCalculationNetSalary } from '../controllers/salaryRequestController.js';
+import { addEmployeeCompensation, calculateGrossSalary, calculateNetSalary, finalizePayroll, getAllPayrollHistory, getMyCalculationGrossSalary, getMyCalculationNetSalary, getMyPayrollHistory } from '../controllers/salaryRequestController.js';
 import {verifyToken} from '../middlewares/verifyToken.js'
 
 const salaryRequestRoute = express.Router();
@@ -13,5 +13,6 @@ salaryRequestRoute.get("/get-all-payroll-history", getAllPayrollHistory);
 
 salaryRequestRoute.get("/get-my-calculate-gross-salary",verifyToken, getMyCalculationGrossSalary);
 salaryRequestRoute.get("/get-my-calculate-net-salary",verifyToken, getMyCalculationNetSalary);
+salaryRequestRoute.get("/get-my-payroll-history",verifyToken, getMyPayrollHistory);
 
 export default salaryRequestRoute;
