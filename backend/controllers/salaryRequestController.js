@@ -125,122 +125,127 @@ export const calculateGrossSalary = async (req, res) => {
     }
 };
 
-export const calculateNetSalary = async (req, res) => {
+const calculateNetPayroll = async () => {
+    const serviceToken = generateServiceToken();
+
+    let payrollData = [];
     try {
-        const serviceToken = generateServiceToken();
+        payrollData = await calculateGrossPayroll();
+    } catch (error) {
+        console.warn("No attendance data found, proceeding with deductions, incentives, and paid leaves only.");
+    }
 
-        let payrollData = [];
-        try {
-            payrollData = await calculateGrossPayroll();
-        } catch (error) {
-            console.warn("No attendance data found, proceeding with deductions, incentives, and paid leaves only.");
+    const deductions = await BenefitDeduction.find({ isAlreadyAdded: false });
+    const approvedIncentives = await IncentiveTracking.find({ isAlreadyAdded: false });
+    const employeeCompensations = await EmployeeCompensation.find({ isAlreadyAdded: false });
+
+    const deductionsMap = {};
+    deductions.forEach(deduction => {
+        const key = `${deduction.userId}`;
+        deductionsMap[key] = (deductionsMap[key] || 0) + deduction.amount;
+    });
+
+    const incentivesMap = {};
+    approvedIncentives.forEach(incentive => {
+        const key = `${incentive.userId}`;
+        incentivesMap[key] = (incentivesMap[key] || 0) + incentive.amount;
+    });
+
+    const compensationMap = {};
+    employeeCompensations.forEach(compensation => {
+        const key = `${compensation.employeeId}`;
+        if (!compensationMap[key]) {
+            compensationMap[key] = { paidLeaveAmount: 0, deductibleAmount: 0 };
         }
+        if (compensation.benefitType === "Paid Benefit") {
+            compensationMap[key].paidLeaveAmount += compensation.totalAmount || 0;
+        } else if (compensation.benefitType === "Deductible Benefit") {
+            compensationMap[key].deductibleAmount += compensation.deductionAmount || 0;
+        }
+    });
 
-        const deductions = await BenefitDeduction.find({ isAlreadyAdded: false });
-        const approvedIncentives = await IncentiveTracking.find({ isAlreadyAdded: false });
-        const employeeCompensations = await EmployeeCompensation.find({ isAlreadyAdded: false });
+    if (payrollData.length === 0) {
+        const employeeIds = new Set([
+            ...Object.keys(deductionsMap),
+            ...Object.keys(incentivesMap),
+            ...Object.keys(compensationMap),
+        ]);
 
-        const deductionsMap = {};
-        deductions.forEach(deduction => {
-            const key = `${deduction.userId}`;
-            deductionsMap[key] = (deductionsMap[key] || 0) + deduction.amount;
-        });
+        payrollData = Array.from(employeeIds).map(employeeId => ({
+            batch_id: "N/A",
+            employees: [{
+                employee_id: employeeId,
+                employee_firstname: "Unknown",
+                employee_lastname: "Unknown",
+                position: "Unknown",
+                totalWorkHours: 0,
+                totalOvertimeHours: 0,
+                dailyWorkHours: [],
+                dailyOvertimeHours: [],
+                hourlyRate: 0,
+                overtimeRate: 0,
+                holidayRate: 0,
+                holidayCount: 0,
+                grossSalary: "0.00",
+                benefitsDeductionsAmount: deductionsMap[employeeId] || 0,
+                incentiveAmount: incentivesMap[employeeId] || 0,
+                paidLeaveAmount: compensationMap[employeeId]?.paidLeaveAmount || 0,
+                deductibleAmount: compensationMap[employeeId]?.deductibleAmount || 0,
+                netSalary: (
+                    (incentivesMap[employeeId] || 0) +
+                    (compensationMap[employeeId]?.paidLeaveAmount || 0) -
+                    (deductionsMap[employeeId] || 0) -
+                    (compensationMap[employeeId]?.deductibleAmount || 0)
+                ).toFixed(2),
+            }]
+        }));
+    } else {
+        payrollData = payrollData.map(batch => {
+            let totalNetSalary = 0;
 
-        const incentivesMap = {};
-        approvedIncentives.forEach(incentive => {
-            const key = `${incentive.userId}`;
-            incentivesMap[key] = (incentivesMap[key] || 0) + incentive.amount;
-        });
+            const employees = batch.employees.map(employee => {
+                if (!employee || !employee.employee_id) return null;
 
-        const compensationMap = {};
-        employeeCompensations.forEach(compensation => {
-            const key = `${compensation.employeeId}`;
-            if (!compensationMap[key]) {
-                compensationMap[key] = { paidLeaveAmount: 0, deductibleAmount: 0 };
-            }
-            if (compensation.benefitType === "Paid Benefit") {
-                compensationMap[key].paidLeaveAmount += compensation.totalAmount || 0;
-            } else if (compensation.benefitType === "Deductible Benefit") {
-                compensationMap[key].deductibleAmount += compensation.deductionAmount || 0;
-            }
-        });
+                const key = `${employee.employee_id}`;
+                const benefitsDeductionsAmount = deductionsMap[key] || 0;
+                const incentiveAmount = incentivesMap[key] || 0;
+                const paidLeaveAmount = compensationMap[key]?.paidLeaveAmount || 0;
+                const deductibleAmount = compensationMap[key]?.deductibleAmount || 0;
+                const grossSalary = parseFloat(employee.grossSalary) || 0;
+                const netSalary = (
+                    grossSalary +
+                    incentiveAmount +
+                    paidLeaveAmount -
+                    benefitsDeductionsAmount -
+                    deductibleAmount
+                ).toFixed(2);
 
-        if (payrollData.length === 0) {
-            const employeeIds = new Set([
-                ...Object.keys(deductionsMap),
-                ...Object.keys(incentivesMap),
-                ...Object.keys(compensationMap),
-            ]);
-
-            payrollData = Array.from(employeeIds).map(employeeId => ({
-                batch_id: "N/A",
-                employees: [{
-                    employee_id: employeeId,
-                    employee_firstname: "Unknown",
-                    employee_lastname: "Unknown",
-                    position: "Unknown",
-                    totalWorkHours: 0,
-                    totalOvertimeHours: 0,
-                    dailyWorkHours: [],
-                    dailyOvertimeHours: [],
-                    hourlyRate: 0,
-                    overtimeRate: 0,
-                    holidayRate: 0,
-                    holidayCount: 0,
-                    grossSalary: "0.00",
-                    benefitsDeductionsAmount: deductionsMap[employeeId] || 0,
-                    incentiveAmount: incentivesMap[employeeId] || 0,
-                    paidLeaveAmount: compensationMap[employeeId]?.paidLeaveAmount || 0,
-                    deductibleAmount: compensationMap[employeeId]?.deductibleAmount || 0,
-                    netSalary: (
-                        (incentivesMap[employeeId] || 0) +
-                        (compensationMap[employeeId]?.paidLeaveAmount || 0) -
-                        (deductionsMap[employeeId] || 0) -
-                        (compensationMap[employeeId]?.deductibleAmount || 0)
-                    ).toFixed(2),
-                }]
-            }));
-        } else {
-            payrollData = payrollData.map(batch => {
-                let totalNetSalary = 0;
-
-                const employees = batch.employees.map(employee => {
-                    if (!employee || !employee.employee_id) return null;
-
-                    const key = `${employee.employee_id}`;
-                    const benefitsDeductionsAmount = deductionsMap[key] || 0;
-                    const incentiveAmount = incentivesMap[key] || 0;
-                    const paidLeaveAmount = compensationMap[key]?.paidLeaveAmount || 0;
-                    const deductibleAmount = compensationMap[key]?.deductibleAmount || 0;
-                    const grossSalary = parseFloat(employee.grossSalary) || 0;
-                    const netSalary = (
-                        grossSalary +
-                        incentiveAmount +
-                        paidLeaveAmount -
-                        benefitsDeductionsAmount -
-                        deductibleAmount
-                    ).toFixed(2);
-
-                    totalNetSalary += parseFloat(netSalary);
-
-                    return {
-                        ...employee,
-                        benefitsDeductionsAmount,
-                        incentiveAmount,
-                        paidLeaveAmount,
-                        deductibleAmount,
-                        netSalary
-                    };
-                }).filter(emp => emp !== null);
+                totalNetSalary += parseFloat(netSalary);
 
                 return {
-                    batch_id: batch.batch_id,
-                    totalNetSalary: totalNetSalary.toFixed(2),
-                    employees
+                    ...employee,
+                    benefitsDeductionsAmount,
+                    incentiveAmount,
+                    paidLeaveAmount,
+                    deductibleAmount,
+                    netSalary
                 };
-            });
-        }
+            }).filter(emp => emp !== null);
 
+            return {
+                batch_id: batch.batch_id,
+                totalNetSalary: totalNetSalary.toFixed(2),
+                employees
+            };
+        });
+    }
+
+    return payrollData;
+};
+
+export const calculateNetSalary = async (req, res) => {
+    try {
+        const payrollData = await calculateNetPayroll();
         res.status(200).json({ success: true, data: payrollData });
     } catch (error) {
         console.error(`Error in fetching payroll with deductions and incentives: ${error.message}`);
@@ -495,3 +500,64 @@ export const getAllPayrollHistory = async (req, res) => {
       return res.status(500).json({ message: "Failed to retrieve payroll history." });
     }
   };
+
+export const getMyPayrollHistory = async (req, res) => {
+    try {
+        const userId = req.user && req.user.userId ? String(req.user.userId) : null;
+        if (!userId) {
+          return res.status(401).json({ message: 'User not authenticated' });
+        }
+        const payrollHistory = await PayrollHistory.find({ employee_id: userId }).sort({ createdAt: -1 });
+
+        if (!payrollHistory || payrollHistory.length === 0) {
+            return res.status(404).json({ message: "No payroll history found for the user." });
+        }
+
+        return res.status(200).json({ success: true, data: payrollHistory });
+    } catch (error) {
+        console.error("Error fetching user payroll history:", error);
+        return res.status(500).json({ message: "Failed to retrieve payroll history." });
+    }
+};
+
+export const getMyCalculationGrossSalary = async (req, res) => {
+    try {
+        const userId = req.user && req.user.userId ? String(req.user.userId) : null;
+        if (!userId) {
+          return res.status(401).json({ message: 'User not authenticated' });
+        }
+
+        const payrollData = await calculateGrossPayroll();
+        const userPayroll = payrollData.flatMap(batch => batch.employees).find(emp => emp.employee_id.toString() === userId);
+
+        if (!userPayroll) {
+            return res.status(404).json({ message: "No gross salary calculation found for the user." });
+        }
+
+        return res.status(200).json({ success: true, data: userPayroll });
+    } catch (error) {
+        console.error("Error fetching user gross salary calculation:", error);
+        return res.status(500).json({ message: "Failed to retrieve gross salary calculation." });
+    }
+};
+
+export const getMyCalculationNetSalary = async (req, res) => {
+    try {
+        const userId = req.user && req.user.userId ? String(req.user.userId) : null;
+        if (!userId) {
+            return res.status(401).json({ message: 'User not authenticated' });
+        }
+
+        const payrollData = await calculateNetPayroll();
+        const userPayroll = payrollData.flatMap(batch => batch.employees).find(emp => emp.employee_id.toString() === userId);
+
+        if (!userPayroll) {
+            return res.status(404).json({ message: "No net salary calculation found for the user." });
+        }
+
+        return res.status(200).json({ success: true, data: userPayroll });
+    } catch (error) {
+        console.error("Error fetching user net salary calculation:", error);
+        return res.status(500).json({ message: "Failed to retrieve net salary calculation." });
+    }
+};
