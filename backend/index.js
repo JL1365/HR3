@@ -17,6 +17,9 @@ import benefitRoute from './routes/benefitRoute.js';
 import benefitRequestRoute from './routes/benefitRequestRoute.js';
 import benefitDeductionRoute from './routes/benefitDeductionRoute.js';
 
+import payrollRoute from './routes/payrollRoute.js';
+// import salaryRequestRoute from './routes/salaryRequestRoute.js';
+
 dotenv.config();
 connectDB();
 
@@ -37,6 +40,9 @@ app.use("/api/benefitDeduction",benefitDeductionRoute);
 
 app.use("/api/incentive",incentiveRoute)
 app.use("/api/incentiveTracking",incentiveTrackingRoute);
+
+app.use("/api/payroll",payrollRoute);
+// app.use("/api/salaryRequest",salaryRequestRoute);
 
 app.listen(PORT,() => {
     console.log(`Server is running at PORT: ${PORT}`);
