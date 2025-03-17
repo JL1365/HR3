@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { useAuthStore } from "../store/authStore";
+import { useNavigate } from "react-router-dom";
 
 function AdminLogin () {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const navigate = useNavigate();
     const adminLogin = useAuthStore((state) => state.adminLogin);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const result = await adminLogin({ email, password });
+        navigate("/admin-dashboard")
         if (!result.success) {
             setError(result.message);
         }

@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { useAuthStore } from "../store/authStore";
+import { useNavigate } from "react-router-dom";
 
 function EmployeeLogin () {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const navigate = useNavigate();
     const employeeLogin = useAuthStore((state) => state.employeeLogin);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const result = await employeeLogin({ email, password });
+        navigate("/employee-dashboard")
         if (!result.success) {
             setError(result.message);
         }
