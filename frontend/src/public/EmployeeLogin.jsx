@@ -12,9 +12,11 @@ function EmployeeLogin () {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const result = await employeeLogin({ email, password });
-        navigate("/employee-dashboard")
-        if (!result.success) {
-            setError(result.message);
+        if (result.success) {
+            console.log("Login successful, redirecting...");
+            navigate("/employee-dashboard"); 
+        } else {
+            setError(result.message || "Invalid email or password.");
         }
     };
 

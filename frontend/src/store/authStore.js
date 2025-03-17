@@ -34,4 +34,20 @@ export const useAuthStore  = create ((set) => ({
             return { success: false, message: error.response?.data?.message || "Login failed" };
         }
     },
+    
+    checkAuth: async () => {
+        try {
+            const response = await axiosInstance.get("/auth/check-auth");
+            console.log("User from API:", response.data);
+            if (response.data.user) {
+                set({ user: response.data.user, isAuthenticated: true });
+            } else {
+                set({ user: null, isAuthenticated: false });
+            }
+        } catch (error) {
+            console.error("User not authenticated:", error);
+            set({ user: null, isAuthenticated: false });
+        }
+    }
+    
 }));

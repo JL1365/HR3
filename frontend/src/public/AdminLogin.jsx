@@ -12,9 +12,11 @@ function AdminLogin () {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const result = await adminLogin({ email, password });
-        navigate("/admin-dashboard")
-        if (!result.success) {
-            setError(result.message);
+        if (result.success) {
+            console.log("Login successful, redirecting...");
+            navigate("/employee-dashboard"); 
+        } else {
+            setError(result.message || "Invalid email or password.");
         }
     };
 
