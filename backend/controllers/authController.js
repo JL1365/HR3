@@ -113,3 +113,29 @@ export const logoutAccount = (req, res) => {
         return res.status(500).json({ success: false, message: "Server error during logout" });
     }
 };
+
+export const getAllPositions = async (req, res) => {
+    try {
+        const serviceToken = generateServiceToken();
+
+        const response = await axios.get(
+            `${process.env.API_GATEWAY_URL}/admin/get-accounts`,
+            {
+                headers: { Authorization: `Bearer ${serviceToken}` },
+            }
+        );
+
+        const users = response.data;
+
+        if (!users || users.length === 0) {
+            return res.status(404).json({ message: "No users found!" });
+        }
+
+        const positions = [...new Set(users.map(user => user.position).filter(position => position))];
+
+        return res.status(200).json({ message: "Fetching unique positions successfully!", positions });
+    } catch (error) {
+        console.error(`Error in getting users: ${error.message}`);
+        return res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+};

@@ -12,6 +12,8 @@ const PrivateLayout = () => {
 
   const pageTitles = {
     "/admin-dashboard": "DASHBOARD",
+    "/compensation-planning": "Compensation planning",
+
     "/employee-dashboard": "DASHBOARD",
   };
   
@@ -38,7 +40,7 @@ const PrivateLayout = () => {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen bg-gray">
       {user?.role === "Admin" ? (
         <AdminSidebar ref={sidebarRef} isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       ) : (

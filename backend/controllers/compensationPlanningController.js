@@ -61,6 +61,34 @@ export const getCompensationPlan = async (req, res) => {
     }
 };
 
+export const updateCompensationPlan = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { hourlyRate, overTimeRate, holidayRate, benefits } = req.body;
+
+        if (!id) {
+            return res.status(400).json({ message: "Compensation Plan ID is required!" });
+        }
+
+        const existingPlan = await CompensationPlanning.findById(id);
+        if (!existingPlan) {
+            return res.status(404).json({ message: "Compensation Plan not found!" });
+        }
+
+        existingPlan.hourlyRate = hourlyRate ?? existingPlan.hourlyRate;
+        existingPlan.overTimeRate = overTimeRate ?? existingPlan.overTimeRate;
+        existingPlan.holidayRate = holidayRate ?? existingPlan.holidayRate;
+        existingPlan.benefits = benefits ?? existingPlan.benefits;
+
+        await existingPlan.save();
+
+        res.status(200).json({ message: "Compensation Plan updated successfully!", data: existingPlan });
+    } catch (error) {
+        console.error("Error updating compensation plan:", error.message);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
 export const getAllGrievance = async (req, res) => {
     try {
       const serviceToken = generateServiceToken();

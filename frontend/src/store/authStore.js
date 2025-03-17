@@ -6,6 +6,7 @@ export const useAuthStore  = create ((set) => ({
     user:null,
     token:null,
     isAuthenticated:false,
+    allPositions:[],
 
     adminLogin: async ({ email, password }) => {
         try {
@@ -59,4 +60,13 @@ export const useAuthStore  = create ((set) => ({
         }
     },
     
+    fetchAllPositions: async () => {
+        set({ loading: true, error: null });
+        try {
+            const response = await axiosInstance.get("/auth/get-all-positions");
+            set({ allPositions: response.data.positions, loading: false });
+        } catch (error) {
+            set({ error: error.response?.data?.message || "Failed to fetch positions", loading: false });
+        }
+    },
 }));

@@ -11,6 +11,8 @@ import PublicRoute from "./components/PublicRoute";
 
 import PrivateLayout from "./components/PrivateLayout";
 
+import CompensationPlanning from "./private/admin/CompensationPlanning";
+
 function App() {
   return (
     <Routes>
@@ -22,6 +24,7 @@ function App() {
       <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
         <Route element={<PrivateLayout />}>
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/compensation-planning" element={<CompensationPlanning />} />
         </Route>
       </Route>
 
