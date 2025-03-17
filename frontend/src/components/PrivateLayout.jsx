@@ -1,0 +1,59 @@
+import { Outlet, useLocation } from "react-router-dom";
+import PrivateHeader from "./PrivateHeader";
+import AdminSidebar from "./AdminSidebar";
+import { useAuthStore } from "../store/authStore";
+import { useState, useEffect, useRef } from "react";
+import EmployeeSidebar from "./EmployeeSidebar";
+
+const PrivateLayout = () => {
+  const location = useLocation();
+  const sidebarRef = useRef(null);
+  const { user } = useAuthStore();
+
+  const pageTitles = {
+    "/admin-dashboard": "DASHBOARD",
+    "/employee-dashboard": "DASHBOARD",
+  };
+  
+
+  const currentTitle = pageTitles[location.pathname] || "Dashboard";
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen((prev) => !prev);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  return (
+    <div className="flex flex-col min-h-screen bg-gray-100">
+      {user?.role === "Admin" ? (
+        <AdminSidebar ref={sidebarRef} isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      ) : (
+        <EmployeeSidebar ref={sidebarRef} isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      )}
+
+      <div className={`flex-1 transition-all ${isSidebarOpen ? "md:ml-72 md:blur-none ml-0 blur-sm" : "ml-0"}`}>
+        <PrivateHeader title={currentTitle} toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
+        <main className="p-6 flex-grow">
+          <Outlet />
+        </main>
+      </div>
+
+    </div>
+  );
+};
+
+export default PrivateLayout;

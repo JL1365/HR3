@@ -48,6 +48,15 @@ export const useAuthStore  = create ((set) => ({
             console.error("User not authenticated:", error);
             set({ user: null, isAuthenticated: false });
         }
-    }
+    },
+
+    logout: async () => {
+        try {
+            await axiosInstance.post("/auth/logout");
+            set({ user: null, token: null, isAuthenticated: false });
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
+    },
     
 }));

@@ -9,6 +9,8 @@ import EmployeeDashboard from "./private/employee/EmployeeDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 
+import PrivateLayout from "./components/PrivateLayout";
+
 function App() {
   return (
     <Routes>
@@ -18,11 +20,15 @@ function App() {
       </Route>
 
       <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route element={<PrivateLayout />}>
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        </Route>
       </Route>
 
       <Route element={<ProtectedRoute allowedRoles={["Employee"]} />}>
-        <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
+        <Route element={<PrivateLayout />}>
+          <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
+        </Route>
       </Route>
 
       <Route path="*" element={<Navigate to="/employee-login" replace />} />
