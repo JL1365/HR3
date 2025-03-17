@@ -38,9 +38,12 @@ const AdminSidebar = forwardRef(({ isSidebarOpen }, ref) => {
     {
       name: "Compensation Planning",
       icon: Briefcase,
-      subItems: [{ name: "Overview", href: "/compensation-planning" }],
+      subItems: [
+        { name: "Overview", href: "/compensation-planning" },
+        { name: "Compensation Benefit", href: "/compensation-benefit" }
+      ],
     },
-  ];
+  ];  
 
   return (
     <div className="flex">

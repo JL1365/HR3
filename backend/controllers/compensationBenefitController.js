@@ -2,23 +2,43 @@ import { CompensationBenefit } from "../models/compensationBenefitModel.js";
 
 export const createBenefit = async (req, res) => {
     try {
-        const { benefitName, benefitType, benefitAmount } = req.body;
-        const isExistingBenefit = await CompensationBenefit.findOne({benefitName});
-        if(isExistingBenefit){
-            return res.status(400).json({message:"Compensation Benefit Already Exists!"});
+      const { benefitName, benefitType, benefitAmount, isNeedRequest, isAvailable } = req.body;
+  
+      const isExistingBenefit = await CompensationBenefit.findOne({ benefitName });
+      if (isExistingBenefit) {
+        return res.status(400).json({ message: "Compensation Benefit Already Exists!" });
+      }
+  
+      let benefitData = { benefitName, benefitType, benefitAmount, isAvailable };
+  
+      if (benefitType === "Paid Benefit") {
+        benefitData.isNeedRequest = false;
+      } else if (benefitType === "Deductible Benefit") {
+        if (typeof isNeedRequest === "undefined") {
+          return res.status(400).json({ message: "isNeedRequest is required for Deductible Benefit!" });
         }
-        const benefit = new CompensationBenefit({ benefitName, benefitType, benefitAmount });
-        await benefit.save();
-        res.status(201).json({ 
-            success: true,
-            message: "Benefit created successfully", 
-            data: { benefitName: benefit.benefitName, benefitType: benefit.benefitType, benefitAmount: benefit.benefitAmount } 
-        });
+        benefitData.isNeedRequest = isNeedRequest;
+      }
+  
+      const benefit = new CompensationBenefit(benefitData);
+      await benefit.save();
+  
+      res.status(201).json({
+        success: true,
+        message: "Benefit created successfully",
+        data: {
+          benefitName: benefit.benefitName,
+          benefitType: benefit.benefitType,
+          benefitAmount: benefit.benefitAmount,
+          isNeedRequest: benefit.isNeedRequest,
+          isAvailable: benefit.isAvailable,
+        },
+      });
     } catch (error) {
-        console.log(`Error in creating benefits: ${error.message}`);
-        res.status(500).json({message: "Internal server error"});
+      console.log(`Error in creating benefits: ${error.message}`);
+      res.status(500).json({ message: "Internal server error" });
     }
-};
+  };  
 
 export const getAllBenefits = async (req, res) => {
     try {
