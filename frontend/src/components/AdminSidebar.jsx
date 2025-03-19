@@ -39,9 +39,10 @@ const AdminSidebar = forwardRef(({ isSidebarOpen }, ref) => {
       name: "Compensation Planning",
       icon: Briefcase,
       subItems: [
-        { name: "Overview", href: "/compensation-planning" },
+        { name: "Planning", href: "/compensation-planning" },
         { name: "Compensation Benefit", href: "/compensation-benefit" },
-        { name: "Penalty", href: "/penalty" }
+        { name: "Penalty", href: "/penalty" },
+        { name: "Employee Violation", href: "/employee-violation" }
       ],
     },
   ];  

@@ -163,7 +163,7 @@ function Penalty() {
       className="p-2 md:p-4"
     >
       <ToastContainer position="top-right" autoClose={3000} />
-      <h2 className="text-lg font-semibold mb-4">Penalty Levels</h2>
+    
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}

@@ -14,6 +14,7 @@ import PrivateLayout from "./components/PrivateLayout";
 import CompensationPlanning from "./private/admin/CompensationPlanning";
 import CompensationBenefit from "./private/admin/CompensationBenefit";
 import Penalty from "./private/admin/Penalty";
+// import EmployeeViolation from "./private/admin/EmployeeViolation";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/compensation-planning" element={<CompensationPlanning />} />
           <Route path="/compensation-benefit" element={<CompensationBenefit />} />
           <Route path="/penalty" element={<Penalty />} />
+          {/* <Route path="/employee-violation" element={<EmployeeViolation />} /> */}
         </Route>
       </Route>
 

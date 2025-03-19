@@ -13,6 +13,10 @@ const PrivateLayout = () => {
   const pageTitles = {
     "/admin-dashboard": "DASHBOARD",
     "/compensation-planning": "Compensation planning",
+    "/compensation-benefit": "Compensation benefit",
+    "/penalty": "Penalties",
+    "/employee-violation": "Employee violation",
+    "/compensation-planning": "Compensation planning",
 
     "/employee-dashboard": "DASHBOARD",
   };
