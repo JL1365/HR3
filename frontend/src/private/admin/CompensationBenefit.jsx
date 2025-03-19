@@ -223,14 +223,21 @@ function CompensationBenefit() {
   };
 
   return (
-    <div>
+<motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="p-2 md:p-4"
+    >
       <ToastContainer autoClose={3000} />
-      <button
-        className="btn btn-success mb-4"
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+       className="mb-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 w-full md:w-auto"
         onClick={() => setIsAddModalOpen(true)}
       >
         Create Compensation Benefit
-      </button>
+  </motion.button>
       {loading && (
         <div className="flex justify-center items-center my-4">
           <div className="loading loading-spinner loading-lg text-primary"></div>
@@ -443,9 +450,9 @@ function CompensationBenefit() {
       )}
 
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
+         initial={{ y: 20, opacity: 0 }}
+         animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
       >
         <div className="overflow-x-auto">
           <table className="table-auto w-full pb-5 text-sm">
@@ -485,18 +492,22 @@ function CompensationBenefit() {
                       </span>
                     </td>
                     <td className="p-3 border-b">
-                      <button
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                         className="btn bg-yellow-500 text-white hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-400"
                         onClick={() => handleEditClick(plan)}
                       >
                         Edit
-                      </button>
-                      <button
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                         className="btn bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500"
                         onClick={() => handleDeleteClick(plan._id)}
                       >
                         Delete
-                      </button>
+                     </motion.button>
                     </td>
                   </tr>
                 ))
@@ -512,24 +523,34 @@ function CompensationBenefit() {
         </div>
       </motion.div>
 
-      <div className="flex justify-between mt-4">
-        <button
-          className="btn btn-primary"
-          onClick={prevPage}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        className="flex justify-between mt-4"
+      >
+        <motion.button 
+          whileHover={{ scale: 1.05 }} 
+          whileTap={{ scale: 0.95 }}
+          className="btn btn-primary text-xs md:text-sm" 
+          onClick={prevPage} 
           disabled={currentPage === 1}
         >
           Previous
-        </button>
-        <span className="text-gray-700">Page {currentPage}</span>
-        <button
-          className="btn btn-primary"
-          onClick={nextPage}
+        </motion.button>
+        <span className="text-gray-700 text-xs md:text-sm">Page {currentPage}</span>
+        <motion.button 
+          whileHover={{ scale: 1.05 }} 
+          whileTap={{ scale: 0.95 }}
+          className="btn btn-primary text-xs md:text-sm" 
+          onClick={nextPage} 
           disabled={indexOfLastPlan >= benefits.length}
         >
           Next
-        </button>
-      </div>
-    </div>
+        </motion.button>
+      </motion.div>
+
+  </motion.div>
   );
 }
 

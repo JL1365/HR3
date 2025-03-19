@@ -131,24 +131,22 @@ function CompensationPlanning() {
   };
 
   return (
-    <div className="p-2">
+<motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="p-2 md:p-4"
+    >
       <ToastContainer position="top-right" autoClose={3000} />
 
-      <button
-        className="btn btn-success mb-4"
-        onClick={() => {
-          setNewPlan({
-            position: "",
-            hourlyRate: "",
-            overTimeRate: "",
-            holidayRate: "",
-            benefits: [{ benefitType: "", deductionsAmount: 0 }],
-          });
-          setIsAddModalOpen(true);
-        }}
+      <motion.button 
+        whileHover={{ scale: 1.05 }} 
+        whileTap={{ scale: 0.95 }}
+        onClick={setIsAddModalOpen} 
+        className="mb-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 w-full md:w-auto"
       >
         Add Compensation Plan
-      </button>
+        </motion.button>
 
       {loading && (
         <div className="flex justify-center items-center my-4">
@@ -157,9 +155,10 @@ function CompensationPlanning() {
       )}
 
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+       initial={{ y: 20, opacity: 0 }}
+       animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
+        className="overflow-x-auto"
       >
         <div className="overflow-x-auto">
           <table className="table-auto w-full pb-5 text-sm">
@@ -176,7 +175,7 @@ function CompensationPlanning() {
             <tbody className="bg-white text-neutral-500 border-b">
               {currentPlans.length > 0 ? (
                 currentPlans.map((plan) => (
-                  <tr key={plan._id}>
+                  <tr key={plan._id} >
                     <td className="p-3 border-b">{plan.positionName || "N/A"}</td>
                     <td className="p-3 border-b">₱{parseFloat(plan.hourlyRate).toFixed(2)}</td>
                     <td className="p-3 border-b">₱{parseFloat(plan.overTimeRate).toFixed(2)}</td>
@@ -191,12 +190,14 @@ function CompensationPlanning() {
                       </button>
                     </td>
                     <td className="p-3 border-b">
-                      <button
+                    <motion.button 
+                     whileHover={{ scale: 1.1 }} 
+                          whileTap={{ scale: 0.9 }}
                         className="btn btn-warning btn-sm"
                         onClick={() => openEditModal(plan)}
                       >
                         Edit
-                      </button>
+                     </motion.button>
                     </td>
                   </tr>
                 ))
@@ -212,15 +213,33 @@ function CompensationPlanning() {
         </div>
       </motion.div>
 
-      <div className="flex justify-between mt-4">
-        <button className="btn btn-primary" onClick={prevPage} disabled={currentPage === 1}>
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        className="flex justify-between mt-4"
+      >
+        <motion.button 
+          whileHover={{ scale: 1.05 }} 
+          whileTap={{ scale: 0.95 }}
+          className="btn btn-primary text-xs md:text-sm" 
+          onClick={prevPage} 
+          disabled={currentPage === 1}
+        >
           Previous
-        </button>
-        <span className="text-gray-700">Page {currentPage}</span>
-        <button className="btn btn-primary" onClick={nextPage} disabled={indexOfLastPlan >= compensationPlans.length}>
+        </motion.button>
+        <span className="text-gray-700 text-xs md:text-sm">Page {currentPage}</span>
+        <motion.button 
+          whileHover={{ scale: 1.05 }} 
+          whileTap={{ scale: 0.95 }}
+          className="btn btn-primary text-xs md:text-sm" 
+          onClick={nextPage} 
+          disabled={indexOfLastPlan >= compensationPlans.length}
+        >
           Next
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
+
 
       {isOpenModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -434,7 +453,7 @@ function CompensationPlanning() {
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }
 
