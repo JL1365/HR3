@@ -18,6 +18,8 @@ const PrivateLayout = () => {
     "/employee-violation": "Employee violation",
     "/compensation-planning": "Compensation planning",
 
+    "/benefit-request": "Benefit Requests",
+
     "/employee-dashboard": "DASHBOARD",
   };
   
