@@ -34,7 +34,7 @@ const PORT = process.env.PORT;
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: ["http://localhost:5173", "https://hr3.jjm-manufacturing.com"],
+    origin: ["http://localhost:5173", "https://hr3.jjm-manufacturing.com","https://hr3-2htq.onrender.com"],
     credentials: true,
     methods: ["GET", "POST","PUT","DELETE"], 
     allowedHeaders: ["Content-Type", "Authorization"], 
