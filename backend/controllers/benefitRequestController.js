@@ -6,15 +6,12 @@ import axios from 'axios'
 
 export const applyBenefit = async (req, res) => {
   try {
-    const userId = req.user && req.user.userId ? String(req.user.userId) : null;
-    console.log("User ID from token:", userId);
-
+    const userId = req.user?.userId ? String(req.user.userId) : null;
     if (!userId) {
       return res.status(400).json({ message: "User ID not found in token." });
     }
 
     const { compensationBenefitId } = req.body;
-
     if (!compensationBenefitId) {
       return res.status(400).json({ message: "Missing required fields." });
     }
@@ -22,33 +19,38 @@ export const applyBenefit = async (req, res) => {
     const serviceToken = generateServiceToken();
     const response = await axios.get(
       `${process.env.API_GATEWAY_URL}/admin/get-accounts`,
-      {
-        headers: { Authorization: `Bearer ${serviceToken}` },
-      }
+      { headers: { Authorization: `Bearer ${serviceToken}` } }
     );
 
     const users = response.data;
-    console.log("Users from API Gateway:", users);
-
     const employeeExists = users.find(user => String(user._id) === userId);
-
     if (!employeeExists) {
-      console.error(`User with ID ${userId} not found in the system.`);
       return res.status(404).json({ message: "User not found in the system." });
     }
 
-    const existingRequest = await BenefitRequest.findOne({ userId, compensationBenefitId });
-    if (existingRequest) {
-      return res.status(400).json({
-        message: "You have already requested this benefit.",
-      });
+    const latestRequest = await BenefitRequest.findOne({
+      userId,
+      compensationBenefitId
+    }).sort({ createdAt: -1 });
+
+    if (latestRequest) {
+      if (latestRequest.status === "Pending") {
+        return res.status(400).json({
+          message: "You have a pending request for this benefit.",
+        });
+      }
+
+      if (latestRequest.status === "Approved") {
+        return res.status(400).json({
+          message: "You are already approved for this benefit.",
+        });
+      }
+
     }
 
     const benefit = await CompensationBenefit.findById(compensationBenefitId);
     if (!benefit) {
-      return res.status(404).json({
-        message: "Benefit not found.",
-      });
+      return res.status(404).json({ message: "Benefit not found." });
     }
 
     if (benefit.isNeedRequest) {
@@ -58,8 +60,10 @@ export const applyBenefit = async (req, res) => {
         });
       }
     }
+
     const frontIdUrl = req.files.frontId ? req.files.frontId[0].path : null;
     const backIdUrl = req.files.backId ? req.files.backId[0].path : null;
+
     const newRequest = new BenefitRequest({
       userId,
       compensationBenefitId,
@@ -81,6 +85,7 @@ export const applyBenefit = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 export { upload };
 

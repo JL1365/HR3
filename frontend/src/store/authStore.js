@@ -4,6 +4,7 @@ import { axiosInstance } from "../lib/axios.js";
 
 export const useAuthStore  = create ((set) => ({
     user:null,
+    users:[],
     token:null,
     isAuthenticated:false,
     allPositions:[],
@@ -67,6 +68,16 @@ export const useAuthStore  = create ((set) => ({
             set({ allPositions: response.data.positions, loading: false });
         } catch (error) {
             set({ error: error.response?.data?.message || "Failed to fetch positions", loading: false });
+        }
+    },
+
+    fetchAllUsers: async () => {
+        set({ loading: true, error: null });
+        try {
+            const response = await axiosInstance.get("/auth/get-all-users");
+            set({ users: response.data.users, loading: false });
+        } catch (error) {
+            set({ error: error.response?.data?.message || "Failed to fetch users", loading: false });
         }
     },
 }));

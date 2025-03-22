@@ -9,9 +9,9 @@ export const useBenefitRequestStore = create((set, get) => ({
             const response = await axiosInstance.get("/benefitRequest/get-all-applied-requests");
             set({ allBenefitRequests: response.data.data || [], loading: false });
         } catch (error) {
-            console.error("Error fetching compensation benefit plans:", error);
+            console.error("Error fetching  benefit request:", error);
             set({ 
-                error: error.response?.data?.message || "Failed to fetch compensation benefit plans", 
+                error: error.response?.data?.message || "Failed to fetch  benefit requests", 
                 loading: false 
             });
         }
