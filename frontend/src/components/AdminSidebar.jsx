@@ -69,6 +69,7 @@ const AdminSidebar = forwardRef(({ isSidebarOpen }, ref) => {
       subItems: [
         { name: "Attendance", href: "/attendance-overview" },
         { name: "Salary Computation", href: "/salary-computation" },
+        { name: "Budget Request", href: "/budget-request" },
       ],
     },
   ];  

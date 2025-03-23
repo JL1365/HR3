@@ -22,6 +22,7 @@ import IncentiveOverview from "./private/admin/IncentiveOverview";
 import IncentiveTracking from "./private/admin/IncentiveTracking";
 import Attendance from "./private/admin/Attendance";
 import SalaryComputation from "./private/admin/SalaryComputation";
+import BudgetRequest from "./private/admin/BudgetRequest";
 // import EmployeeViolation from "./private/admin/EmployeeViolation";
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
 
           <Route path="/attendance-overview" element={<Attendance />} />
           <Route path="/salary-computation" element={<SalaryComputation />} />
+          <Route path="/budget-request" element={<BudgetRequest />} />
         </Route>
       </Route>
 
