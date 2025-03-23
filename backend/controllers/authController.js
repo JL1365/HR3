@@ -1,8 +1,9 @@
 import axios from 'axios';
 import bcrypt from 'bcryptjs';
-
-import {generateServiceToken} from '../middlewares/gatewayTokenGenerator.js';
-import {generateTokenAndSetCookie} from '../utils/generateTokenAndSetCookie.js'
+import useragent from 'useragent';
+import { LoginActivity } from '../models/loginActivityModel.js';
+import { generateServiceToken } from '../middlewares/gatewayTokenGenerator.js';
+import { generateTokenAndSetCookie } from '../utils/generateTokenAndSetCookie.js';
 
 export const getAllUsers = async (req, res) => {
     try {
@@ -28,11 +29,16 @@ export const getAllUsers = async (req, res) => {
     }
 };
 
-
 export const adminLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
         const serviceToken = generateServiceToken();
+        const userAgent = useragent.parse(req.headers["user-agent"]);
+        const ipAddress =
+            process.env.NODE_ENV === "production"
+                ? req.headers["x-forwarded-for"]?.split(",")[0] || "Unknown"
+                : req.socket.remoteAddress || "Unknown";
+
         const response = await axios.get(
             `${process.env.API_GATEWAY_URL}/admin/get-accounts`,
             { headers: { Authorization: `Bearer ${serviceToken}` } }
@@ -42,15 +48,71 @@ export const adminLogin = async (req, res) => {
         const user = users.find((u) => u.email === email && u.role === "Admin");
 
         if (!user) {
+            await LoginActivity.create({
+                email,
+                loginHistory: [{ ipAddress, device: userAgent.toString(), status: "Failed" }],
+                failedLoginAttempts: 1,
+                deviceInfo: userAgent.toString(),
+            });
+
             return res.status(400).json({ message: "Invalid email or password" });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
+            await LoginActivity.findOneAndUpdate(
+                { user_id: user._id },
+                { $inc: { failedLoginAttempts: 1 } },
+                { upsert: true }
+            );
+
+            await LoginActivity.updateOne(
+                { user_id: user._id },
+                {
+                    $push: {
+                        loginHistory: {
+                            ipAddress,
+                            device: userAgent.toString(),
+                            status: "Failed",
+                        },
+                    },
+                }
+            );
+
             return res.status(400).json({ message: "Invalid email or password" });
         }
 
         const token = generateTokenAndSetCookie(res, user);
+
+        const loginRecord = await LoginActivity.findOne({ user_id: user._id });
+
+        if (loginRecord) {
+            loginRecord.loginCount += 1;
+            loginRecord.lastLogin = new Date();
+            loginRecord.failedLoginAttempts = 0;
+            loginRecord.deviceInfo = userAgent.toString();
+            loginRecord.loginHistory.push({
+                ipAddress,
+                device: userAgent.toString(),
+                status: "Success",
+            });
+            await loginRecord.save();
+        } else {
+            await LoginActivity.create({
+                user_id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                role: user.role,
+                position: user.position,
+                Hr: user.Hr,
+                loginCount: 1,
+                lastLogin: new Date(),
+                failedLoginAttempts: 0,
+                deviceInfo: userAgent.toString(),
+                loginHistory: [{ ipAddress, device: userAgent.toString(), status: "Success" }],
+            });
+        }
 
         return res.status(200).json({ token, user });
     } catch (error) {
@@ -63,6 +125,12 @@ export const employeeLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
         const serviceToken = generateServiceToken();
+        const userAgent = useragent.parse(req.headers["user-agent"]);
+        const ipAddress =
+            process.env.NODE_ENV === "production"
+                ? req.headers["x-forwarded-for"]?.split(",")[0] || "Unknown"
+                : req.socket.remoteAddress || "Unknown";
+
         const response = await axios.get(
             `${process.env.API_GATEWAY_URL}/admin/get-accounts`,
             { headers: { Authorization: `Bearer ${serviceToken}` } }
@@ -72,15 +140,71 @@ export const employeeLogin = async (req, res) => {
         const user = users.find((u) => u.email === email && u.role === "Employee");
 
         if (!user) {
+            await LoginActivity.create({
+                email,
+                loginHistory: [{ ipAddress, device: userAgent.toString(), status: "Failed" }],
+                failedLoginAttempts: 1,
+                deviceInfo: userAgent.toString(),
+            });
+
             return res.status(400).json({ message: "Invalid email or password" });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
+            await LoginActivity.findOneAndUpdate(
+                { user_id: user._id },
+                { $inc: { failedLoginAttempts: 1 } },
+                { upsert: true }
+            );
+
+            await LoginActivity.updateOne(
+                { user_id: user._id },
+                {
+                    $push: {
+                        loginHistory: {
+                            ipAddress,
+                            device: userAgent.toString(),
+                            status: "Failed",
+                        },
+                    },
+                }
+            );
+
             return res.status(400).json({ message: "Invalid email or password" });
         }
 
         const token = generateTokenAndSetCookie(res, user);
+
+        const loginRecord = await LoginActivity.findOne({ user_id: user._id });
+
+        if (loginRecord) {
+            loginRecord.loginCount += 1;
+            loginRecord.lastLogin = new Date();
+            loginRecord.failedLoginAttempts = 0;
+            loginRecord.deviceInfo = userAgent.toString();
+            loginRecord.loginHistory.push({
+                ipAddress,
+                device: userAgent.toString(),
+                status: "Success",
+            });
+            await loginRecord.save();
+        } else {
+            await LoginActivity.create({
+                user_id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                role: user.role,
+                position: user.position,
+                Hr: user.Hr,
+                loginCount: 1,
+                lastLogin: new Date(),
+                failedLoginAttempts: 0,
+                deviceInfo: userAgent.toString(),
+                loginHistory: [{ ipAddress, device: userAgent.toString(), status: "Success" }],
+            });
+        }
 
         return res.status(200).json({ token, user });
     } catch (error) {
@@ -137,5 +261,15 @@ export const getAllPositions = async (req, res) => {
     } catch (error) {
         console.error(`Error in getting users: ${error.message}`);
         return res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+};
+
+export const getAllLoginActivities = async (req, res) => {
+    try {
+        const loginActivities = await LoginActivity.find().sort({ lastLogin: -1 }).lean();
+        return res.status(200).json({ success: true, data: loginActivities });
+    } catch (err) {
+        console.error("Error fetching login activities:", err.message);
+        return res.status(500).json({ success: false, message: "Server error" });
     }
 };

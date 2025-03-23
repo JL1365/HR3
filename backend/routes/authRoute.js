@@ -1,5 +1,5 @@
 import express from 'express';
-import { checkAuth, getAllUsers, adminLogin, employeeLogin, logoutAccount, getAllPositions } from '../controllers/authController.js';
+import { checkAuth, getAllUsers, adminLogin, employeeLogin, logoutAccount, getAllPositions, getAllLoginActivities } from '../controllers/authController.js';
 import { verifyToken } from '../middlewares/verifyToken.js';
 
 const authRoute = express();
@@ -10,5 +10,6 @@ authRoute.post("/employee-login", employeeLogin);
 authRoute.get("/check-auth", verifyToken, checkAuth);
 authRoute.post("/logout", logoutAccount);
 authRoute.get("/get-all-positions", verifyToken, getAllPositions);
+authRoute.get("/get-login-activities", getAllLoginActivities);
 
 export default authRoute;
