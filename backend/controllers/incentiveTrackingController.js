@@ -52,7 +52,8 @@ export const createIncentiveTracking = async (req, res) => {
 
 export const getAllIncentiveTracking = async (req, res) => {
     try {
-        const allIncentivesTracking = await IncentiveTracking.find({});
+        const allIncentivesTracking = await IncentiveTracking.find({})
+        .populate('incentiveId');
 
         const serviceToken = generateServiceToken();
 

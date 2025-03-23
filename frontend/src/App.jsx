@@ -19,6 +19,7 @@ import BenefitDeduction from "./private/admin/BenefitDeductions";
 import EmployeeBenefitDetails from "./private/admin/EmployeeBenefitDetails";
 import Documents from "./private/admin/Documents";
 import IncentiveOverview from "./private/admin/IncentiveOverview";
+import IncentiveTracking from "./private/admin/IncentiveTracking";
 // import EmployeeViolation from "./private/admin/EmployeeViolation";
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
           <Route path="/documents" element={<Documents />} />
           
           <Route path="/incentive-overview" element={<IncentiveOverview />} />
+          <Route path="/incentive-tracking" element={<IncentiveTracking />} />
         </Route>
       </Route>
 
