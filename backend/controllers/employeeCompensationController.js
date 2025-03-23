@@ -42,7 +42,7 @@ export const addEmployeeCompensation = async (req, res) => {
             employeeId,
             benefit,
             benefitType,
-            isAlreadyAdded: true
+            isAlreadyAdded: false
         };
 
         if (benefitType === "Paid Benefit") {
@@ -50,10 +50,10 @@ export const addEmployeeCompensation = async (req, res) => {
                 return res.status(400).json({ message: "Days of leave must be greater than 0." });
             }
             compensationData.daysLeave = daysLeave;
-            compensationData.totalAmount = daysLeave * benefitDetails.benefitAmount; // Calculate total amount
+            compensationData.totalAmount = daysLeave * benefitDetails.benefitAmount;
         } else if (benefitType === "Deductible Benefit") {
-            compensationData.deductionAmount = benefitDetails.benefitAmount; // Use benefitAmount for deduction
-            delete compensationData.daysLeave; // Ensure daysLeave is not included
+            compensationData.deductionAmount = benefitDetails.benefitAmount; 
+            delete compensationData.daysLeave;
         } else {
             return res.status(400).json({ message: "Invalid benefit type." });
         }

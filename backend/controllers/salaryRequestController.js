@@ -531,6 +531,11 @@ export const finalizePayroll = async (req, res) => {
             { $set: { isAlreadyAdded: true } }
         );
 
+        await IncentiveTracking.updateMany(
+            { _id: { $in: approvedIncentives.map(comp => comp._id) }, isAlreadyAdded: false },
+            { $set: { isAlreadyAdded: true } }
+        );
+
         const newBatchId = `batch-${Date.now()}`;
 
         await Attendance.updateMany(
