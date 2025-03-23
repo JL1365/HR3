@@ -35,6 +35,17 @@ function BenefitDeduction() {
     fetchAllBenefitRequest();
   }, []);
 
+  useEffect(() => {
+    if (benefitRequestId) {
+      const selectedRequest = allBenefitRequests.find(req => req._id === benefitRequestId);
+      if (selectedRequest && selectedRequest.compensationBenefitId?.benefitAmount) {
+        setAmount(selectedRequest.compensationBenefitId.benefitAmount.toString());
+      }
+    } else {
+      setAmount("");
+    }
+  }, [benefitRequestId, allBenefitRequests]);
+
   const handleAddDeduction = async (e) => {
     e.preventDefault();
     if (!selectedUser || !benefitRequestId || !amount) {
@@ -216,7 +227,7 @@ function BenefitDeduction() {
             <table className="table w-full">
               <thead>
                 <tr>
-                  <th className="px-4 py-3">User</th>
+                  <th className="px-4 py-3">Employee name</th>
                   <th className="px-4 py-3">Action</th>
                 </tr>
               </thead>
@@ -444,7 +455,10 @@ function BenefitDeduction() {
                       )
                       .map((req) => (
                         <option key={req._id} value={req._id}>
-                          {req.compensationBenefitId?.benefitName || "Unnamed Benefit"}
+                          {req.compensationBenefitId?.benefitName || "Unnamed Benefit"} 
+                          {req.compensationBenefitId?.benefitAmount ? 
+                            ` - ₱${req.compensationBenefitId.benefitAmount}` : 
+                            ''}
                         </option>
                       ))}
                   </select>
@@ -454,13 +468,15 @@ function BenefitDeduction() {
                   <label className="block mb-1 font-medium">Amount</label>
                   <input
                     type="number"
-                    className="input input-bordered w-full"
+                    className="input input-bordered w-full bg-gray-100"
                     value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
+                    readOnly
                     placeholder="₱0.00"
                     min={150}
-                    disabled={!benefitRequestId}
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Amount is automatically set based on the selected benefit
+                  </p>
                 </div>
 
                 <div className="pt-2 flex justify-end space-x-2">
@@ -478,7 +494,7 @@ function BenefitDeduction() {
                     whileTap={{ scale: 0.95 }}
                     type="submit"
                     className="btn btn-primary"
-                    disabled={loading}
+                    disabled={loading || !selectedUser || !benefitRequestId || !amount}
                   >
                     {loading ? (
                       <span className="flex items-center">

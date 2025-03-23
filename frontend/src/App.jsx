@@ -16,6 +16,8 @@ import CompensationBenefit from "./private/admin/CompensationBenefit";
 import Penalty from "./private/admin/Penalty";
 import BenefitRequest from "./private/admin/BenefitRequest";
 import BenefitDeduction from "./private/admin/BenefitDeductions";
+import EmployeeBenefitDetails from "./private/admin/EmployeeBenefitDetails";
+import Documents from "./private/admin/Documents";
 // import EmployeeViolation from "./private/admin/EmployeeViolation";
 
 function App() {
@@ -36,6 +38,8 @@ function App() {
           
           <Route path="/benefit-request" element={<BenefitRequest />} />
           <Route path="/benefit-deductions" element={<BenefitDeduction />} />
+          <Route path="/employee-benefit-details" element={<EmployeeBenefitDetails />} />
+          <Route path="/documents" element={<Documents />} />
         </Route>
       </Route>
 

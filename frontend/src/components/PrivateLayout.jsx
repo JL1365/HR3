@@ -19,11 +19,13 @@ const PrivateLayout = () => {
     "/compensation-planning": "Compensation planning",
 
     "/benefit-request": "Benefit Requests",
+    "/benefit-deductions": "Benefit Deductions",
+    "/employee-benefit-details": "Employee Benefit Details",
+    "/documents": "Documents",
 
     "/employee-dashboard": "DASHBOARD",
   };
   
-
   const currentTitle = pageTitles[location.pathname] || "Dashboard";
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

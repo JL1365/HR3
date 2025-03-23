@@ -51,7 +51,8 @@ const AdminSidebar = forwardRef(({ isSidebarOpen }, ref) => {
       subItems: [
         { name: "Benefit Request", href: "/benefit-request" },
         { name: "Deductions", href: "/benefit-deductions" },
-        { name: "Employee benefit details", href: "/employee-benefit-details" }
+        { name: "Employee benefit details", href: "/employee-benefit-details" },
+        { name: "Documents", href: "/documents" }
       ],
     },
   ];  

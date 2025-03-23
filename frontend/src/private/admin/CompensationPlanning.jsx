@@ -168,7 +168,6 @@ function CompensationPlanning() {
                 <th className="p-3 text-left">Hourly Rate</th>
                 <th className="p-3 text-left">Overtime Rate</th>
                 <th className="p-3 text-left">Holiday Rate</th>
-                <th className="p-3 text-left">Benefits</th>
                 <th className="p-3 text-left">Action</th>
               </tr>
             </thead>
@@ -180,15 +179,6 @@ function CompensationPlanning() {
                     <td className="p-3 border-b">₱{parseFloat(plan.hourlyRate).toFixed(2)}</td>
                     <td className="p-3 border-b">₱{parseFloat(plan.overTimeRate).toFixed(2)}</td>
                     <td className="p-3 border-b">₱{parseFloat(plan.holidayRate).toFixed(2)}</td>
-                    <td className="p-3 border-b">
-                      <button
-                        className="btn btn-primary btn-sm"
-                        onClick={() => showBenefits(plan.benefits || [])}
-                        disabled={!plan.benefits || plan.benefits.length === 0}
-                      >
-                        View Benefits
-                      </button>
-                    </td>
                     <td className="p-3 border-b">
                     <motion.button 
                      whileHover={{ scale: 1.1 }} 
@@ -240,46 +230,6 @@ function CompensationPlanning() {
         </motion.button>
       </motion.div>
 
-
-      {isOpenModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg w-full max-w-md">
-            <h2 className="text-lg font-semibold mb-4">Benefits</h2>
-            {selectedBenefits && selectedBenefits.length > 0 ? (
-              <div className="overflow-y-auto max-h-80">
-                <table className="table w-full">
-                  <thead>
-                    <tr>
-                      <th className="p-3 text-left">Benefit Type</th>
-                      <th className="p-3 text-left">Deductions Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {selectedBenefits.map((benefit, index) => (
-                      <tr key={benefit._id || index}>
-                        <td className="p-3 border-b">{benefit.benefitType}</td>
-                        <td className="p-3 border-b">
-                          ₱{parseFloat(benefit.deductionsAmount).toFixed(2)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <p className="text-center py-4">No Benefits</p>
-            )}
-            <div className="flex justify-end mt-4">
-              <button
-                className="btn btn-primary"
-                onClick={() => setIsOpenModal(false)}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {isAddModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -368,68 +318,6 @@ function CompensationPlanning() {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Benefits:
-                </label>
-                {newPlan.benefits.map((benefit, index) => (
-                  <div key={index} className="flex gap-2 mb-2">
-                    <input
-                      type="text"
-                      placeholder="Benefit Type"
-                      className="input input-bordered flex-1"
-                      value={benefit.benefitType}
-                      onChange={(e) => {
-                        const updatedBenefits = [...newPlan.benefits];
-                        updatedBenefits[index].benefitType = e.target.value;
-                        setNewPlan({ ...newPlan, benefits: updatedBenefits });
-                      }}
-                    />
-                    <input
-                      type="number"
-                      placeholder="Amount"
-                      className="input input-bordered w-1/3"
-                      value={benefit.deductionsAmount}
-                      onChange={(e) => {
-                        const updatedBenefits = [...newPlan.benefits];
-                        updatedBenefits[index].deductionsAmount = Number(
-                          e.target.value
-                        );
-                        setNewPlan({ ...newPlan, benefits: updatedBenefits });
-                      }}
-                      step="0.01"
-                      min="0"
-                    />
-                    {newPlan.benefits.length > 1 && (
-                      <button
-                        className="btn btn-error btn-sm"
-                        onClick={() => {
-                          const updatedBenefits = newPlan.benefits.filter(
-                            (_, i) => i !== index
-                          );
-                          setNewPlan({ ...newPlan, benefits: updatedBenefits });
-                        }}
-                      >
-                        X
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button
-                  className="btn btn-outline btn-sm mt-2"
-                  onClick={() => {
-                    setNewPlan({
-                      ...newPlan,
-                      benefits: [
-                        ...newPlan.benefits,
-                        { benefitType: "", deductionsAmount: 0 },
-                      ],
-                    });
-                  }}
-                >
-                  + Add Benefit
-                </button>
-              </div>
             </div>
 
             <div className="flex justify-end gap-2 mt-6">
