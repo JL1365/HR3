@@ -148,7 +148,12 @@ function SalaryComputation() {
     }
   };
 
-  const renderTable = (data, type) => (
+const renderTable = (data, type) => {
+  const totalNetSalary = data.reduce((sum, batch) => {
+    return sum + parseFloat(batch.totalNetSalary || "0");
+  }, 0).toFixed(2);
+
+  return (
     <div className="overflow-x-auto">
       <table className="table w-full table-zebra" ref={type === 'gross' ? grossTableRef : netTableRef}>
         <thead>
@@ -205,9 +210,20 @@ function SalaryComputation() {
             ))
           )}
         </tbody>
+        {/* Add footer row with total net salary - only show for net salary table */}
+        {type === 'net' && (
+          <tfoot>
+            <tr className="font-bold text-base">
+              <td colSpan={type === 'net' ? 9 : 4} className="text-right">Total Net Salary:</td>
+              <td className="text-primary text-lg">{totalNetSalary}</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        )}
       </table>
     </div>
   );
+};
 
   const renderEmployeeDetailsTable = () => {
     if (!openModalData) return null;

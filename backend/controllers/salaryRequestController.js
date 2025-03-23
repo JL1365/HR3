@@ -135,20 +135,17 @@ const calculateNetPayroll = async () => {
         console.warn("No attendance data found, proceeding with deductions, incentives, and paid leaves only.");
     }
 
-    // Get detailed data instead of just amounts
     const deductions = await BenefitDeduction.find({ isAlreadyAdded: false });
     const approvedIncentives = await IncentiveTracking.find({ isAlreadyAdded: false });
     const employeeCompensations = await EmployeeCompensation.find({ isAlreadyAdded: false })
-        .populate('benefit'); // Populate the benefit details
+        .populate('benefit');
 
-    // Get benefit data to match with deductions
     const benefits = await CompensationBenefit.find();
     const benefitsMap = {};
     benefits.forEach(benefit => {
         benefitsMap[benefit._id] = benefit;
     });
 
-    // Create detailed maps instead of just summing amounts
     const deductionsDetailMap = {};
     deductions.forEach(deduction => {
         const key = `${deduction.userId}`;
@@ -224,7 +221,6 @@ const calculateNetPayroll = async () => {
     });
 
     if (payrollData.length === 0) {
-        // Same as before but with detailed maps
         const employeeIds = new Set([
             ...Object.keys(deductionsDetailMap),
             ...Object.keys(incentivesDetailMap),
@@ -263,7 +259,6 @@ const calculateNetPayroll = async () => {
                 holidayRate: 0,
                 holidayCount: 0,
                 grossSalary: "0.00",
-                // Detailed benefit/deduction information
                 benefitsDeductionsAmount: deductionsDetailMap[employeeId]?.total || 0,
                 benefitsDeductionsDetails: deductionsDetailMap[employeeId]?.items || [],
                 incentiveAmount: incentivesDetailMap[employeeId]?.total || 0,
@@ -479,9 +474,9 @@ export const finalizePayroll = async (req, res) => {
                 benefitsDeductionsAmount -
                 deductibleAmount
             ).toFixed(2);
-
             return {
                 batch_id: batch_id,
+                totalNetSalary: batchData.totalNetSalary,
                 employee_id: emp.employee_id,
                 employee_firstname: emp.employee_firstname || "Unknown",
                 employee_lastname: emp.employee_lastname || "Unknown",

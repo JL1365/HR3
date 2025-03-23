@@ -58,16 +58,20 @@ function PayrollHistory() {
       <h1 className="text-2xl font-semibold mb-4">Payroll History</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {payrollHistory.map(batch => (
-          <motion.div
-            key={batch._id}
-            className="bg-white p-4 rounded-lg shadow-md cursor-pointer"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => openModal(batch)}
-          >
-            <h2 className="text-xl font-semibold">Batch ID: {batch._id}</h2>
-            <p>Total Employees: {batch.payrolls.length}</p>
-          </motion.div>
+   <motion.div
+   key={batch._id}
+   className="bg-white p-4 rounded-lg shadow-md cursor-pointer"
+   whileHover={{ scale: 1.05 }}
+   whileTap={{ scale: 0.95 }}
+   onClick={() => openModal(batch)}
+ >
+   <h2 className="text-xl font-semibold">Batch ID: {batch._id}</h2>
+   <p>Total Employees: {batch.payrolls.length}</p>
+   <p className="font-semibold text-green-600">
+     Total Net Salary: ₱{batch.totalNetSalary || 
+       batch.payrolls.reduce((sum, payroll) => sum + parseFloat(payroll.netSalary || 0), 0).toFixed(2)}
+   </p>
+ </motion.div>
         ))}
       </div>
 

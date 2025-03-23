@@ -8,6 +8,7 @@ const DailyHoursSchema = new mongoose.Schema({
 
 const PayrollHistorySchema = new mongoose.Schema({
     batch_id: { type: String, required: true },
+    totalNetSalary: { type: Number, default: 0 },
     employee_id: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     employee_firstname: { type: String, required: true },
     employee_lastname: { type: String, required: true },
