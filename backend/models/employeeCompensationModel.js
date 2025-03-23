@@ -3,17 +3,17 @@ import mongoose from "mongoose";
 const employeeCompensationSchema = new mongoose.Schema({
     employeeId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User", // Reference sa User model
+        ref: "User", 
         required: true
     },
     benefit: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "CompensationBenefit", // Reference sa CompensationBenefit model
+        ref: "CompensationBenefit", 
         required: true
     },
     benefitType: {
         type: String,
-        enum: ["Paid Benefit", "Deductible Benefit"],
+        enum: ["Paid Benefit", "Deductible Benefit","Deduction"],
         required: true
     },
     daysLeave: { 

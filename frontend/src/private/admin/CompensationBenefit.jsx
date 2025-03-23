@@ -279,6 +279,7 @@ function CompensationBenefit() {
                   <option value="">Select Benefit Type</option>
                   <option value="Paid Benefit">Paid Benefit</option>
                   <option value="Deductible Benefit">Deductible Benefit</option>
+                  <option value="Deduction">Deduction</option>
                 </select>
               </div>
 
@@ -382,6 +383,7 @@ function CompensationBenefit() {
                   <option value="">Select Benefit Type</option>
                   <option value="Paid Benefit">Paid Benefit</option>
                   <option value="Deductible Benefit">Deductible Benefit</option>
+                  <option value="Deduction">Deduction</option>
                 </select>
               </div>
 

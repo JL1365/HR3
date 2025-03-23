@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-    const employeeLeaveSchema = new mongoose.Schema({
+const employeeLeaveSchema = new mongoose.Schema({
     employee_id: { type: String, required: true, unique: true },
     employee_firstname:{type:String},
     employee_lastname:{type:String},
@@ -13,7 +13,8 @@ import mongoose from "mongoose";
     leaves: [
         {
             leave_id: { type: String, required: true }, 
-            leave_type: { type: String, required: true }
+            leave_type: { type: String, required: true },
+            isAlreadyAdded: { type: Boolean, default: false }
         }
     ],
    isAlreadyAdded:{type:Boolean,default:false}  

@@ -135,40 +135,100 @@ const calculateNetPayroll = async () => {
         console.warn("No attendance data found, proceeding with deductions, incentives, and paid leaves only.");
     }
 
+    // Get detailed data instead of just amounts
     const deductions = await BenefitDeduction.find({ isAlreadyAdded: false });
     const approvedIncentives = await IncentiveTracking.find({ isAlreadyAdded: false });
-    const employeeCompensations = await EmployeeCompensation.find({ isAlreadyAdded: false });
+    const employeeCompensations = await EmployeeCompensation.find({ isAlreadyAdded: false })
+        .populate('benefit'); // Populate the benefit details
 
-    const deductionsMap = {};
+    // Get benefit data to match with deductions
+    const benefits = await CompensationBenefit.find();
+    const benefitsMap = {};
+    benefits.forEach(benefit => {
+        benefitsMap[benefit._id] = benefit;
+    });
+
+    // Create detailed maps instead of just summing amounts
+    const deductionsDetailMap = {};
     deductions.forEach(deduction => {
         const key = `${deduction.userId}`;
-        deductionsMap[key] = (deductionsMap[key] || 0) + deduction.amount;
+        if (!deductionsDetailMap[key]) {
+            deductionsDetailMap[key] = {
+                items: [],
+                total: 0
+            };
+        }
+        deductionsDetailMap[key].items.push({
+            id: deduction._id,
+            amount: deduction.amount,
+            description: deduction.description || "General Deduction",
+            createdAt: deduction.createdAt
+        });
+        deductionsDetailMap[key].total += deduction.amount;
     });
 
-    const incentivesMap = {};
+    const incentivesDetailMap = {};
     approvedIncentives.forEach(incentive => {
         const key = `${incentive.userId}`;
-        incentivesMap[key] = (incentivesMap[key] || 0) + incentive.amount;
+        if (!incentivesDetailMap[key]) {
+            incentivesDetailMap[key] = {
+                items: [],
+                total: 0
+            };
+        }
+        incentivesDetailMap[key].items.push({
+            id: incentive._id,
+            amount: incentive.amount,
+            description: incentive.description || "Incentive",
+            createdAt: incentive.createdAt
+        });
+        incentivesDetailMap[key].total += incentive.amount;
     });
 
-    const compensationMap = {};
+    const compensationDetailMap = {};
     employeeCompensations.forEach(compensation => {
         const key = `${compensation.employeeId}`;
-        if (!compensationMap[key]) {
-            compensationMap[key] = { paidLeaveAmount: 0, deductibleAmount: 0 };
+        if (!compensationDetailMap[key]) {
+            compensationDetailMap[key] = {
+                paidLeaveItems: [],
+                deductibleItems: [],
+                paidLeaveTotal: 0,
+                deductibleTotal: 0
+            };
         }
+        
+        const benefitName = compensation.benefit ? 
+            (compensation.benefit.benefitName || "Unknown Benefit") : 
+            "Unknown Benefit";
+
         if (compensation.benefitType === "Paid Benefit") {
-            compensationMap[key].paidLeaveAmount += compensation.totalAmount || 0;
-        } else if (compensation.benefitType === "Deductible Benefit") {
-            compensationMap[key].deductibleAmount += compensation.deductionAmount || 0;
+            compensationDetailMap[key].paidLeaveItems.push({
+                id: compensation._id,
+                benefitId: compensation.benefit?._id || "",
+                benefitName: benefitName,
+                daysLeave: compensation.daysLeave || 0,
+                amount: compensation.totalAmount || 0,
+                createdAt: compensation.createdAt
+            });
+            compensationDetailMap[key].paidLeaveTotal += compensation.totalAmount || 0;
+        } else if (compensation.benefitType === "Deduction") {
+            compensationDetailMap[key].deductibleItems.push({
+                id: compensation._id,
+                benefitId: compensation.benefit?._id || "",
+                benefitName: benefitName,
+                amount: compensation.deductionAmount || 0,
+                createdAt: compensation.createdAt
+            });
+            compensationDetailMap[key].deductibleTotal += compensation.deductionAmount || 0;
         }
     });
 
     if (payrollData.length === 0) {
+        // Same as before but with detailed maps
         const employeeIds = new Set([
-            ...Object.keys(deductionsMap),
-            ...Object.keys(incentivesMap),
-            ...Object.keys(compensationMap),
+            ...Object.keys(deductionsDetailMap),
+            ...Object.keys(incentivesDetailMap),
+            ...Object.keys(compensationDetailMap),
         ]);
 
         const serviceToken = generateServiceToken();
@@ -203,15 +263,20 @@ const calculateNetPayroll = async () => {
                 holidayRate: 0,
                 holidayCount: 0,
                 grossSalary: "0.00",
-                benefitsDeductionsAmount: deductionsMap[employeeId] || 0,
-                incentiveAmount: incentivesMap[employeeId] || 0,
-                paidLeaveAmount: compensationMap[employeeId]?.paidLeaveAmount || 0,
-                deductibleAmount: compensationMap[employeeId]?.deductibleAmount || 0,
+                // Detailed benefit/deduction information
+                benefitsDeductionsAmount: deductionsDetailMap[employeeId]?.total || 0,
+                benefitsDeductionsDetails: deductionsDetailMap[employeeId]?.items || [],
+                incentiveAmount: incentivesDetailMap[employeeId]?.total || 0,
+                incentiveDetails: incentivesDetailMap[employeeId]?.items || [],
+                paidLeaveAmount: compensationDetailMap[employeeId]?.paidLeaveTotal || 0,
+                paidLeaveDetails: compensationDetailMap[employeeId]?.paidLeaveItems || [],
+                deductibleAmount: compensationDetailMap[employeeId]?.deductibleTotal || 0,
+                deductibleDetails: compensationDetailMap[employeeId]?.deductibleItems || [],
                 netSalary: (
-                    (incentivesMap[employeeId] || 0) +
-                    (compensationMap[employeeId]?.paidLeaveAmount || 0) -
-                    (deductionsMap[employeeId] || 0) -
-                    (compensationMap[employeeId]?.deductibleAmount || 0)
+                    (incentivesDetailMap[employeeId]?.total || 0) +
+                    (compensationDetailMap[employeeId]?.paidLeaveTotal || 0) -
+                    (deductionsDetailMap[employeeId]?.total || 0) -
+                    (compensationDetailMap[employeeId]?.deductibleTotal || 0)
                 ).toFixed(2),
             }]
         }));
@@ -223,10 +288,10 @@ const calculateNetPayroll = async () => {
                 if (!employee || !employee.employee_id) return null;
 
                 const key = `${employee.employee_id}`;
-                const benefitsDeductionsAmount = deductionsMap[key] || 0;
-                const incentiveAmount = incentivesMap[key] || 0;
-                const paidLeaveAmount = compensationMap[key]?.paidLeaveAmount || 0;
-                const deductibleAmount = compensationMap[key]?.deductibleAmount || 0;
+                const benefitsDeductionsAmount = deductionsDetailMap[key]?.total || 0;
+                const incentiveAmount = incentivesDetailMap[key]?.total || 0;
+                const paidLeaveAmount = compensationDetailMap[key]?.paidLeaveTotal || 0;
+                const deductibleAmount = compensationDetailMap[key]?.deductibleTotal || 0;
                 const grossSalary = parseFloat(employee.grossSalary) || 0;
                 const netSalary = (
                     grossSalary +
@@ -241,9 +306,13 @@ const calculateNetPayroll = async () => {
                 return {
                     ...employee,
                     benefitsDeductionsAmount,
+                    benefitsDeductionsDetails: deductionsDetailMap[key]?.items || [],
                     incentiveAmount,
+                    incentiveDetails: incentivesDetailMap[key]?.items || [],
                     paidLeaveAmount,
+                    paidLeaveDetails: compensationDetailMap[key]?.paidLeaveItems || [],
                     deductibleAmount,
+                    deductibleDetails: compensationDetailMap[key]?.deductibleItems || [],
                     netSalary
                 };
             }).filter(emp => emp !== null);
@@ -271,7 +340,7 @@ export const calculateNetSalary = async (req, res) => {
 
 export const addEmployeeCompensation = async (req, res) => {
     try {
-        const { employeeId, benefit, benefitType, daysLeave } = req.body;
+        const { employeeId, benefit, benefitType, daysLeave, deductionAmount } = req.body;
 
         if (!employeeId || !benefit || !benefitType) {
             return res.status(400).json({ message: "Missing required fields." });
@@ -313,8 +382,12 @@ export const addEmployeeCompensation = async (req, res) => {
             }
             compensationData.daysLeave = daysLeave;
             compensationData.totalAmount = daysLeave * benefitDetails.benefitAmount;
-        } else if (benefitType === "Deductible Benefit") {
-            compensationData.deductionAmount = benefitDetails.benefitAmount;
+        } else if (benefitType === "Deduction") {
+            if (!deductionAmount || deductionAmount <= 0) {
+                return res.status(400).json({ message: "Deduction amount must be greater than 0." });
+            }
+            compensationData.deductionAmount = deductionAmount;
+            compensationData.totalAmount = 0;
             delete compensationData.daysLeave;
         } else {
             return res.status(400).json({ message: "Invalid benefit type." });

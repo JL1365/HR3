@@ -7,7 +7,7 @@ const compensationBenefitSchema = new mongoose.Schema({
     },
     benefitType: {
         type: String,
-        enum: ["Paid Benefit", "Deductible Benefit"],
+        enum: ["Paid Benefit", "Deductible Benefit","Deduction"],
         required: true
     },
     benefitAmount: {
