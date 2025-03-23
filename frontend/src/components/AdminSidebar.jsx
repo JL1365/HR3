@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { motion, AnimatePresence } from "framer-motion";
 
-import {LayoutDashboard,Briefcase,ChevronDown,ChevronRight, Plus} from "lucide-react";
+import {LayoutDashboard,Briefcase,ChevronDown,ChevronRight, Plus, Gift} from "lucide-react";
 
 import jjmLogo from "../assets/jjmlogo.jpg";
 
@@ -53,6 +53,14 @@ const AdminSidebar = forwardRef(({ isSidebarOpen }, ref) => {
         { name: "Deductions", href: "/benefit-deductions" },
         { name: "Employee benefit details", href: "/employee-benefit-details" },
         { name: "Documents", href: "/documents" }
+      ],
+    },
+    {
+      name: "Incentives Management",
+      icon: Gift,
+      subItems: [
+        { name: "Incentive Overview", href: "/incentive-overview" },
+        { name: "Incentive Tracking", href: "/incentive-tracking" },
       ],
     },
   ];  
