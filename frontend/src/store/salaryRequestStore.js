@@ -5,6 +5,7 @@ export const useSalaryRequestStore = create((set) => ({
   grossSalaryData: null,
   netSalaryData: null,
   error: null,
+  payrollHistory: null, // Add payrollHistory state
 
   fetchGrossSalary: async () => {
     try {
@@ -32,6 +33,24 @@ export const useSalaryRequestStore = create((set) => ({
     } catch (error) {
       set({ error: error.message });
       throw error;
+    }
+  },
+
+  finalizePayroll: async (batchId) => {
+    try {
+      const response = await axiosInstance.post("/salaryRequest/finalize-payroll", { batch_id: batchId });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  fetchAllPayrollHistory: async () => { // Add fetchAllPayrollHistory method
+    try {
+      const response = await axiosInstance.get("/salaryRequest/get-all-payroll-history");
+      set({ payrollHistory: response.data, error: null });
+    } catch (error) {
+      set({ error: error.message });
     }
   },
 
