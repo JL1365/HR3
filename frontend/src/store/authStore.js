@@ -1,13 +1,13 @@
 import {create} from 'zustand'
 import { axiosInstance } from "../lib/axios.js";
 
-
 export const useAuthStore  = create ((set) => ({
-    user:null,
-    users:[],
-    token:null,
-    isAuthenticated:false,
-    allPositions:[],
+    user: null,
+    users: [],
+    token: null,
+    isAuthenticated: false,
+    allPositions: [],
+    loginActivities: [], 
 
     adminLogin: async ({ email, password }) => {
         try {
@@ -80,4 +80,13 @@ export const useAuthStore  = create ((set) => ({
             set({ error: error.response?.data?.message || "Failed to fetch users", loading: false });
         }
     },
+
+    fetchLoginActivities: async () => {
+        try {
+            const response = await axiosInstance.get("/auth/get-login-activities");
+            set({ loginActivities: response.data.data });
+        } catch (error) {
+            console.error("Error fetching login activities:", error);
+        }
+    }
 }));
