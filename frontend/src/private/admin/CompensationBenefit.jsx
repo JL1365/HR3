@@ -3,7 +3,7 @@ import { useCompensationBenefitStore } from "../../store/compensationBenefitStor
 import { motion } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import AddEmployeeCompensation from './AddEmployeeCompensation';
 function CompensationBenefit() {
   const {
     benefits,
@@ -222,8 +222,83 @@ function CompensationBenefit() {
     }
   };
 
+  const filterPlansByType = (type) => {
+    return benefits.filter((plan) => plan.benefitType === type);
+  };
+
+  const renderTable = (plans, title) => (
+    <motion.div
+      initial={{ y: 20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h2 className="text-xl font-semibold mb-4">{title}</h2>
+      <div className="overflow-x-auto">
+        <table className="table-auto w-full pb-5 text-sm">
+          <thead className="bg-white text-gray-500 border-b">
+            <tr>
+              <th className="p-3 text-left">Benefit Name</th>
+              <th className="p-3 text-left">Benefit Type</th>
+              <th className="p-3 text-left">Benefit Amount</th>
+              <th className="p-3 text-left">Is Available?</th>
+              <th className="p-3 text-left">Is NeedRequest?</th>
+              <th className="p-3 text-left">Date</th>
+              <th className="p-3 text-left">Action</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white text-neutral-500 border-b">
+            {plans.length > 0 ? (
+              plans.map((plan) => (
+                <tr key={plan._id}>
+                  <td className="p-3 border-b">{plan.benefitName || "N/A"}</td>
+                  <td className="p-3 border-b">{plan.benefitType || "N/A"}</td>
+                  <td className="p-3 border-b">
+                    ₱{parseFloat(plan.benefitAmount).toFixed(2) || "N/A"}
+                  </td>
+                  <td className="p-3 border-b">
+                    {plan.isAvailable ? "Yes" : "No"}
+                  </td>
+                  <td className="p-3 border-b">
+                    {plan.isNeedRequest ? "Yes" : "No"}
+                  </td>
+                  <td className="p-3 border-b">
+                    <span>{new Date(plan.createdAt).toLocaleDateString()}</span>
+                  </td>
+                  <td className="p-3 border-b">
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="btn bg-yellow-500 text-white hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-400"
+                      onClick={() => handleEditClick(plan)}
+                    >
+                      Edit
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="btn bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500"
+                      onClick={() => handleDeleteClick(plan._id)}
+                    >
+                      Delete
+                    </motion.button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="7" className="text-center text-gray-500 py-4">
+                  No {title.toLowerCase()} found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </motion.div>
+  );
+
   return (
-<motion.div
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -233,11 +308,11 @@ function CompensationBenefit() {
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-       className="mb-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 w-full md:w-auto"
+        className="mb-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 w-full md:w-auto"
         onClick={() => setIsAddModalOpen(true)}
       >
         Create Compensation Benefit
-  </motion.button>
+      </motion.button>
       {loading && (
         <div className="flex justify-center items-center my-4">
           <div className="loading loading-spinner loading-lg text-primary"></div>
@@ -451,79 +526,9 @@ function CompensationBenefit() {
         </div>
       )}
 
-      <motion.div
-         initial={{ y: 20, opacity: 0 }}
-         animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-      >
-        <div className="overflow-x-auto">
-          <table className="table-auto w-full pb-5 text-sm">
-            <thead className="bg-white text-gray-500 border-b">
-              <tr>
-                <th className="p-3 text-left">Benefit Name</th>
-                <th className="p-3 text-left">Benefit Type</th>
-                <th className="p-3 text-left">Benefit Amount</th>
-                <th className="p-3 text-left">Is Available?</th>
-                <th className="p-3 text-left">Is NeedRequest?</th>
-                <th className="p-3 text-left">Date</th>
-                <th className="p-3 text-left">Action</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white text-neutral-500 border-b">
-              {currentPlans.length > 0 ? (
-                currentPlans.map((plan) => (
-                  <tr key={plan._id}>
-                    <td className="p-3 border-b">
-                      {plan.benefitName || "N/A"}
-                    </td>
-                    <td className="p-3 border-b">
-                      {plan.benefitType || "N/A"}
-                    </td>
-                    <td className="p-3 border-b">
-                      ₱{parseFloat(plan.benefitAmount).toFixed(2) || "N/A"}
-                    </td>
-                    <td className="p-3 border-b">
-                      {plan.isAvailable ? "Yes" : "No"}
-                    </td>
-                    <td className="p-3 border-b">
-                      {plan.isNeedRequest ? "Yes" : "No"}
-                    </td>
-                    <td className="p-3 border-b">
-                      <span>
-                        {new Date(plan.createdAt).toLocaleDateString()}
-                      </span>
-                    </td>
-                    <td className="p-3 border-b">
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                        className="btn bg-yellow-500 text-white hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-400"
-                        onClick={() => handleEditClick(plan)}
-                      >
-                        Edit
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                        className="btn bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500"
-                        onClick={() => handleDeleteClick(plan._id)}
-                      >
-                        Delete
-                     </motion.button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" className="text-center text-gray-500 py-4">
-                    No compensation benefit plans found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </motion.div>
+      {renderTable(filterPlansByType("Paid Benefit"), "Paid Benefits")}
+      {renderTable(filterPlansByType("Deductible Benefit"), "Deductible Benefits")}
+      {renderTable(filterPlansByType("Deduction"), "Deductions")}
 
       <motion.div 
         initial={{ opacity: 0 }}
@@ -551,8 +556,8 @@ function CompensationBenefit() {
           Next
         </motion.button>
       </motion.div>
-
-  </motion.div>
+      <AddEmployeeCompensation />
+    </motion.div>
   );
 }
 

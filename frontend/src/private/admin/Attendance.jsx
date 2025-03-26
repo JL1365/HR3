@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAttendanceStore } from '../../store/attendanceStore';
-import AddEmployeeCompensation from './AddEmployeeCompensation';
+
 import { motion } from 'framer-motion';
 
 function Attendance() {
@@ -184,7 +184,6 @@ function Attendance() {
                 </motion.button>
             </motion.div>
 
-            <AddEmployeeCompensation />
         </motion.div>
     );
 }
