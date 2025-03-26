@@ -24,6 +24,7 @@ import salaryRequestRoute from './routes/salaryRequestRoute.js';
 import integrationRoute from './routes/integrationRoute.js';
 import adminDashboardRoute from './routes/adminDashboardRoute.js';
 import employeeDasboardRoute from './routes/employeeDashboardRoute.js';
+import auditRoute from './routes/auditRoute.js';
 
 dotenv.config();
 connectDB();
@@ -61,6 +62,8 @@ app.use("/api/integration",integrationRoute);
 
 app.use("/api/adminDashboard",adminDashboardRoute);
 app.use("/api/employeeDashboard",employeeDasboardRoute);
+
+app.use("/api/audit",auditRoute);
 
 app.use(express.static(path.join(__dirname, "/frontend/dist")));
 

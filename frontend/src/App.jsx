@@ -35,6 +35,7 @@ import EmployeeViolation from "./private/admin/EmployeeViolation";
 import MyViolations from "./private/employee/MyViolation";
 import MySalaryStructure from "./private/employee/MySalaryStructure";
 import Grievance from "./private/admin/Grievance";
+import Audit from "./private/admin/Audit";
 // import EmployeeViolation from "./private/admin/EmployeeViolation";
 
 function App() {
@@ -67,6 +68,8 @@ function App() {
           <Route path="/budget-request" element={<BudgetRequest />} />
 
           <Route path="/behavioral-analytics" element={<BehavioralAnalytics />} />
+
+          <Route path="/audit" element={<Audit />} />
         </Route>
       </Route>
 

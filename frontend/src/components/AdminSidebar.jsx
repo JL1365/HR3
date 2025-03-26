@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { motion, AnimatePresence } from "framer-motion";
 
-import {LayoutDashboard,Briefcase,ChevronDown,ChevronRight, Plus, Gift, DollarSign, TrendingUp} from "lucide-react";
+import {LayoutDashboard,Briefcase,ChevronDown,ChevronRight, Plus, Gift, DollarSign, TrendingUp, ClipboardList} from "lucide-react";
 
 import jjmLogo from "../assets/jjmlogo.jpg";
 
@@ -77,6 +77,11 @@ const AdminSidebar = forwardRef(({ isSidebarOpen }, ref) => {
       name: "Behavioral Analytics",
       icon: TrendingUp,
        href: "/behavioral-analytics",
+    },
+    {
+      name: "Audit",
+      icon: ClipboardList,
+       href: "/audit",
     },
   ];  
 
