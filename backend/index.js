@@ -43,9 +43,34 @@ app.use(cors({
         "https://hr3-jjm-manufacturing-8lav.onrender.com"
     ],
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"], 
-    allowedHeaders: ["Content-Type", "Authorization"], 
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], 
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept", "x-client-key", "x-client-token", "x-client-secret", "Origin", "Host"],
 }));
+
+// Add explicit CORS headers middleware
+app.use((req, res, next) => {
+    const allowedOrigins = [
+        "http://localhost:5173", 
+        "https://hr3.jjm-manufacturing.com",
+        "https://hr3-jjm-manufacturing-8lav.onrender.com",
+        "https://hr3-2htq.onrender.com"
+    ];
+    const origin = req.headers.origin;
+    
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, x-client-key, x-client-token, x-client-secret, Origin, Host');
+    res.header('Access-Control-Allow-Credentials', true);
+    
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+    }
+    
+    next();
+});
 
 app.use("/api/auth",authRoute)
 app.use("/api/compensation",compensationPlanningRoute)
