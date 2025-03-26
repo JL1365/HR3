@@ -30,6 +30,7 @@ import MyDeductions from "./private/employee/MyDeductions";
 
 import IncentivesOverview from "./private/employee/IncentivesOverview";
 import IncentiveHistory from "./private/employee/IncentiveHistory";
+import MySalaryInfo from "./private/employee/MySalaryInfo";
 // import EmployeeViolation from "./private/admin/EmployeeViolation";
 
 function App() {
@@ -73,6 +74,8 @@ function App() {
 
           <Route path="/overview" element={<IncentivesOverview />} />
           <Route path="/incentive-history" element={<IncentiveHistory />} />
+
+          <Route path="/my-salary-info" element={<MySalaryInfo />} />
         </Route>
       </Route>
 

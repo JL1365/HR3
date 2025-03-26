@@ -3,9 +3,10 @@ import { axiosInstance } from "../lib/axios.js";
 
 export const useSalaryRequestStore = create((set) => ({
   grossSalaryData: null,
+  userPayroll: null,
   netSalaryData: null,
   error: null,
-  payrollHistory: null, // Add payrollHistory state
+  payrollHistory: null,
 
   fetchGrossSalary: async () => {
     try {
@@ -45,10 +46,37 @@ export const useSalaryRequestStore = create((set) => ({
     }
   },
 
-  fetchAllPayrollHistory: async () => { // Add fetchAllPayrollHistory method
+  fetchAllPayrollHistory: async () => {
     try {
       const response = await axiosInstance.get("/salaryRequest/get-all-payroll-history");
       set({ payrollHistory: response.data, error: null });
+    } catch (error) {
+      set({ error: error.message });
+    }
+  },
+
+  fetchMyGrossSalary: async () => {
+    try {
+      const response = await axiosInstance.get("/salaryRequest/get-my-calculate-gross-salary");
+      set({ userPayroll: response.data.data, error: null });
+    } catch (error) {
+      set({ error: error.message });
+    }
+  },
+
+  fetchMyNetSalary: async () => {
+    try {
+      const response = await axiosInstance.get("/salaryRequest/get-my-calculate-net-salary");
+      set({ userPayroll: response.data.data, error: null });
+    } catch (error) {
+      set({ error: error.message });
+    }
+  },
+
+  fetchMyPayrollHistory: async () => {
+    try {
+      const response = await axiosInstance.get("/salaryRequest/get-my-payroll-history");
+      set({ payrollHistory: response.data.data, error: null });
     } catch (error) {
       set({ error: error.message });
     }

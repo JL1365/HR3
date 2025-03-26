@@ -631,7 +631,7 @@ export const getMyCalculationGrossSalary = async (req, res) => {
         const userPayroll = payrollData.flatMap(batch => batch.employees).find(emp => emp.employee_id.toString() === userId);
 
         if (!userPayroll) {
-            return res.status(404).json({ message: "No gross salary calculation found for the user." });
+            return res.status(400).json({ message: "No gross salary calculation found for the user." });
         }
 
         return res.status(200).json({ success: true, data: userPayroll });
@@ -652,7 +652,7 @@ export const getMyCalculationNetSalary = async (req, res) => {
         const userPayroll = payrollData.flatMap(batch => batch.employees).find(emp => emp.employee_id.toString() === userId);
 
         if (!userPayroll) {
-            return res.status(404).json({ message: "No net salary calculation found for the user." });
+            return res.status(400).json({ message: "No net salary calculation found for the user." });
         }
 
         return res.status(200).json({ success: true, data: userPayroll });
@@ -681,7 +681,7 @@ export const getMyPayrollHistoryByBatch = async (req, res) => {
         ]);
 
         if (!payrollHistory || payrollHistory.length === 0) {
-            return res.status(404).json({ message: "No payroll history found for the user." });
+            return res.status(400).json({ message: "No payroll history found for the user." });
         }
 
         return res.status(200).json({ success: true, data: payrollHistory });

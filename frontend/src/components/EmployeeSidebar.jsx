@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Plus,
   Gift,
+  DollarSign,
 } from "lucide-react";
 
 import jjmLogo from "../assets/jjmlogo.jpg";
@@ -63,6 +64,11 @@ const EmployeeSidebar = forwardRef(({ isSidebarOpen }, ref) => {
         {name: "Incentives Overview",href: "/overview"},
         {name: "Incentive History",href: "/incentive-history"},
       ],
+    },
+    {
+      name: "My Salary info",
+      icon: DollarSign,
+       href: "/my-salary-info",
     },
   ];
 
