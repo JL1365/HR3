@@ -4,7 +4,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { motion, AnimatePresence } from "framer-motion";
 
-import {LayoutDashboard,Briefcase,ChevronDown,ChevronRight, Plus} from "lucide-react";
+import {
+  LayoutDashboard,
+  Briefcase,
+  ChevronDown,
+  ChevronRight,
+  Plus,
+  Gift,
+} from "lucide-react";
 
 import jjmLogo from "../assets/jjmlogo.jpg";
 
@@ -43,9 +50,18 @@ const EmployeeSidebar = forwardRef(({ isSidebarOpen }, ref) => {
     {
       name: "My Benefits",
       icon: Plus,
-      subItems: [{ name: "Benefits Overview", href: "/benefits-overview" },
+      subItems: [
+        {name: "Benefits Overview",href: "/benefits-overview"},
         { name: "Apply Benefit", href: "/apply-benefit" },
-        { name: "My Deductions", href: "/my-deductions" }
+        { name: "My Deductions", href: "/my-deductions" },
+      ],
+    },
+    {
+      name: "My Incentives",
+      icon: Gift,
+      subItems: [
+        {name: "Incentives Overview",href: "/overview"},
+        {name: "Incentive History",href: "/incentive-history"},
       ],
     },
   ];

@@ -9,6 +9,6 @@ incentiveTrackingRoute.get("/get-all-incentive-tracking", getAllIncentiveTrackin
 incentiveTrackingRoute.put("/update-incentive-tracking/:id", updateIncentiveTracking);
 incentiveTrackingRoute.delete("/delete-incentive-tracking/:id", deleteIncentiveTracking);
 
-incentiveTrackingRoute.get("/get-my-incentives-tracking",verifyToken, getMyIncentiveTracking);
+incentiveTrackingRoute.get("/get-my-incentives-tracking", verifyToken, getMyIncentiveTracking);
 
 export default incentiveTrackingRoute;

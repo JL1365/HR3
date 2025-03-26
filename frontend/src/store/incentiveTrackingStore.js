@@ -5,6 +5,7 @@ export const useIncentiveTrackingStore = create((set, get) => ({
   incentiveTrackings: [],
   users: [],
   incentives: [],
+  myIncentives: [],
   loading: false,
   error: null,
   currentPage: 1,
@@ -15,6 +16,22 @@ export const useIncentiveTrackingStore = create((set, get) => ({
     try {
       const response = await axiosInstance.get("/incentiveTracking/get-all-incentive-tracking");
       set({ incentiveTrackings: response.data, loading: false });
+    } catch (error) {
+      set({ error: error.message, loading: false });
+    }
+  },
+
+  fetchMyIncentives: async () => {
+    set({ loading: true });
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axiosInstance.get("/incentiveTracking/get-my-incentives-tracking", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+      set({ myIncentives: response.data.data, loading: false });
     } catch (error) {
       set({ error: error.message, loading: false });
     }

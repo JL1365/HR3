@@ -145,7 +145,7 @@ export const getMyIncentiveTracking = async (req, res) => {
         if(!userId){
             return res.status(401).json({message:'User not authenticated.'});
         }
-        const myIncentivesTracking = await IncentiveTracking.find({ userId})
+        const myIncentivesTracking = await IncentiveTracking.find({ userId })
             .populate("incentiveId", "incentiveName incentiveType amount dateGiven status");
 
         res.status(200).json({ success: true, data: myIncentivesTracking });

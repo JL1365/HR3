@@ -508,7 +508,7 @@ export const finalizePayroll = async (req, res) => {
 
         await IncentiveTracking.updateMany(
             { userId: { $in: employeeIds }, isAlreadyAdded: false },
-            { $set: { isAlreadyAdded: true } }
+            { $set: { isAlreadyAdded: true, status: "Received", dateReceived: new Date() } }
         );
 
         await BenefitDeduction.updateMany(
@@ -527,9 +527,20 @@ export const finalizePayroll = async (req, res) => {
         );
 
         await IncentiveTracking.updateMany(
-            { _id: { $in: approvedIncentives.map(comp => comp._id) }, isAlreadyAdded: false },
-            { $set: { isAlreadyAdded: true } }
-        );
+            { 
+              _id: { $in: approvedIncentives.map(comp => comp._id) }, 
+              isAlreadyAdded: false, 
+              status: "Pending" 
+            },
+            { 
+              $set: { 
+                isAlreadyAdded: true, 
+                status: "Received",
+                dateReceived: new Date()
+              }
+            }
+          );
+          
 
         const newBatchId = `batch-${Date.now()}`;
 

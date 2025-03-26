@@ -27,6 +27,9 @@ import BehavioralAnalytics from "./private/admin/BehavioralAnalytics";
 import BenefitsOverview from "./private/employee/BenefitsOverview";
 import ApplyBenefit from "./private/employee/ApplyBenefit";
 import MyDeductions from "./private/employee/MyDeductions";
+
+import IncentivesOverview from "./private/employee/IncentivesOverview";
+import IncentiveHistory from "./private/employee/IncentiveHistory";
 // import EmployeeViolation from "./private/admin/EmployeeViolation";
 
 function App() {
@@ -51,7 +54,7 @@ function App() {
           <Route path="/documents" element={<Documents />} />
           
           <Route path="/incentive-overview" element={<IncentiveOverview />} />
-          <Route path="/incentive-tracking" element={<IncentiveTracking />} />
+          <Route path="/assign-incentive" element={<IncentiveTracking />} />
 
           <Route path="/attendance-overview" element={<Attendance />} />
           <Route path="/salary-computation" element={<SalaryComputation />} />
@@ -67,6 +70,9 @@ function App() {
           <Route path="/benefits-overview" element={<BenefitsOverview />} />
           <Route path="/apply-benefit" element={<ApplyBenefit />} />
           <Route path="/my-deductions" element={<MyDeductions />} />
+
+          <Route path="/overview" element={<IncentivesOverview />} />
+          <Route path="/incentive-history" element={<IncentiveHistory />} />
         </Route>
       </Route>
 

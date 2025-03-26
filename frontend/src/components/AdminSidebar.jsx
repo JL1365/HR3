@@ -60,7 +60,7 @@ const AdminSidebar = forwardRef(({ isSidebarOpen }, ref) => {
       icon: Gift,
       subItems: [
         { name: "Incentive Overview", href: "/incentive-overview" },
-        { name: "Incentive Tracking", href: "/incentive-tracking" },
+        { name: "Assign incentive", href: "/assign-incentive" },
       ],
     },
     {

@@ -108,13 +108,13 @@ function IncentiveTracking() {
                     setIsOpenModal(true);
                 }}
             >
-                Create Incentive Tracking
+                Assign incentives
             </motion.button>
             <div className="overflow-x-auto">
                 <table className="table-auto w-full pb-5 text-sm">
                     <thead className="bg-white text-gray-500 border-b">
                         <tr>
-                            <th className="p-3 text-left">Name</th>
+                            <th className="p-3 text-left">Employee name</th>
                             <th className="p-3 text-left">Incentive Type</th>
                             <th className="p-3 text-left">Amount</th>
                             <th className="p-3 text-left">Earned Date</th>
@@ -197,7 +197,7 @@ function IncentiveTracking() {
                 <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded shadow-lg w-96">
                         <h2 className="text-xl font-semibold mb-4">
-                            {isEditing ? "Edit Incentive Tracking" : "Create Incentive Tracking"}
+                            {isEditing ? "Edit Incentive " : "Assign Incentive "}
                         </h2>
                         <form onSubmit={handleSubmit}>
                             <div className="mb-4">
@@ -280,7 +280,7 @@ function IncentiveTracking() {
                                     Cancel
                                 </button>
                                 <button type="submit" className="btn btn-primary">
-                                    {isEditing ? "Update" : "Create"}
+                                    {isEditing ? "Update" : "Assign"}
                                 </button>
                             </div>
                         </form>
