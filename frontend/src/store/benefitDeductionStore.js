@@ -3,6 +3,7 @@ import { axiosInstance } from "../lib/axios.js";
 
 export const useBenefitDeductiontStore = create((set, get) => ({
     allDeductions: [],
+    myDeductions: [],
     loading: false,
     error: null,
   
@@ -15,6 +16,20 @@ export const useBenefitDeductiontStore = create((set, get) => ({
         console.error("Error fetching benefit deductions:", error);
         set({ 
           error: error.response?.data?.message || "Failed to fetch benefit deductions", 
+          loading: false 
+        });
+      }
+    },
+
+    fetchMyDeductions: async () => {
+      set({ loading: true, error: null });
+      try {
+        const response = await axiosInstance.get("/benefitDeduction/get-my-deductions");
+        set({ myDeductions: response.data.deductions || [], loading: false });
+      } catch (error) {
+        console.error("Error fetching my deductions:", error);
+        set({ 
+          error: error.response?.data?.message || "Failed to fetch my deductions", 
           loading: false 
         });
       }
@@ -43,4 +58,3 @@ export const useBenefitDeductiontStore = create((set, get) => ({
   
     clearError: () => set({ error: null }),
   }));
-  

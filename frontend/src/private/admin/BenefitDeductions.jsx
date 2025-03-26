@@ -177,6 +177,12 @@ function BenefitDeduction() {
     }
   };
 
+  const getTotalAmount = (userId) => {
+    return allDeductions
+      .filter((deduction) => deduction.userId === userId)
+      .reduce((sum, deduction) => sum + deduction.amount, 0);
+  };
+
   return (
     <div className="p-2 md:p-4 space-y-4 max-w-6xl mx-auto">
       <ToastContainer position="top-right" autoClose={3000} />
@@ -228,6 +234,7 @@ function BenefitDeduction() {
               <thead>
                 <tr>
                   <th className="px-4 py-3">Employee name</th>
+                  <th className="px-4 py-3">Total Amount</th>
                   <th className="px-4 py-3">Action</th>
                 </tr>
               </thead>
@@ -242,6 +249,7 @@ function BenefitDeduction() {
                     <td className="px-4 py-3">
                       {user.firstName} {user.lastName}
                     </td>
+                    <td className="px-4 py-3">₱{getTotalAmount(user._id)}</td>
                     <td className="px-4 py-3 text-blue-500 font-medium">
                       View Deductions
                     </td>

@@ -43,8 +43,10 @@ const EmployeeSidebar = forwardRef(({ isSidebarOpen }, ref) => {
     {
       name: "My Benefits",
       icon: Plus,
-      subItems: [{ name: "Benefits Overview", href: "/benefits-overview" }],
-      subItems: [{ name: "Apply Benefit", href: "/apply-benefit" }],
+      subItems: [{ name: "Benefits Overview", href: "/benefits-overview" },
+        { name: "Apply Benefit", href: "/apply-benefit" },
+        { name: "My Deductions", href: "/my-deductions" }
+      ],
     },
   ];
 

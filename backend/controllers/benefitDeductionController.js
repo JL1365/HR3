@@ -197,7 +197,7 @@ export const getMyDeduction = async (req, res) => {
         path: "BenefitRequestId",
         populate: {
           path: "compensationBenefitId",
-          select: "compensationBenefitName",
+          select: "benefitName",
         },
         select: "createdAt",
       })
