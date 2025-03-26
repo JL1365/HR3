@@ -5,6 +5,7 @@ export const useCompensationStore = create((set) => ({
     compensationPlans: [],
     error: null,
     loading: false,
+    salaryStructure: null,
 
     fetchCompensationPlans: async () => {
         set({ loading: true, error: null });
@@ -63,6 +64,20 @@ export const useCompensationStore = create((set) => ({
                 loading: false 
             });
             throw error;
+        }
+    },
+
+    fetchMySalaryStructure: async () => {
+        set({ loading: true, error: null });
+        try {
+            const response = await axiosInstance.get("/compensation/get-my-salary-structure");
+            set({ salaryStructure: response.data.data, loading: false });
+        } catch (error) {
+            console.error("Error fetching salary structure:", error);
+            set({ 
+                error: error.response?.data?.message || "Failed to fetch salary structure", 
+                loading: false 
+            });
         }
     },
 

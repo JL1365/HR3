@@ -109,3 +109,32 @@ export const getAllGrievance = async (req, res) => {
       res.status(500).json({ message: "Server error" });
     }
 };
+
+export const getMySalaryStructure = async (req, res) => {
+    try {
+        const userId = req.user && req.user.userId ? String(req.user.userId) : null;
+        if (!userId) {
+            return res.status(401).json({ message: 'User not authenticated' });
+        }
+
+        const serviceToken = generateServiceToken();
+        const response = await axios.get(`${process.env.API_GATEWAY_URL}/admin/get-accounts`, {
+            headers: { Authorization: `Bearer ${serviceToken}` }
+        });
+
+        const user = response.data.find(user => user._id === userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const compensationPlan = await CompensationPlanning.findOne({ position: user._id });
+        if (!compensationPlan) {
+            return res.status(404).json({ message: 'Compensation plan not found for your position' });
+        }
+
+        res.status(200).json({ message: 'Salary structure fetched successfully', data: compensationPlan });
+    } catch (error) {
+        console.error('Error fetching salary structure:', error.message);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};

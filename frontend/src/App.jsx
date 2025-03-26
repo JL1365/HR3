@@ -33,6 +33,7 @@ import IncentiveHistory from "./private/employee/IncentiveHistory";
 import MySalaryInfo from "./private/employee/MySalaryInfo";
 import EmployeeViolation from "./private/admin/EmployeeViolation";
 import MyViolations from "./private/employee/MyViolation";
+import MySalaryStructure from "./private/employee/MySalaryStructure";
 // import EmployeeViolation from "./private/admin/EmployeeViolation";
 
 function App() {
@@ -70,6 +71,7 @@ function App() {
       <Route element={<ProtectedRoute allowedRoles={["Employee"]} />}>
         <Route element={<PrivateLayout />}>
           <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
+          <Route path="/my-salary-structure" element={<MySalaryStructure />} />
           <Route path="/my-violations" element={<MyViolations />} />
           <Route path="/benefits-overview" element={<BenefitsOverview />} />
           <Route path="/apply-benefit" element={<ApplyBenefit />} />
