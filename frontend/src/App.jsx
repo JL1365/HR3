@@ -31,6 +31,7 @@ import MyDeductions from "./private/employee/MyDeductions";
 import IncentivesOverview from "./private/employee/IncentivesOverview";
 import IncentiveHistory from "./private/employee/IncentiveHistory";
 import MySalaryInfo from "./private/employee/MySalaryInfo";
+import EmployeeViolation from "./private/admin/EmployeeViolation";
 // import EmployeeViolation from "./private/admin/EmployeeViolation";
 
 function App() {
@@ -45,9 +46,9 @@ function App() {
         <Route element={<PrivateLayout />}>
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/compensation-planning" element={<CompensationPlanning />} />
-          <Route path="/compensation-benefit" element={<CompensationBenefit />} />
+          <Route path="/compensation" element={<CompensationBenefit />} />
           <Route path="/penalty" element={<Penalty />} />
-          {/* <Route path="/employee-violation" element={<EmployeeViolation />} /> */}
+          <Route path="/employee-violation" element={<EmployeeViolation />} />
           
           <Route path="/benefit-request" element={<BenefitRequest />} />
           <Route path="/benefit-deductions" element={<BenefitDeduction />} />

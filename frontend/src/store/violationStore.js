@@ -125,5 +125,48 @@ export const useViolationStore = create((set, get) => ({
     }
   },
   
-  clearErrors: () => set({ error: null })
+  clearErrors: () => set({ error: null }),
+
+  addEmployeeViolation: async (violationData) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axiosInstance.post(
+        '/violation/create-employee-violation', 
+        violationData
+      );
+      
+      // Update violations list after creating a new one
+      const violations = get().violations;
+      set({ 
+        violations: [...violations, response.data.violation],
+        isLoading: false 
+      });
+      
+      return response.data;
+    } catch (error) {
+      set({ 
+        isLoading: false, 
+        error: error.response?.data?.message || 'Error creating violation' 
+      });
+      throw error;
+    }
+  },
+
+  fetchAllEmployeeViolations: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axiosInstance.get('/violation/get-all-employee-violations');
+      set({ 
+        violations: response.data.employeeViolations, 
+        isLoading: false 
+      });
+      return response.data.employeeViolations;
+    } catch (error) {
+      set({ 
+        isLoading: false, 
+        error: error.response?.data?.message || 'Error fetching employee violations' 
+      });
+      throw error;
+    }
+  }
 }));

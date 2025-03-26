@@ -3,6 +3,7 @@ import { axiosInstance } from "../lib/axios.js";
 
 export const useCompensationBenefitStore = create((set) => ({
     benefits: [],
+    employeeCompensations: [],
     error: null,
     loading: false,
 
@@ -15,6 +16,20 @@ export const useCompensationBenefitStore = create((set) => ({
             console.error("Error fetching compensation benefit plans:", error);
             set({ 
                 error: error.response?.data?.message || "Failed to fetch compensation benefit plans", 
+                loading: false 
+            });
+        }
+    },
+
+    fetchEmployeeCompensations: async () => {
+        set({ loading: true, error: null });
+        try {
+            const response = await axiosInstance.get("/compensationBenefit/get-employee-compensation");
+            set({ employeeCompensations: response.data.data || [], loading: false });
+        } catch (error) {
+            console.error("Error fetching employee compensations:", error);
+            set({ 
+                error: error.response?.data?.message || "Failed to fetch employee compensations", 
                 loading: false 
             });
         }
@@ -92,6 +107,5 @@ export const useCompensationBenefitStore = create((set) => ({
         }
     },
     
-
     clearError: () => set({ error: null }),
 }));

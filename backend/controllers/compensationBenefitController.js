@@ -1,4 +1,7 @@
 import { CompensationBenefit } from "../models/compensationBenefitModel.js";
+import axios from "axios";
+import { generateServiceToken } from "../middlewares/gatewayTokenGenerator.js";
+import { EmployeeCompensation } from "../models/employeeCompensationModel.js";
 
 export const createBenefit = async (req, res) => {
     try {
@@ -89,5 +92,39 @@ export const deleteBenefit = async (req, res) => {
     } catch (error) {
         console.log(`Error in deleting benefits: ${error.message}`);
         res.status(500).json({message: "Internal server error"});
+    }
+};
+
+export const getEmployeeCompensation = async (req, res) => {
+    try {
+        const serviceToken = generateServiceToken();
+        const response = await axios.get(
+            `${process.env.API_GATEWAY_URL}/admin/get-accounts`, 
+            {
+                headers: { Authorization: `Bearer ${serviceToken}` },
+            }
+        );
+
+        const users = response.data;
+        const compensations = await EmployeeCompensation.find().populate('benefit');
+
+        if (!compensations || compensations.length === 0) {
+            return res.status(404).json({ message: "No compensations found" });
+        }
+
+        const updatedCompensations = compensations.map((compensation) => {
+            const user = users.find((u) => u._id === compensation.employeeId?.toString());
+            return {
+                ...compensation.toObject(),
+                employeeName: user ? `${user.firstName} ${user.lastName}` : "Unknown Employee",
+                benefitName: compensation.benefit ? compensation.benefit.benefitName : "Unknown Benefit",
+                totalAmount: compensation.benefitType === "Deduction" ? compensation.deductionAmount : compensation.daysLeave * (compensation.benefit ? compensation.benefit.benefitAmount : 0),
+            };
+        });
+
+        res.status(200).json({ success: true, data: updatedCompensations });
+    } catch (error) {
+        console.error(`Error in fetching employee compensation: ${error.message}`);
+        res.status(500).json({ message: "Internal server error" });
     }
 };

@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 
 const compensationBenefitSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
     benefitName: {
         type: String,
         required: true

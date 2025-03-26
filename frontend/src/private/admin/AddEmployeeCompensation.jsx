@@ -4,11 +4,12 @@ import { useAuthStore } from '../../store/authStore';
 import { useCompensationBenefitStore } from '../../store/compensationBenefitStore';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { motion } from 'framer-motion';
 
 function AddEmployeeCompensation() {
     const { addEmployeeCompensation, error } = useSalaryRequestStore();
     const { users, fetchAllUsers } = useAuthStore();
-    const { benefits, fetchBenefits } = useCompensationBenefitStore();
+    const { benefits, fetchBenefits, fetchEmployeeCompensations, employeeCompensations, loading } = useCompensationBenefitStore();
     const [isLoading, setIsLoading] = useState(false);
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [formData, setFormData] = useState({
@@ -19,10 +20,30 @@ function AddEmployeeCompensation() {
         deductionAmount: 0,
     });
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const compensationsPerPage = 10;
+
+    const indexOfLastCompensation = currentPage * compensationsPerPage;
+    const indexOfFirstCompensation = indexOfLastCompensation - compensationsPerPage;
+    const currentCompensations = employeeCompensations.slice(indexOfFirstCompensation, indexOfLastCompensation);
+
+    const nextPage = () => {
+        if (indexOfLastCompensation < employeeCompensations.length) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const prevPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
     useEffect(() => {
         fetchAllUsers();
         fetchBenefits();
-    }, [fetchAllUsers, fetchBenefits]);
+        fetchEmployeeCompensations();
+    }, [fetchAllUsers, fetchBenefits, fetchEmployeeCompensations]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -60,17 +81,29 @@ function AddEmployeeCompensation() {
     });
 
     return (
-        <div>
+        <motion.div className="p-2 md:p-4">
             <ToastContainer autoClose={3000} />
-            <button
-                className="mb-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setIsOpenModal(true)}
+                className="mb-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
                 Add Employee Compensation
-            </button>
+            </motion.button>
             {isOpenModal && (
-                <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded shadow-lg w-96">
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                    className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50"
+                >
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                        className="bg-white p-6 rounded shadow-lg w-96"
+                    >
                         <h2 className="text-xl font-semibold mb-4">Add Employee Compensation</h2>
                         <form onSubmit={handleSubmit}>
                             <div className="mb-4">
@@ -173,10 +206,95 @@ function AddEmployeeCompensation() {
                                 </button>
                             </div>
                         </form>
+                    </motion.div>
+                </motion.div>
+            )}
+            <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="overflow-x-auto"
+            >
+                <div className="min-w-full inline-block align-middle">
+                    <div className="overflow-hidden">
+                        <table className="min-w-full table-auto text-sm">
+                            <thead className="bg-white text-gray-500 border-b">
+                                <tr>
+                                    <th className="p-2 md:p-3 text-left">Employee Name</th>
+                                    <th className="p-2 md:p-3 text-left">Benefit Name</th>
+                                    <th className="p-2 md:p-3 text-left">Benefit Type</th>
+                                    <th className="p-2 md:p-3 text-left">Amount</th>
+                                    <th className="p-2 md:p-3 text-left">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white text-neutral-500 border-b">
+                                {currentCompensations.length > 0 ? (
+                                    currentCompensations.map((compensation, index) => (
+                                        <motion.tr
+                                            key={compensation._id}
+                                            className="text-center"
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.3, delay: index * 0.05 }}
+                                        >
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {compensation.employeeName}
+                                            </td>
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {compensation.benefitName}
+                                            </td>
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {compensation.benefitType}
+                                            </td>
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {compensation.totalAmount}
+                                            </td>
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {new Date(compensation.createdAt).toLocaleDateString()}
+                                            </td>
+                                        </motion.tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="5" className="text-center py-4">
+                                            No employee compensations found.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            )}
-        </div>
+            </motion.div>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="flex justify-between mt-4"
+            >
+                <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="btn btn-primary text-xs md:text-sm"
+                    onClick={prevPage}
+                    disabled={currentPage === 1}
+                >
+                    Previous
+                </motion.button>
+                <span className="text-gray-700 text-xs md:text-sm">
+                    Page {currentPage}
+                </span>
+                <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="btn btn-primary text-xs md:text-sm"
+                    onClick={nextPage}
+                    disabled={indexOfLastCompensation >= employeeCompensations.length}
+                >
+                    Next
+                </motion.button>
+            </motion.div>
+        </motion.div>
     );
 }
 
