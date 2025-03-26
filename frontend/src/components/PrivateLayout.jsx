@@ -18,12 +18,26 @@ const PrivateLayout = () => {
     "/employee-violation": "Employee violation",
     "/compensation-planning": "Compensation planning",
 
+    "/incentive-overview": "Incentive overview",
+    "/assign-incentive": "Assign incentive",
+
+    "/attendance-overview": "Attendance",
+    "/salary-computation": "Salary computation",
+    "/budget-request": "Request a budget",
+
     "/benefit-request": "Benefit Requests",
     "/benefit-deductions": "Benefit Deductions",
     "/employee-benefit-details": "Employee Benefit Details",
     "/documents": "Documents",
 
     "/employee-dashboard": "DASHBOARD",
+    "/benefits-overview": "Benefits Overview",
+    "/apply-benefit": "Apply Benefit",
+    "/my-deductions": "My Deductions",
+    "/overview": "Incentives Overview",
+    "/incentive-history": "Incentive History",
+
+    "/my-salary-info": "Salary Info",
   };
   
   const currentTitle = pageTitles[location.pathname] || "Dashboard";
