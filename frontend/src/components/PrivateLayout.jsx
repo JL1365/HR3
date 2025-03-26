@@ -14,6 +14,7 @@ const PrivateLayout = () => {
     "/admin-dashboard": "DASHBOARD",
     "/compensation-planning": "Compensation planning",
     "/compensation-benefit": "Compensation benefit",
+    "/grievance": "Grievance",
     "/penalty": "Penalties",
     "/employee-violation": "Employee violation",
     "/compensation-planning": "Compensation planning",
@@ -26,7 +27,7 @@ const PrivateLayout = () => {
     "/budget-request": "Request a budget",
 
     "/my-violations": "My Violations",
-    
+
     "/benefit-request": "Benefit Requests",
     "/benefit-deductions": "Benefit Deductions",
     "/employee-benefit-details": "Employee Benefit Details",

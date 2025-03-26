@@ -110,6 +110,19 @@ export const getAllGrievance = async (req, res) => {
     }
 };
 
+export const getGrievances = async (req, res) => {
+    try {
+        const serviceToken = generateServiceToken();
+        const response = await axios.get(`${process.env.API_GATEWAY_URL}/hr4/EmComplaint`, {
+            headers: { Authorization: `Bearer ${serviceToken}` }
+        });
+        res.status(200).json({ data: response.data });
+    } catch (error) {
+        console.error("Error fetching grievances:", error.message);
+        res.status(500).json({ message: "Internal Server error" });
+    }
+};
+
 export const getMySalaryStructure = async (req, res) => {
     try {
         const userId = req.user && req.user.userId ? String(req.user.userId) : null;

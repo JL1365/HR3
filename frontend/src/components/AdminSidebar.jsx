@@ -41,6 +41,7 @@ const AdminSidebar = forwardRef(({ isSidebarOpen }, ref) => {
       subItems: [
         { name: "Planning", href: "/compensation-planning" },
         { name: "Compensation", href: "/compensation" },
+        { name: "Grievance", href: "/grievance" },
         { name: "Penalty", href: "/penalty" },
         { name: "Employee Violation", href: "/employee-violation" }
       ],

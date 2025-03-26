@@ -34,6 +34,7 @@ import MySalaryInfo from "./private/employee/MySalaryInfo";
 import EmployeeViolation from "./private/admin/EmployeeViolation";
 import MyViolations from "./private/employee/MyViolation";
 import MySalaryStructure from "./private/employee/MySalaryStructure";
+import Grievance from "./private/admin/Grievance";
 // import EmployeeViolation from "./private/admin/EmployeeViolation";
 
 function App() {
@@ -49,6 +50,7 @@ function App() {
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/compensation-planning" element={<CompensationPlanning />} />
           <Route path="/compensation" element={<CompensationBenefit />} />
+          <Route path="/grievance" element={<Grievance />} />
           <Route path="/penalty" element={<Penalty />} />
           <Route path="/employee-violation" element={<EmployeeViolation />} />
           
