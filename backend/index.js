@@ -36,58 +36,16 @@ const PORT = process.env.PORT;
 
 app.use(express.json());
 app.use(cookieParser());
-const ALLOWED_ORIGINS = [
-    "http://localhost:5173", 
-    "https://hr3.jjm-manufacturing.com",
-    "https://hr3-jjm-manufacturing-8lav.onrender.com",
-    "https://hr3-2htq.onrender.com"
-];
-
-const corsOptions = {
-    origin: function (origin, callback) {
-        if (!origin || ALLOWED_ORIGINS.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: [
-        "Content-Type", 
-        "Authorization", 
-        "X-Requested-With", 
-        "Accept", 
-        "x-client-key", 
-        "x-client-token", 
-        "x-client-secret", 
-        "Origin", 
-        "Host"
+app.use(cors({
+    origin: [
+        "http://localhost:5173", 
+        "https://hr3.jjm-manufacturing.com",
+        "https://hr3-jjm-manufacturing-8lav.onrender.com"
     ],
-    optionsSuccessStatus: 200
-};
-
-app.use(cors(corsOptions));
-
-app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    
-    if (ALLOWED_ORIGINS.includes(origin)) {
-        res.vary('Origin');
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    }
-    
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', corsOptions.allowedHeaders.join(', '));
-    res.header('Access-Control-Allow-Credentials', 'true');
-    
-    if (req.method === 'OPTIONS') {
-        return res.sendStatus(200);
-    }
-    
-    next();
-});
-
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"], 
+    allowedHeaders: ["Content-Type", "Authorization"], 
+}));
 
 app.use("/api/auth",authRoute)
 app.use("/api/compensation",compensationPlanningRoute)
