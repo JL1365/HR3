@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSalaryRequestStore } from "../../store/salaryRequestStore";
 import { motion, AnimatePresence } from "framer-motion";
+import jjmLogo from '../../assets/jjmlogo.jpg';
 
 function PayrollHistory() {
   const { payrollHistory, fetchAllPayrollHistory, error } =
@@ -50,6 +51,65 @@ function PayrollHistory() {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
+  };
+
+  const generatePDF = () => {
+    if (!selectedBatch) return;
+
+    const originalTable = document.querySelector(".payroll-table");
+    const tableClone = originalTable.cloneNode(true);
+
+    const tempDiv = document.createElement('div');
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.left = '-9999px';
+    tempDiv.style.top = '-9999px';
+    tempDiv.innerHTML = `
+      <div style="background-color: white; padding: 20px; font-family: Arial;">
+        <img src="${jjmLogo}" alt="Logo" style="display: block; margin: 0 auto 20px; width: 100px;">
+        <h2 style="margin-bottom: 10px; text-align: center;">Payroll Batch Details</h2>
+        <p style="text-align: center;">Generated: ${new Date().toLocaleDateString()}</p>
+        ${tableClone.outerHTML}
+      </div>
+    `;
+    document.body.appendChild(tempDiv);
+
+    const printContent = tempDiv.firstChild;
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('Please allow popups to export the table');
+      document.body.removeChild(tempDiv);
+      return;
+    }
+
+    printWindow.document.open();
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Payroll Batch Details</title>
+          <style>
+            body { font-family: Arial; }
+            table { border-collapse: collapse; width: 100%; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+            tr:nth-child(even) { background-color: #f9f9f9; }
+            .print-btn { display: block; margin: 20px auto; padding: 10px 20px; background: #4CAF50; color: white; border: none; cursor: pointer; }
+            .download-btn { display: block; margin: 20px auto; padding: 10px 20px; background: #2196F3; color: white; border: none; cursor: pointer; }
+            @media print {
+              .print-btn, .download-btn { display: none; }
+            }
+          </style>
+        </head>
+        <body>
+          ${tempDiv.innerHTML}
+          <button class="print-btn" onclick="window.print()">Print</button>
+          <button class="download-btn" onclick="window.close()">Close</button>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+
+    document.body.removeChild(tempDiv);
   };
 
   if (error) {
@@ -124,10 +184,11 @@ function PayrollHistory() {
               Batch ID: {selectedBatch._id}
             </h2>
             <div className="overflow-x-auto">
-              <table className="min-w-full table-auto text-sm">
+              <table className="min-w-full table-auto text-sm payroll-table">
                 <thead className="bg-white text-gray-500 border-b">
                   <tr>
                     <th className="p-2 md:p-3 text-left">Employee</th>
+                    <th className="p-2 md:p-3 text-left">Position</th>
                     <th className="p-2 md:p-3 text-left">Total Work Hours</th>
                     <th className="p-2 md:p-3 text-left">
                       Total Overtime Hours
@@ -228,6 +289,14 @@ function PayrollHistory() {
               </motion.button>
             </div>
             <div className="flex justify-end space-x-2 mt-6">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={generatePDF}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Download PDF
+              </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

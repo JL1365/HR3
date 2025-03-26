@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSalaryRequestStore } from "../../store/salaryRequestStore";
 import { motion, AnimatePresence } from "framer-motion";
+import jjmLogo from "../../assets/jjmlogo.jpg";
 
 function MyPayrollHistory() {
   const { payrollHistory, fetchMyPayrollHistory, error } =
@@ -9,6 +10,7 @@ function MyPayrollHistory() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const detailsTableRef = useRef(null);
 
   useEffect(() => {
     fetchMyPayrollHistory();
@@ -38,6 +40,66 @@ function MyPayrollHistory() {
       (currentPage - 1) * itemsPerPage,
       currentPage * itemsPerPage
     ) || [];
+
+  const exportTableAsImage = () => {
+    if (!detailsTableRef || !detailsTableRef.current) return;
+
+    const originalTable = detailsTableRef.current;
+    const tableClone = originalTable.cloneNode(true);
+
+    const tempDiv = document.createElement('div');
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.left = '-9999px';
+    tempDiv.style.top = '-9999px';
+    tempDiv.innerHTML = `
+      <div style="background-color: white; padding: 20px; font-family: Arial;">
+        <img src="${jjmLogo}" alt="Logo" style="display: block; margin: 0 auto 20px; width: 100px;">
+        <h2 style="margin-bottom: 10px; text-align: center;">Payroll Details</h2>
+        <p style="text-align: center;">Generated: ${new Date().toLocaleDateString()}</p>
+        <p style="text-align: center;">${selectedPayroll.employee_firstname} ${selectedPayroll.employee_lastname}</p>
+        ${tableClone.outerHTML}
+      </div>
+    `;
+    document.body.appendChild(tempDiv);
+
+    const printContent = tempDiv.firstChild;
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('Please allow popups to export the table');
+      document.body.removeChild(tempDiv);
+      return;
+    }
+
+    printWindow.document.open();
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Payroll Details</title>
+          <style>
+            body { font-family: Arial; }
+            table { border-collapse: collapse; width: 100%; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+            tr:nth-child(even) { background-color: #f9f9f9; }
+            .print-btn { display: block; margin: 20px auto; padding: 10px 20px; background: #4CAF50; color: white; border: none; cursor: pointer; }
+            .download-btn { display: block; margin: 20px auto; padding: 10px 20px; background: #2196F3; color: white; border: none; cursor: pointer; }
+            @media print {
+              .print-btn, .download-btn { display: none; }
+            }
+          </style>
+        </head>
+        <body>
+          ${tempDiv.innerHTML}
+          <button class="print-btn" onclick="window.print()">Print</button>
+          <button class="download-btn" onclick="window.close()">Close</button>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+
+    document.body.removeChild(tempDiv);
+  };
 
   return (
     <motion.div
@@ -167,7 +229,7 @@ function MyPayrollHistory() {
               <div className="mt-6">
                 <h3 className="text-lg font-semibold mb-2">Daily Work Hours</h3>
                 <div className="overflow-x-auto">
-                  <table className="table-auto w-full text-left">
+                  <table className="table-auto w-full text-left" ref={detailsTableRef}>
                     <thead>
                       <tr>
                         <th className="px-4 py-2">Date</th>
@@ -251,6 +313,14 @@ function MyPayrollHistory() {
               </div>
 
               <div className="flex justify-end mt-6">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={exportTableAsImage}
+                  className="px-5 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                >
+                  Download PDF
+                </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}

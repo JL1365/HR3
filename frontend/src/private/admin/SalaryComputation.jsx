@@ -4,7 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion, AnimatePresence } from "framer-motion";
 import PayrollHistory from './PayrollHistory';
-
+import jjmLogo from '../../assets/jjmlogo.jpg'
 function SalaryComputation() {
   const {
     grossSalaryData,
@@ -68,8 +68,9 @@ function SalaryComputation() {
     tempDiv.style.top = '-9999px';
     tempDiv.innerHTML = `
       <div style="background-color: white; padding: 20px; font-family: Arial;">
-        <h2 style="margin-bottom: 10px;">Salary Computation Report</h2>
-        <p>Generated: ${new Date().toLocaleDateString()}</p>
+       <img src="${jjmLogo}" alt="Logo" style="display: block; margin: 0 auto 20px; width: 100px;">
+        <h2 style="margin-bottom: 10px; text-align: center;">Salary Computation Report</h2>
+        <p style="text-align: center;">Generated: ${new Date().toLocaleDateString()}</p>
         ${tableClone.outerHTML}
       </div>
     `;
