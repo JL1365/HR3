@@ -1,4 +1,3 @@
-
 import axios from 'axios'; 
 
 import { generateServiceToken } from '../middlewares/gatewayTokenGenerator.js';
@@ -129,14 +128,14 @@ export const getMyViolations = async (req, res) => {
     }
 
     const myViolations = await Violation.find({ userId })
-      .populate('penaltyLevel')
+      .populate('penaltyLevel');
     if (!myViolations.length) {
       return res.status(404).json({ message: 'No violations found for this user' });
     }
 
     return res.status(200).json({ myViolations });
   } catch (error) {
-    console.log(`Error in retrieving my violation : ${error.message}`)
+    console.log(`Error in retrieving my violation : ${error.message}`);
     return res.status(500).json({ message: 'Server error', error });
   }
 };
