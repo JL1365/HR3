@@ -26,6 +26,33 @@ export const useBenefitRequestStore = create((set, get) => ({
         }
       },
     
+    myApplyRequests: [],
+    fetchMyApplyRequests: async () => {
+        set({ loading: true, error: null });
+        try {
+            const response = await axiosInstance.get("/benefitRequest/get-my-apply-requests");
+            set({ myApplyRequests: response.data.myApplyRequests || [], loading: false });
+        } catch (error) {
+            console.error("Error fetching my apply requests:", error);
+            set({ 
+                error: error.response?.data?.message || "Failed to fetch my apply requests", 
+                loading: false 
+            });
+        }
+    },
 
-  clearError: () => set({ error: null }),
+    applyBenefit: async (formData) => {
+        try {
+            await axiosInstance.post("/benefitRequest/apply-benefit", formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            get().fetchMyApplyRequests(); 
+        } catch (error) {
+            set({ error: error.response?.data?.message || "Failed to apply for benefit" });
+        }
+    },
+
+    clearError: () => set({ error: null }),
 }));

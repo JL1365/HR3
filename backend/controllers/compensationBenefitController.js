@@ -13,7 +13,7 @@ export const createBenefit = async (req, res) => {
   
       if (benefitType === "Paid Benefit") {
         benefitData.isNeedRequest = false;
-      } else if (benefitType === "Deduction") {
+      } else if (benefitType === "Deduction" || benefitType === "Deductible Benefit") {
         if (typeof isNeedRequest === "undefined") {
           return res.status(400).json({ message: "isNeedRequest is required for Deduction!" });
         }

@@ -24,6 +24,8 @@ import Attendance from "./private/admin/Attendance";
 import SalaryComputation from "./private/admin/SalaryComputation";
 import BudgetRequest from "./private/admin/BudgetRequest";
 import BehavioralAnalytics from "./private/admin/BehavioralAnalytics";
+import BenefitsOverview from "./private/employee/BenefitsOverview";
+import ApplyBenefit from "./private/admin/ApplyBenefit";
 // import EmployeeViolation from "./private/admin/EmployeeViolation";
 
 function App() {
@@ -61,6 +63,8 @@ function App() {
       <Route element={<ProtectedRoute allowedRoles={["Employee"]} />}>
         <Route element={<PrivateLayout />}>
           <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
+          <Route path="/benefits-overview" element={<BenefitsOverview />} />
+          <Route path="/apply-benefit" element={<ApplyBenefit />} />
         </Route>
       </Route>
 
