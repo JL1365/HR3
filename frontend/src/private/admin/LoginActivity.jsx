@@ -29,10 +29,31 @@ function LoginActivity() {
     setHistoryPage(1);
   };
 
+  const combineData = (activities) => {
+    const combinedData = {};
+    activities.forEach(activity => {
+      const key = activity.email || "Unknown";
+      if (!combinedData[key]) {
+        combinedData[key] = {
+          ...activity,
+          loginCount: 0,
+          failedLoginAttempts: 0,
+          loginHistory: [],
+        };
+      }
+      combinedData[key].loginCount += activity.loginCount;
+      combinedData[key].failedLoginAttempts += activity.failedLoginAttempts;
+      combinedData[key].loginHistory = combinedData[key].loginHistory.concat(activity.loginHistory);
+    });
+    return Object.values(combinedData);
+  };
+
+  const combinedLoginActivities = combineData(loginActivities);
+
   const indexOfLastActivity = currentPage * itemsPerPage;
   const indexOfFirstActivity = indexOfLastActivity - itemsPerPage;
-  const currentActivities = loginActivities.slice(indexOfFirstActivity, indexOfLastActivity);
-  const totalPages = Math.ceil(loginActivities.length / itemsPerPage);
+  const currentActivities = combinedLoginActivities.slice(indexOfFirstActivity, indexOfLastActivity);
+  const totalPages = Math.ceil(combinedLoginActivities.length / itemsPerPage);
 
   const handlePageChange = (direction) => {
     if (direction === "next" && currentPage < totalPages) {
@@ -167,7 +188,7 @@ function LoginActivity() {
           whileTap={{ scale: 0.95 }}
           className="btn btn-primary text-xs md:text-sm"
           onClick={handlePageChange.bind(null, "next")}
-          disabled={indexOfLastActivity >= loginActivities.length}
+          disabled={indexOfLastActivity >= combinedLoginActivities.length}
         >
           Next
         </motion.button>
@@ -175,7 +196,7 @@ function LoginActivity() {
 
       <h3 className="text-lg font-semibold mb-2 mt-6">Login Activities Chart</h3>
       <ResponsiveContainer width="100%" height={400}>
-        <BarChart data={loginActivities}>
+        <BarChart data={combinedLoginActivities}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="email" />
           <YAxis />

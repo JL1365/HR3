@@ -36,7 +36,7 @@ const EmployeeSidebar = forwardRef(({ isSidebarOpen }, ref) => {
   const menuItems = [
     { name: "Dashboard", href: "/Employee-dashboard", icon: LayoutDashboard },
     {
-      name: "Compensation Planning",
+      name: "Compensation",
       icon: Briefcase,
       subItems: [{ name: "Overview", href: "/compensation-overview" }],
     },

@@ -4,6 +4,7 @@ import useragent from 'useragent';
 import { LoginActivity } from '../models/loginActivityModel.js';
 import { generateServiceToken } from '../middlewares/gatewayTokenGenerator.js';
 import { generateTokenAndSetCookie } from '../utils/generateTokenAndSetCookie.js';
+import { PageVisit } from '../models/pageVisitModel.js';
 
 export const getAllUsers = async (req, res) => {
     try {
@@ -271,5 +272,72 @@ export const getAllLoginActivities = async (req, res) => {
     } catch (err) {
         console.error("Error fetching login activities:", err.message);
         return res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+
+export const logPageVisit = async (req, res) => {
+    try {
+        console.log("Received request:", req.body);
+        const { pageName, duration } = req.body;
+        const userId = req.user && req.user.userId ? String(req.user.userId) : null;
+        if (!userId) {
+          return res.status(401).json({ message: 'User not authenticated' });
+        }
+
+        if (!pageName || !duration) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+
+        const existingVisit = await PageVisit.findOne({ user_id: userId, pageName });
+
+        if (existingVisit) {
+            existingVisit.duration += parseFloat(duration);
+            await existingVisit.save();
+            return res.status(200).json({ message: "Page visit duration updated successfully" });
+        } else {
+            await PageVisit.create({
+                user_id: userId,
+                pageName,
+                duration: parseFloat(duration),
+            });
+
+            return res.status(200).json({ message: "Page visit logged successfully" });
+        }
+    } catch (error) {
+        console.error("Error logging page visit:", error.stack);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+  
+export const getPageVisits = async (req, res) => {
+    try {
+      const pageVisits = await PageVisit.aggregate([
+        {
+          $group: {
+            _id: "$pageName",
+            totalVisits: { $sum: 1 },
+            totalTimeSpent: { $sum: "$duration" },
+            averageTimeSpent: { $avg: "$duration" },
+          },
+        },
+        { $sort: { totalVisits: -1 } },
+      ]);
+  
+      res.status(200).json(pageVisits);
+    } catch (error) {
+      console.error("Error fetching page visits:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  };
+  
+  export const getAllPageVisits = async (req, res) => {
+    try {
+      const allPageVisits = await PageVisit.find()
+        .lean();
+  
+      return res.status(200).json({ success: true, data: allPageVisits });
+    } catch (err) {
+      console.error("Error fetching login activities:", err.message);
+      return res.status(500).json({ success: false, message: "Server error" });
     }
 };
