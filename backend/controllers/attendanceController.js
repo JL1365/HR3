@@ -1,6 +1,6 @@
 import axios from "axios";
 import { generateServiceToken } from "../middlewares/gatewayTokenGenerator.js";
-import { Batch } from "../models/BatchModel.js";
+import { Batch } from '../models/batchModel.js';
 import { EmployeeLeave } from "../models/employeeLeaveModel.js";
 import { Attendance } from "../models/attendanceModel.js";
 

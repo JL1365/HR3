@@ -13,11 +13,14 @@ const batchSchema = new mongoose.Schema({
   expiration_date: {
     type: Date, 
   },
-  totalPayrollAmount: { type: Number, default: 0 }
+  totalPayrollAmount: { 
+    type: Number, 
+    default: 0 
+  }
 });
+
 batchSchema.virtual('isExpired').get(function () {
     return Date.now() > this.expiration_date;
-  });
+});
 
 export const Batch = mongoose.model('Batch', batchSchema);
-

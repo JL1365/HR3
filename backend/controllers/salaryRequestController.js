@@ -7,7 +7,7 @@ import { IncentiveTracking } from "../models/incentiveTrackingModel.js";
 import { EmployeeCompensation } from "../models/employeeCompensationModel.js";
 import { CompensationBenefit } from "../models/compensationBenefitModel.js";
 import {PayrollHistory} from '../models/payrollHistoryModel.js'
-import {Batch} from '../models/BatchModel.js'
+import {Batch} from '../models/batchModel.js'
 
 const calculateGrossPayroll = async () => {
     const serviceToken = generateServiceToken();
