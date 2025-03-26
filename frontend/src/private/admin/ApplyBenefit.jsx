@@ -11,10 +11,10 @@ function ApplyBenefit() {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
-    const plansPerPage = 10;
-    const indexOfLastPlan = currentPage * plansPerPage;
-    const indexOfFirstPlan = indexOfLastPlan - plansPerPage;
-    const currentPlans = benefits.slice(indexOfFirstPlan, indexOfLastPlan);
+    const requestsPerPage = 10;
+    const indexOfLastRequest = currentPage * requestsPerPage;
+    const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
+    const currentRequests = myApplyRequests.slice(indexOfFirstRequest, indexOfLastRequest);
 
     useEffect(() => {
         fetchMyApplyRequests();
@@ -33,7 +33,7 @@ function ApplyBenefit() {
     };
 
     const nextPage = () => {
-        if (indexOfLastPlan < benefits.length) {
+        if (indexOfLastRequest < myApplyRequests.length) {
             setCurrentPage(currentPage + 1);
         }
     };
@@ -122,8 +122,8 @@ function ApplyBenefit() {
                             </tr>
                         </thead>
                         <tbody className="bg-white text-neutral-500 border-b">
-                            {myApplyRequests.length > 0 ? (
-                                myApplyRequests.map((request) => (
+                            {currentRequests.length > 0 ? (
+                                currentRequests.map((request) => (
                                     <tr key={request._id}>
                                         <td className="p-3 border-b">
                                             {request.compensationBenefitId?.benefitName || 'N/A'}
@@ -165,7 +165,7 @@ function ApplyBenefit() {
                     whileTap={{ scale: 0.95 }}
                     className="btn btn-primary text-xs md:text-sm" 
                     onClick={nextPage} 
-                    disabled={indexOfLastPlan >= benefits.length}
+                    disabled={indexOfLastRequest >= myApplyRequests.length}
                 >
                     Next
                 </motion.button>
