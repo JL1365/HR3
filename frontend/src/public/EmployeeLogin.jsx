@@ -31,9 +31,16 @@ function EmployeeLogin() {
     };
 
     return (
-        <div className="flex flex-col justify-center items-center min-h-screen bg-opacity-15 px-4">
-            {loading && <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white text-sm">Loading...</div>}
-            <div className="p-6 py-10 w-full max-w-xs h-auto bg-white shadow-lg rounded-lg border">
+        <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100 px-4">
+            {loading && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                    <div className="flex flex-col items-center">
+                        <div className="loader border-t-4 border-white rounded-full w-12 h-12 animate-spin"></div>
+                        <p className="text-white text-sm mt-2">Logging in...</p>
+                    </div>
+                </div>
+            )}
+            <div className="p-6 py-10 w-full max-w-xs h-auto bg-white shadow-lg rounded-lg border transform transition-transform duration-300 hover:scale-105">
                 <div className="flex justify-center gap-x-2 pb-2">
                     <img
                         src={jjmLogo}
@@ -64,7 +71,7 @@ function EmployeeLogin() {
                             value={formData.employee_email}
                             onChange={handleChange}
                             placeholder="Email"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition-shadow duration-200"
                             required
                         />
                     </div>
@@ -83,13 +90,13 @@ function EmployeeLogin() {
                             value={formData.employee_password}
                             onChange={handleChange}
                             placeholder="Password"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10 text-sm"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10 text-sm transition-shadow duration-200"
                             required
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute inset-y-0 right-0 mt-8 pr-3 flex items-center text-gray-600"
+                            className="absolute inset-y-0 right-0 mt-8 pr-3 flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200"
                             aria-label={showPassword ? "Hide password" : "Show password"}
                         >
                             <FaEye icon={showPassword ? faEyeSlash : faEye} />
@@ -123,7 +130,7 @@ function EmployeeLogin() {
 
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 rounded-md transition-colors flex items-center justify-center"
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 rounded-md transition-transform duration-200 transform hover:scale-105 flex items-center justify-center"
                     >
                         Login
                     </button>

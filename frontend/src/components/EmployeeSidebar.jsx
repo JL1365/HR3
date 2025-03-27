@@ -46,7 +46,9 @@ const EmployeeSidebar = forwardRef(({ isSidebarOpen }, ref) => {
     {
       name: "Compensation",
       icon: Briefcase,
-      subItems: [{ name: "Salary Structure", href: "/my-salary-structure" },
+      subItems: [
+       
+        { name: "Salary Structure", href: "/my-salary-structure" },
         { name: "My violations", href: "/my-violations" }
       ],
     },

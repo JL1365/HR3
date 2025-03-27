@@ -26,6 +26,7 @@ const PrivateLayout = () => {
     "/salary-computation": "Salary computation",
     "/budget-request": "Request a budget",
 
+    "/my-salary-structure": "Salary structure",
     "/my-violations": "My Violations",
 
     "/benefit-request": "Benefit Requests",
