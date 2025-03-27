@@ -96,8 +96,8 @@ function PageVisits() {
       <h2>All Page Visits</h2>
       {loading ? <p>Loading...</p> : (
         <div>
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full table-auto text-sm">
+            <thead className="bg-white text-gray-500 border-b">
               <tr>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-neutral uppercase tracking-wider">User ID</th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-neutral uppercase tracking-wider">Total Visits</th>
@@ -155,8 +155,8 @@ function PageVisits() {
 
       <h2>Page Visit Summary</h2>
       {loading ? <p>Loading...</p> : (
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <table className="min-w-full table-auto text-sm">
+          <thead className="bg-white text-gray-500 border-b">
             <tr>
               <th className="px-6 py-4 text-left text-xs font-semibold text-neutral uppercase tracking-wider">Page Name</th>
               <th className="px-6 py-4 text-left text-xs font-semibold text-neutral uppercase tracking-wider">Total Visits</th>
