@@ -33,6 +33,9 @@ const PrivateLayout = () => {
     "/employee-benefit-details": "Employee Benefit Details",
     "/documents": "Documents",
 
+    "/behavioral-analytics": "Behavioral Analytics",
+    "/predictive-analytics": "Predictive Analytics",
+
     "/employee-dashboard": "DASHBOARD",
     "/benefits-overview": "Benefits Overview",
     "/apply-benefit": "Apply Benefit",

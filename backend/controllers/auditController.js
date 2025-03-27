@@ -1,16 +1,10 @@
 import axios from 'axios';
-import { generateServiceToken } from '../middlewares/gatewayTokenGenerator.js';
 import { Audit } from '../models/core2/auditModel.js';
 
 export const getAllAudits = async (req, res) => {
     try {
-        const serviceToken = generateServiceToken();
-
         const response = await axios.get(
-            'https://backend-core2.jjm-manufacturing.com/api/auditCompletedTasksHr3',
-            {
-                headers: { Authorization: `Bearer ${serviceToken}` },
-            }
+            'https://backend-core2.jjm-manufacturing.com/api/auditCompletedTasksHr3'
         );
 
         const auditData = response.data;
@@ -33,14 +27,9 @@ export const createAudit = async (req, res) => {
         const newAudit = new Audit({ department, description, task });
         const savedAudit = await newAudit.save();
 
-        const serviceToken = generateServiceToken();
-
         const response = await axios.post(
             'https://backend-core2.jjm-manufacturing.com/api/auditRequestHr3',
-            { department, description, task },
-            {
-                headers: { Authorization: `Bearer ${serviceToken}` },
-            }
+            { department, description, task }
         );
 
         const createdAudit = response.data;
