@@ -53,125 +53,118 @@ const PredictiveAnalytics = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-8 p-8 bg-gray-50">
+    <div className="p-2 md:p-4">
+      {isLoading && <p>Loading predictive analytics...</p>}
+      {!isLoading && (
+        <>
+          <div className="bg-white shadow-md rounded-lg p-6 mb-4">
+            <h2 className="text-xl font-semibold mb-4">Employee Behavior Predictions</h2>
+            <div className="overflow-x-auto">
+              <table className="min-w-full table-auto text-sm">
+                <thead className="bg-white text-gray-500 border-b">
+                  <tr>
+                    <th className="p-2 md:p-3 text-left">Employee Name</th>
+                    <th className="p-2 md:p-3 text-left">Total Leaves</th>
+                    <th className="p-2 md:p-3 text-left">Holidays Worked</th>
+                    <th className="p-2 md:p-3 text-left">Prediction</th>
+                    <th className="p-2 md:p-3 text-left">Accuracy</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white text-neutral-500 border-b">
+                  {behaviorPredictions.map((employee, index) => (
+                    <tr key={employee.employee_id} className="hover:bg-gray-100">
+                      <td className="p-2 md:p-3 text-left">{employee.name}</td>
+                      <td className="p-2 md:p-3 text-left">{employee.totalLeaves}</td>
+                      <td className="p-2 md:p-3 text-left">{employee.holidaysWorked}</td>
+                      <td className="p-2 md:p-3 text-left">
+                        <span className={`px-2 py-1 rounded ${getBehaviorColor(employee.prediction)}`}>
+                          {employee.prediction}
+                        </span>
+                      </td>
+                      <td className="p-2 md:p-3 text-left">{employee.reason}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-      <div className="bg-white shadow-md rounded-lg p-6">
-        <h2 className="text-2xl font-bold mb-4">Employee Behavior Predictions</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="p-3 border">Employee Name</th>
-                <th className="p-3 border">Total Leaves</th>
-                <th className="p-3 border">Holidays Worked</th>
-                <th className="p-3 border">Prediction</th>
-                <th className="p-3 border">Confidence</th>
-              </tr>
-            </thead>
-            <tbody>
-              {behaviorPredictions.map((employee) => (
-                <tr key={employee.employee_id} className="hover:bg-gray-100">
-                  <td className="p-3 border">{employee.name}</td>
-                  <td className="p-3 border text-center">{employee.totalLeaves}</td>
-                  <td className="p-3 border text-center">{employee.holidaysWorked}</td>
-                  <td className="p-3 border">
-                    <span className={`px-2 py-1 rounded ${getBehaviorColor(employee.prediction)}`}>
-                      {employee.prediction}
-                    </span>
-                  </td>
-                  <td className="p-3 border">{employee.reason}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+          <div className="bg-white shadow-md rounded-lg p-6 mb-4">
+            <h2 className="text-xl font-semibold mb-4">Incentive Eligibility</h2>
+            <div className="overflow-x-auto">
+              <table className="min-w-full table-auto text-sm">
+                <thead className="bg-white text-gray-500 border-b">
+                  <tr>
+                    <th className="p-2 md:p-3 text-left">Employee Name</th>
+                    <th className="p-2 md:p-3 text-left">Total Attendance</th>
+                    <th className="p-2 md:p-3 text-left">Holidays Worked</th>
+                    <th className="p-2 md:p-3 text-left">Total Leaves</th>
+                    <th className="p-2 md:p-3 text-left">Overtime Hours</th>
+                    <th className="p-2 md:p-3 text-left">Incentive Eligible</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white text-neutral-500 border-b">
+                  {incentivePredictions.map((employee, index) => (
+                    <tr key={employee.employee_id} className="hover:bg-gray-100">
+                      <td className="p-2 md:p-3 text-left">{employee.name}</td>
+                      <td className="p-2 md:p-3 text-left">{employee.totalAttendance}</td>
+                      <td className="p-2 md:p-3 text-left">{employee.holidaysWorked}</td>
+                      <td className="p-2 md:p-3 text-left">{employee.totalLeaves}</td>
+                      <td className="p-2 md:p-3 text-left">{(employee.totalOvertimeHours || 0).toFixed(2)}</td>
+                      <td className="p-2 md:p-3 text-left">
+                        {employee.isEligible ? (
+                          <Check className="text-green-500 mx-auto" />
+                        ) : (
+                          <X className="text-red-500 mx-auto" />
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-      <div className="bg-white shadow-md rounded-lg p-6">
-        <h2 className="text-2xl font-bold mb-4">Incentive Eligibility</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="p-3 border">Employee Name</th>
-                <th className="p-3 border">Total Attendance</th>
-                <th className="p-3 border">Holidays Worked</th>
-                <th className="p-3 border">Total Leaves</th>
-                <th className="p-3 border">Overtime Hours</th>
-                <th className="p-3 border">Incentive Eligible</th>
-              </tr>
-            </thead>
-            <tbody>
-              {incentivePredictions.map((employee) => (
-                <tr key={employee.employee_id} className="hover:bg-gray-100">
-                  <td className="p-3 border">{employee.name}</td>
-                  <td className="p-3 border text-center">{employee.totalAttendance}</td>
-                  <td className="p-3 border text-center">{employee.holidaysWorked}</td>
-                  <td className="p-3 border text-center">{employee.totalLeaves}</td>
-                  <td className="p-3 border text-center">
-                    {(employee.totalOvertimeHours || 0).toFixed(2)}
-                  </td>
-                  <td className="p-3 border text-center">
-                    {employee.isEligible ? (
-                      <Check className="text-green-500 mx-auto" />
-                    ) : (
-                      <X className="text-red-500 mx-auto" />
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div className="bg-white shadow-md rounded-lg p-6">
-        <h2 className="text-2xl font-bold mb-4">Employee Retention</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="p-3 border">Employee Name</th>
-                <th className="p-3 border">Total Leaves</th>
-                <th className="p-3 border">Holidays Worked</th>
-                <th className="p-3 border">Total Attendance</th>
-                <th className="p-3 border">Minutes Late</th>
-                <th className="p-3 border">Previous Violations</th>
-                <th className="p-3 border">Risk Level</th>
-                <th className="p-3 border">Confidence</th>
-              </tr>
-            </thead>
-            <tbody>
-              {violationPredictions.map((employee) => (
-                <tr key={employee.employee_id} className="hover:bg-gray-100">
-                  <td className="p-3 border">{employee.name}</td>
-                  <td className="p-3 border text-center">{employee.totalLeaves}</td>
-                  <td className="p-3 border text-center">{employee.holidaysWorked}</td>
-                  <td className="p-3 border text-center">{employee.totalAttendance}</td>
-                  <td className="p-3 border text-center">{employee.totalMinutesLate}</td>
-                  <td className="p-3 border text-center">{employee.previousViolations}</td>
-                  <td className="p-3 border">
-                    <span className={`px-2 py-1 rounded ${getRiskColor(employee.riskLevel)}`}>
-                      {employee.riskLevel}
-                    </span>
-                  </td>
-                  <td className="p-3 border">{employee.riskConfidence}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
+          <div className="bg-white shadow-md rounded-lg p-6">
+            <h2 className="text-xl font-semibold mb-4">Employee Retention</h2>
+            <div className="overflow-x-auto">
+              <table className="min-w-full table-auto text-sm">
+                <thead className="bg-white text-gray-500 border-b">
+                  <tr>
+                    <th className="p-2 md:p-3 text-left">Employee Name</th>
+                    <th className="p-2 md:p-3 text-left">Total Leaves</th>
+                    <th className="p-2 md:p-3 text-left">Holidays Worked</th>
+                    <th className="p-2 md:p-3 text-left">Total Attendance</th>
+                    <th className="p-2 md:p-3 text-left">Minutes Late</th>
+                    <th className="p-2 md:p-3 text-left">Previous Violations</th>
+                    <th className="p-2 md:p-3 text-left">Risk Level</th>
+                    <th className="p-2 md:p-3 text-left">Accuracy</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white text-neutral-500 border-b">
+                  {violationPredictions.map((employee, index) => (
+                    <tr key={employee.employee_id} className="hover:bg-gray-100">
+                      <td className="p-2 md:p-3 text-left">{employee.name}</td>
+                      <td className="p-2 md:p-3 text-left">{employee.totalLeaves}</td>
+                      <td className="p-2 md:p-3 text-left">{employee.holidaysWorked}</td>
+                      <td className="p-2 md:p-3 text-left">{employee.totalAttendance}</td>
+                      <td className="p-2 md:p-3 text-left">{employee.totalMinutesLate}</td>
+                      <td className="p-2 md:p-3 text-left">{employee.previousViolations}</td>
+                      <td className="p-2 md:p-3 text-left">
+                        <span className={`px-2 py-1 rounded ${getRiskColor(employee.riskLevel)}`}>
+                          {employee.riskLevel}
+                        </span>
+                      </td>
+                      <td className="p-2 md:p-3 text-left">{employee.riskConfidence}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

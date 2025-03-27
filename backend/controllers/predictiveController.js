@@ -190,12 +190,11 @@ export const predictViolations = async (req, res) => {
   try {
     const employees = await EmployeeLeave.find({});
     const attendanceRecords = await Attendance.find({});
-    const existingViolations = await Violation.find({});
 
     const features = [];
     const violationMetadata = [];
 
-    employees.forEach(employee => {
+    for (const employee of employees) {
       const employeeAttendance = attendanceRecords.filter(record => {
         if (!record.employee_id) {
           console.warn(`Attendance record missing employee_id: ${JSON.stringify(record)}`);
@@ -208,13 +207,8 @@ export const predictViolations = async (req, res) => {
       const holidaysWorked = employeeAttendance.filter(record => record.isHoliday).length || 0;
       const totalAttendance = employeeAttendance.length || 0;
       const totalMinutesLate = employeeAttendance.reduce((sum, record) => sum + (record.minutes_late || 0), 0);
-      const previousViolations = existingViolations.filter(v => {
-        if (!v.employee_id) {
-          console.warn(`Violation record missing employee_id: ${JSON.stringify(v)}`);
-          return false;
-        }
-        return v.employee_id.toString() === employee.employee_id.toString();
-      }).length;
+
+      const previousViolations = await Violation.countDocuments({ userId: employee.employee_id });
 
       features.push([totalLeaves, holidaysWorked, totalAttendance, totalMinutesLate, previousViolations]);
 
@@ -227,7 +221,7 @@ export const predictViolations = async (req, res) => {
         totalMinutesLate,
         previousViolations
       });
-    });
+    }
 
     const normalizedFeatures = features.map(feature => normalizeData(feature));
 
