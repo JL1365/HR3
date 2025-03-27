@@ -22,7 +22,30 @@ function MySalaryStructure() {
     }
 
     if (!salaryStructure) {
-        return <div>No salary structure found.</div>;
+        return (
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="flex flex-col items-center justify-center h-full text-gray-500"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-16 w-16 text-gray-400 mb-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12h6m2 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                </svg>
+                <p className="text-gray-600 text-center">No salary structure available.</p>
+            </motion.div>
+        );
     }
 
     return (

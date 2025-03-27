@@ -3,10 +3,8 @@ import { useViolationStore } from '../../store/violationStore';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
-import usePageTracking from '../../hooks/usePageTracking';
 
 function MyViolations() {
-  usePageTracking("My Violations");
   const { myViolations, getMyViolations, isLoading, error } = useViolationStore();
   const [currentPage, setCurrentPage] = useState(1);
   const violationsPerPage = 10;
@@ -36,8 +34,7 @@ function MyViolations() {
   }
 
   if (error) {
-    toast.error(error);
-    return <p>Error: {error}</p>;
+    console.error(error);
   }
 
   return (
@@ -103,8 +100,11 @@ function MyViolations() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="7" className="text-center py-4">
-                      No violations found.
+                    <td colSpan="7" className="text-center py-8 text-gray-500">
+                      <div className="flex flex-col items-center">
+                    
+                        <p className="text-gray-600 text-center">No violations found.</p>
+                      </div>
                     </td>
                   </tr>
                 )}
