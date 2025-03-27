@@ -32,6 +32,10 @@ const attendanceSchema = new mongoose.Schema({
     type: String,
     default: '0h 0m',
   },
+  minutes_late: {
+    type: Number,
+    default: 0,
+  },
   entry_type: {
     type: String,
     enum: ['Manual Entry', 'System Entry','N/A'],

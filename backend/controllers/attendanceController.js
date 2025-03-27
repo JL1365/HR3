@@ -47,7 +47,7 @@ export const getLeavesFromHr1 = async (req, res) => {
             }
             behavior.leave_types[leave_type] += 1;
   
-            behavior.leaves.push({ leave_id, leave_type, start_date, end_date }); // Save start_date and end_date
+            behavior.leaves.push({ leave_id, leave_type, start_date, end_date }); 
   
             await behavior.save();
         }
@@ -99,7 +99,6 @@ export const getAttendanceFromHr1 = async (req, res) => {
         for (const record of attendanceData) {
             const { _id } = record;
   
-            // Check for existing attendance with the same time tracking ID (_id)
             const existingAttendanceById = await Attendance.findOne({ _id });
             if (existingAttendanceById) {
                 console.log(`Attendance with ID ${_id} already exists. Skipping...`);
@@ -161,7 +160,7 @@ export const getLeavesAndAttendance = async (req, res) => {
             }
             behavior.leave_types[leave_type] += 1;
 
-            behavior.leaves.push({ leave_id, leave_type, start_date, end_date }); // Save start_date and end_date
+            behavior.leaves.push({ leave_id, leave_type, start_date, end_date });
 
             await behavior.save();
         }
@@ -219,7 +218,7 @@ export const getBehavioralAnalytics = async (req, res) => {
             const leaveDurations = leaveRecord.leaves.map(leave => {
                 const startDate = new Date(leave.start_date);
                 const endDate = new Date(leave.end_date);
-                const durationInDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1; // Include both start and end dates
+                const durationInDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1; 
                 return {
                     leave_id: leave.leave_id,
                     leave_type: leave.leave_type,
@@ -249,5 +248,35 @@ export const getBehavioralAnalytics = async (req, res) => {
     } catch (error) {
         console.error("Error fetching behavioral analytics:", error.message);
         res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+export const saveAttendance = async (req, res) => {
+    try {
+        const { employee_id, time_in, time_out, total_hours, batch_id, position } = req.body;
+
+        const expected_time_in = new Date(time_in);
+        expected_time_in.setHours(9, 0, 0, 0);
+
+        let minutes_late = 0;
+        if (time_in) {
+            const diff = (new Date(time_in) - expected_time_in) / (1000 * 60); 
+            minutes_late = diff > 0 ? Math.floor(diff) : 0;
+        }
+
+        const attendance = new Attendance({
+            employee_id,
+            time_in,
+            time_out,
+            total_hours,
+            batch_id,
+            position,
+            minutes_late,
+        });
+
+        await attendance.save();
+        res.status(201).json({ success: true, data: attendance });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
     }
 };

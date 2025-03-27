@@ -1,6 +1,6 @@
 import { Attendance } from "../models/attendanceModel.js";
 import { EmployeeLeave } from "../models/employeeLeaveModel.js";
-
+import { Violation } from "../models/violationModel.js";
 
 export const predictEmployeeBehavior = async (req, res) => {
   try {
@@ -38,7 +38,8 @@ export const predictEmployeeBehavior = async (req, res) => {
         leaveTypesUsed, 
         holidaysWorked: holidayAttendance.length,
         totalAttendance,
-        prediction
+        prediction,
+        reason: `Prediction generated based on training data: ${prediction}`
       });
     }
 
@@ -69,13 +70,55 @@ export const predictIncentiveEligibility = async (req, res) => {
         totalAttendance,
         holidaysWorked,
         totalLeaves,
-        isEligible
+        isEligible,
+        eligibilityReason: isEligible
+          ? 'High attendance, significant holiday work, and low leave usage'
+          : 'Does not meet attendance, holiday work, or leave criteria'
       });
     }
 
     res.status(200).json({ success: true, incentivePredictions });
   } catch (err) {
     console.error("Error in incentive prediction:", err.message);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+export const predictEmployeeRetention = async (req, res) => {
+  try {
+    const employees = await Attendance.find({});
+    const retentionPredictions = [];
+
+    for (const employee of employees) {
+      const violations = await Violation.find({ userId: employee.employee_id });
+      const totalViolations = violations.length;
+      const totalMinutesLate = await Attendance.aggregate([
+        { $match: { employee_id: employee.employee_id } },
+        { $group: { _id: null, totalMinutesLate: { $sum: "$minutes_late" } } },
+      ]);
+
+      const minutesLate = totalMinutesLate[0]?.totalMinutesLate || 0;
+
+      let retentionRisk = "Low";
+      if (totalViolations > 3 || minutesLate > 300) {
+        retentionRisk = "High";
+      } else if (totalViolations > 1 || minutesLate > 100) {
+        retentionRisk = "Medium";
+      }
+
+      retentionPredictions.push({
+        employee_id: employee.employee_id,
+        name: `${employee.employee_firstname} ${employee.employee_lastname}`,
+        totalViolations,
+        minutesLate,
+        retentionRisk,
+        reason: `Retention risk is ${retentionRisk} due to ${totalViolations} violations and ${minutesLate} minutes late.`,
+      });
+    }
+
+    res.status(200).json({ success: true, retentionPredictions });
+  } catch (err) {
+    console.error("Error in retention prediction:", err.message);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };

@@ -6,6 +6,7 @@ const EmployeeBehaviorPredictor = () => {
   const [predictions, setPredictions] = useState([]);
   const [model, setModel] = useState(null);
   const [incentivePredictions, setIncentivePredictions] = useState([]);
+  const [retentionPredictions, setRetentionPredictions] = useState([]);
 
   const prepareTrainingData = (rawData) => {
     const features = rawData.map(employee => [
@@ -100,6 +101,23 @@ const EmployeeBehaviorPredictor = () => {
     fetchIncentivePredictions();
   }, []);
 
+  useEffect(() => {
+    const fetchRetentionPredictions = async () => {
+      try {
+        const response = await axiosInstance.get('/predictive/employee-retention');
+        const data = response.data;
+
+        if (data.success) {
+          setRetentionPredictions(data.retentionPredictions);
+        }
+      } catch (error) {
+        console.error('Error fetching retention predictions:', error);
+      }
+    };
+
+    fetchRetentionPredictions();
+  }, []);
+
   const predictBehavior = (employeeFeatures) => {
     if (!model) return 'Analyzing...';
 
@@ -131,13 +149,13 @@ const EmployeeBehaviorPredictor = () => {
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr>
-                <th className="p-2 border">Employee</th>
+                <th className="p-2 border">Employee Name</th>
                 <th className="p-2 border">Total Leaves</th>
-                <th className="p-2 border">Leave Types</th>
+                <th className="p-2 border">Leave Types Used</th>
                 <th className="p-2 border">Holidays Worked</th>
                 <th className="p-2 border">Total Attendance</th>
-                <th className="p-2 border">Backend Prediction</th>
-                <th className="p-2 border">ML Model Prediction</th>
+                <th className="p-2 border">Reason for Prediction</th>
+                <th className="p-2 border">Prediction</th>
               </tr>
             </thead>
             <tbody>
@@ -148,7 +166,9 @@ const EmployeeBehaviorPredictor = () => {
                   <td className="p-2 border">{sanitizeLeaveTypes(employee.leaveTypesUsed).join(', ') || 'N/A'}</td>
                   <td className="p-2 border text-center">{employee.holidaysWorked ?? 'N/A'}</td>
                   <td className="p-2 border text-center">{employee.totalAttendance ?? 'N/A'}</td>
-                  <td className="p-2 border">{employee.prediction || 'N/A'}</td>
+                  <td className="p-2 border">
+                    {employee.reason || 'No reason provided'}
+                  </td>
                   <td className="p-2 border">
                     {predictBehavior([
                       employee.totalLeaves ?? 0,
@@ -170,11 +190,12 @@ const EmployeeBehaviorPredictor = () => {
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr>
-                <th className="p-2 border">Employee</th>
+                <th className="p-2 border">Employee Name</th>
                 <th className="p-2 border">Total Attendance</th>
                 <th className="p-2 border">Holidays Worked</th>
                 <th className="p-2 border">Total Leaves</th>
                 <th className="p-2 border">Eligible for Incentive</th>
+                <th className="p-2 border">Reason for Eligibility</th>
               </tr>
             </thead>
             <tbody>
@@ -187,6 +208,37 @@ const EmployeeBehaviorPredictor = () => {
                   <td className="p-2 border text-center">
                     {employee.isEligible ? 'Yes' : 'No'}
                   </td>
+                  <td className="p-2 border">
+                    {employee.eligibilityReason || 'No reason provided'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="w-full max-w-6xl mx-auto p-6 bg-white shadow-md rounded-lg">
+        <h2 className="text-xl font-semibold mb-4">Employee Retention Predictions</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr>
+                <th className="p-2 border">Employee Name</th>
+                <th className="p-2 border">Total Violations</th>
+                <th className="p-2 border">Minutes Late</th>
+                <th className="p-2 border">Retention Risk</th>
+                <th className="p-2 border">Reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              {retentionPredictions.map((employee) => (
+                <tr key={employee.employee_id}>
+                  <td className="p-2 border">{employee.name || 'N/A'}</td>
+                  <td className="p-2 border text-center">{employee.totalViolations ?? 'N/A'}</td>
+                  <td className="p-2 border text-center">{employee.minutesLate ?? 'N/A'}</td>
+                  <td className="p-2 border text-center">{employee.retentionRisk}</td>
+                  <td className="p-2 border">{employee.reason}</td>
                 </tr>
               ))}
             </tbody>
