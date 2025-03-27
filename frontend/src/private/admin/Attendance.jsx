@@ -54,42 +54,72 @@ function Attendance() {
         >
             <h1 className="text-2xl font-semibold mb-4">Attendance Records</h1>
             <div className="overflow-x-auto">
-                <table className="table-auto w-full border">
-                    <thead>
-                        <tr>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Position</th>
-                            <th>Time In</th>
-                            <th>Time Out</th>
-                            <th>Total Hours</th>
-                            <th>Overtime Hours</th>
-                            <th>Entry Type</th>
-                            <th>Is Holiday</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentAttendance.map(record => (
-                            <motion.tr
-                                key={record._id}
-                                className="border-t"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.3 }}
-                            >
-                                <td>{record.employee_firstname}</td>
-                                <td>{record.employee_lastname}</td>
-                                <td>{record.position}</td>
-                                <td>{record.time_in ? new Date(record.time_in).toLocaleString() : '—'}</td>
-                                <td>{record.time_out ? new Date(record.time_out).toLocaleString() : '—'}</td>
-                                <td>{record.total_hours}</td>
-                                <td>{record.overtime_hours}</td>
-                                <td>{record.entry_type}</td>
-                                <td>{record.isHoliday ? 'Yes' : 'No'}</td>
-                            </motion.tr>
-                        ))}
-                    </tbody>
-                </table>
+                <div className="min-w-full inline-block align-middle">
+                    <div className="overflow-hidden">
+                        <table className="min-w-full table-auto text-sm">
+                            <thead className="bg-white text-gray-500 border-b">
+                                <tr>
+                                    <th className="p-2 md:p-3 text-left">First Name</th>
+                                    <th className="p-2 md:p-3 text-left">Last Name</th>
+                                    <th className="p-2 md:p-3 text-left">Position</th>
+                                    <th className="p-2 md:p-3 text-left">Time In</th>
+                                    <th className="p-2 md:p-3 text-left">Time Out</th>
+                                    <th className="p-2 md:p-3 text-left">Total Hours</th>
+                                    <th className="p-2 md:p-3 text-left">Overtime Hours</th>
+                                    <th className="p-2 md:p-3 text-left">Entry Type</th>
+                                    <th className="p-2 md:p-3 text-left">Is Holiday</th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white text-neutral-500 border-b">
+                                {currentAttendance.length > 0 ? (
+                                    currentAttendance.map((record, index) => (
+                                        <motion.tr
+                                            key={record._id}
+                                            className="text-center"
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.3, delay: index * 0.05 }}
+                                        >
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {record.employee_firstname}
+                                            </td>
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {record.employee_lastname}
+                                            </td>
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {record.position}
+                                            </td>
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {record.time_in ? new Date(record.time_in).toLocaleString() : '—'}
+                                            </td>
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {record.time_out ? new Date(record.time_out).toLocaleString() : '—'}
+                                            </td>
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {record.total_hours}
+                                            </td>
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {record.overtime_hours}
+                                            </td>
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {record.entry_type}
+                                            </td>
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {record.isHoliday ? 'Yes' : 'No'}
+                                            </td>
+                                        </motion.tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="9" className="text-center py-4">
+                                            No attendance records found.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <motion.div
@@ -122,37 +152,66 @@ function Attendance() {
             </motion.div>
 
             <h1 className="text-2xl font-semibold mt-8 mb-4">Leave Records</h1>
-            <table className="table-auto w-full border">
-                <thead>
-                    <tr className="bg-gray-100">
-                        <th className="px-4 py-2 border">Name</th>
-                        <th className="px-4 py-2 border">Department</th>
-                        <th className="px-4 py-2 border">Leave Type</th>
-                        <th className="px-4 py-2 border">Start Date</th>
-                        <th className="px-4 py-2 border">End Date</th>
-                        <th className="px-4 py-2 border">Reason</th>
-                        <th className="px-4 py-2 border">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {currentLeave.map((leave) => (
-                        <motion.tr
-                            key={leave.leave_id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            <td className="px-4 py-2 border">{leave.employee_firstname} {leave.employee_lastname}</td>
-                            <td className="px-4 py-2 border">{leave.employee_department}</td>
-                            <td className="px-4 py-2 border">{leave.leave_type}</td>
-                            <td className="px-4 py-2 border">{new Date(leave.start_date).toLocaleDateString()}</td>
-                            <td className="px-4 py-2 border">{new Date(leave.end_date).toLocaleDateString()}</td>
-                            <td className="px-4 py-2 border">{leave.reason}</td>
-                            <td className="px-4 py-2 border">{leave.status}</td>
-                        </motion.tr>
-                    ))}
-                </tbody>
-            </table>
+            <div className="overflow-x-auto">
+                <div className="min-w-full inline-block align-middle">
+                    <div className="overflow-hidden">
+                        <table className="min-w-full table-auto text-sm">
+                            <thead className="bg-white text-gray-500 border-b">
+                                <tr>
+                                    <th className="p-2 md:p-3 text-left">Name</th>
+                                    <th className="p-2 md:p-3 text-left">Department</th>
+                                    <th className="p-2 md:p-3 text-left">Leave Type</th>
+                                    <th className="p-2 md:p-3 text-left">Start Date</th>
+                                    <th className="p-2 md:p-3 text-left">End Date</th>
+                                    <th className="p-2 md:p-3 text-left">Reason</th>
+                                    <th className="p-2 md:p-3 text-left">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white text-neutral-500 border-b">
+                                {currentLeave.length > 0 ? (
+                                    currentLeave.map((leave, index) => (
+                                        <motion.tr
+                                            key={leave.leave_id}
+                                            className="text-center"
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.3, delay: index * 0.05 }}
+                                        >
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {leave.employee_firstname} {leave.employee_lastname}
+                                            </td>
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {leave.employee_department}
+                                            </td>
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {leave.leave_type}
+                                            </td>
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {new Date(leave.start_date).toLocaleDateString()}
+                                            </td>
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {new Date(leave.end_date).toLocaleDateString()}
+                                            </td>
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {leave.reason}
+                                            </td>
+                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
+                                                {leave.status}
+                                            </td>
+                                        </motion.tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="7" className="text-center py-4">
+                                            No leave records found.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
             <motion.div
                 initial={{ opacity: 0 }}
