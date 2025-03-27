@@ -178,7 +178,7 @@ function CompensationPlanning() {
                     <td className="p-3 border-b">{plan.positionName || "N/A"}</td>
                     <td className="p-3 border-b">₱{parseFloat(plan.hourlyRate).toFixed(2)}</td>
                     <td className="p-3 border-b">₱{parseFloat(plan.overTimeRate).toFixed(2)}</td>
-                    <td className="p-3 border-b">₱{parseFloat(plan.holidayRate).toFixed(2)}</td>
+                    <td className="p-3 border-b">{plan.holidayRate}</td>
                     <td className="p-3 border-b">
                     <motion.button 
                      whileHover={{ scale: 1.1 }} 
