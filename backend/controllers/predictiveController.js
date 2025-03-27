@@ -1,47 +1,95 @@
+import * as tf from '@tensorflow/tfjs';
 import { Attendance } from "../models/attendanceModel.js";
 import { EmployeeLeave } from "../models/employeeLeaveModel.js";
 import { Violation } from "../models/violationModel.js";
 
+const normalizeData = (data) => {
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  return data.map(value => (value - min) / (max - min));
+};
+
 export const predictEmployeeBehavior = async (req, res) => {
   try {
     const employees = await EmployeeLeave.find({});
-    const predictions = [];
+    const attendanceRecords = await Attendance.find({});
 
-    for (const employee of employees) {
-      const attendanceRecords = await Attendance.find({ employee_id: employee.employee_id });
+    const features = [];
+    const labels = [];
+    const employeeMetadata = [];
 
-      const holidayAttendance = attendanceRecords.filter(record => record.isHoliday === true);
-      const totalAttendance = attendanceRecords.length;
+    employees.forEach(employee => {
+      const employeeAttendance = attendanceRecords.filter(
+        record => record.employee_id.toString() === employee.employee_id.toString()
+      );
 
-      const leaveTypesUsed = employee.leaves.map(leave => leave.leave_type);
+      const totalLeaves = employee.leave_count || 0;
+      const leaveTypesUsed = employee.leaves?.map(leave => leave.leave_type) || [];
+      const holidaysWorked = employeeAttendance.filter(record => record.isHoliday).length || 0;
+      const totalAttendance = employeeAttendance.length || 0;
 
-      const frequentLeave = employee.leave_count > 5;
-      const diverseLeaveTypes = leaveTypesUsed.length > 3;
-      const oftenWorksHolidays = holidayAttendance.length > 3;
+      features.push([
+        totalLeaves,
+        leaveTypesUsed.length,
+        holidaysWorked,
+        totalAttendance
+      ]);
 
-      let prediction = '';
-
-      if (frequentLeave && !oftenWorksHolidays) {
-        prediction = 'High leave frequency, low holiday work — Potential absenteeism';
-      } else if (!frequentLeave && oftenWorksHolidays) {
-        prediction = 'Low leave usage, high holiday work — Highly engaged';
-      } else if (frequentLeave && oftenWorksHolidays) {
-        prediction = 'Balanced: Takes leaves but still works on holidays';
+      let label;
+      if (totalLeaves > 10 && holidaysWorked < 3) {
+        label = [1, 0, 0, 0];
+      } else if (holidaysWorked > 10 && totalLeaves < 5) {
+        label = [0, 1, 0, 0];
+      } else if (totalLeaves > 5 && holidaysWorked > 5) {
+        label = [0, 0, 1, 0];
       } else {
-        prediction = 'Stable behavior';
+        label = [0, 0, 0, 1];
       }
 
-      predictions.push({
+      labels.push(label);
+
+      employeeMetadata.push({
         employee_id: employee.employee_id,
         name: `${employee.employee_firstname} ${employee.employee_lastname}`,
-        totalLeaves: employee.leave_count,
-        leaveTypesUsed, 
-        holidaysWorked: holidayAttendance.length,
-        totalAttendance,
-        prediction,
-        reason: `Prediction generated based on training data: ${prediction}`
+        totalLeaves,
+        leaveTypesUsed,
+        holidaysWorked,
+        totalAttendance
       });
-    }
+    });
+
+    const normalizedFeatures = features.map(feature => normalizeData(feature));
+
+    const model = tf.sequential();
+    model.add(tf.layers.dense({ inputShape: [4], units: 16, activation: 'relu' }));
+    model.add(tf.layers.dense({ units: 4, activation: 'softmax' }));
+
+    model.compile({ optimizer: 'adam', loss: 'categoricalCrossentropy', metrics: ['accuracy'] });
+
+    const xs = tf.tensor2d(normalizedFeatures);
+    const ys = tf.tensor2d(labels);
+
+    await model.fit(xs, ys, { epochs: 100, batchSize: 32 });
+
+    const predictions = await Promise.all(employeeMetadata.map(async (employee, index) => {
+      const input = tf.tensor2d([normalizedFeatures[index]]);
+      const prediction = model.predict(input);
+      const predictionArray = (await prediction.array())[0];
+      input.dispose();
+      prediction.dispose();
+
+      const categories = ['Potential Absenteeism', 'Highly Engaged', 'Balanced', 'Stable Behavior'];
+      const predictedIndex = predictionArray.indexOf(Math.max(...predictionArray));
+
+      return {
+        ...employee,
+        prediction: categories[predictedIndex],
+        reason: `Confidence: ${(predictionArray[predictedIndex] * 100).toFixed(2)}%`
+      };
+    }));
+
+    xs.dispose();
+    ys.dispose();
 
     res.status(200).json({ success: true, predictions });
   } catch (err) {
@@ -53,29 +101,83 @@ export const predictEmployeeBehavior = async (req, res) => {
 export const predictIncentiveEligibility = async (req, res) => {
   try {
     const employees = await EmployeeLeave.find({});
-    const incentivePredictions = [];
+    const attendanceRecords = await Attendance.find({});
 
-    for (const employee of employees) {
-      const attendanceRecords = await Attendance.find({ employee_id: employee.employee_id });
+    const features = [];
+    const incentiveMetadata = [];
 
-      const totalAttendance = attendanceRecords.length;
-      const totalLeaves = employee.leave_count;
-      const holidaysWorked = attendanceRecords.filter(record => record.isHoliday === true).length;
+    employees.forEach(employee => {
+      const employeeAttendance = attendanceRecords.filter(
+        record => record.employee_id.toString() === employee.employee_id.toString()
+      );
 
-      const isEligible = totalAttendance > 200 && holidaysWorked > 10 && totalLeaves < 5;
+      const totalLeaves = employee.leave_count || 0;
+      const holidaysWorked = employeeAttendance.filter(record => record.isHoliday).length || 0;
+      const totalAttendance = employeeAttendance.length || 0;
+      const totalOvertimeHours = employeeAttendance.reduce((sum, record) => {
+        const [hours, minutes] = record.overtime_hours.split('h ').map(Number);
+        return sum + hours + minutes / 60;
+      }, 0);
 
-      incentivePredictions.push({
+      features.push([totalAttendance, holidaysWorked, totalLeaves, totalOvertimeHours]);
+
+      incentiveMetadata.push({
         employee_id: employee.employee_id,
         name: `${employee.employee_firstname} ${employee.employee_lastname}`,
         totalAttendance,
         holidaysWorked,
         totalLeaves,
+        totalOvertimeHours
+      });
+    });
+
+    const normalizedFeatures = features.map(feature => normalizeData(feature));
+
+    const model = tf.sequential();
+    model.add(tf.layers.dense({
+      inputShape: [4],
+      units: 10,
+      activation: 'relu'
+    }));
+    model.add(tf.layers.dense({
+      units: 1,
+      activation: 'sigmoid'
+    }));
+
+    model.compile({
+      optimizer: 'adam',
+      loss: 'binaryCrossentropy',
+      metrics: ['accuracy']
+    });
+
+    const xs = tf.tensor2d(normalizedFeatures);
+    const ys = tf.tensor1d(features.map(f => 
+      f[0] > 200 && f[1] > 10 && f[2] < 5 && f[3] > 50 ? 1 : 0
+    ));
+
+    await model.fit(xs, ys, {
+      epochs: 50,
+      batchSize: 32
+    });
+
+    const incentivePredictions = await Promise.all(incentiveMetadata.map(async (employee, index) => {
+      const input = tf.tensor2d([normalizedFeatures[index]]);
+      const prediction = model.predict(input);
+      const isEligible = (await prediction.array())[0][0] > 0.5;
+      input.dispose();
+      prediction.dispose();
+
+      return {
+        ...employee,
         isEligible,
         eligibilityReason: isEligible
-          ? 'High attendance, significant holiday work, and low leave usage'
-          : 'Does not meet attendance, holiday work, or leave criteria'
-      });
-    }
+          ? 'High attendance, significant holiday work, low leave usage, and high overtime hours'
+          : 'Does not meet attendance, holiday work, leave, or overtime criteria'
+      };
+    }));
+
+    xs.dispose();
+    ys.dispose();
 
     res.status(200).json({ success: true, incentivePredictions });
   } catch (err) {
@@ -84,41 +186,103 @@ export const predictIncentiveEligibility = async (req, res) => {
   }
 };
 
-export const predictEmployeeRetention = async (req, res) => {
+export const predictViolations = async (req, res) => {
   try {
-    const employees = await Attendance.find({});
-    const retentionPredictions = [];
+    const employees = await EmployeeLeave.find({});
+    const attendanceRecords = await Attendance.find({});
+    const existingViolations = await Violation.find({});
 
-    for (const employee of employees) {
-      const violations = await Violation.find({ userId: employee.employee_id });
-      const totalViolations = violations.length;
-      const totalMinutesLate = await Attendance.aggregate([
-        { $match: { employee_id: employee.employee_id } },
-        { $group: { _id: null, totalMinutesLate: { $sum: "$minutes_late" } } },
-      ]);
+    const features = [];
+    const violationMetadata = [];
 
-      const minutesLate = totalMinutesLate[0]?.totalMinutesLate || 0;
+    employees.forEach(employee => {
+      const employeeAttendance = attendanceRecords.filter(record => {
+        if (!record.employee_id) {
+          console.warn(`Attendance record missing employee_id: ${JSON.stringify(record)}`);
+          return false;
+        }
+        return record.employee_id.toString() === employee.employee_id.toString();
+      });
 
-      let retentionRisk = "Low";
-      if (totalViolations > 3 || minutesLate > 300) {
-        retentionRisk = "High";
-      } else if (totalViolations > 1 || minutesLate > 100) {
-        retentionRisk = "Medium";
-      }
+      const totalLeaves = employee.leave_count || 0;
+      const holidaysWorked = employeeAttendance.filter(record => record.isHoliday).length || 0;
+      const totalAttendance = employeeAttendance.length || 0;
+      const totalMinutesLate = employeeAttendance.reduce((sum, record) => sum + (record.minutes_late || 0), 0);
+      const previousViolations = existingViolations.filter(v => {
+        if (!v.employee_id) {
+          console.warn(`Violation record missing employee_id: ${JSON.stringify(v)}`);
+          return false;
+        }
+        return v.employee_id.toString() === employee.employee_id.toString();
+      }).length;
 
-      retentionPredictions.push({
+      features.push([totalLeaves, holidaysWorked, totalAttendance, totalMinutesLate, previousViolations]);
+
+      violationMetadata.push({
         employee_id: employee.employee_id,
         name: `${employee.employee_firstname} ${employee.employee_lastname}`,
-        totalViolations,
-        minutesLate,
-        retentionRisk,
-        reason: `Retention risk is ${retentionRisk} due to ${totalViolations} violations and ${minutesLate} minutes late.`,
+        totalLeaves,
+        holidaysWorked,
+        totalAttendance,
+        totalMinutesLate,
+        previousViolations
       });
-    }
+    });
 
-    res.status(200).json({ success: true, retentionPredictions });
+    const normalizedFeatures = features.map(feature => normalizeData(feature));
+
+    const model = tf.sequential();
+    model.add(tf.layers.dense({
+      inputShape: [5],
+      units: 16,
+      activation: 'relu'
+    }));
+    model.add(tf.layers.dense({
+      units: 3,
+      activation: 'softmax'
+    }));
+
+    model.compile({
+      optimizer: 'adam',
+      loss: 'categoricalCrossentropy',
+      metrics: ['accuracy']
+    });
+
+    const xs = tf.tensor2d(normalizedFeatures);
+    const ys = tf.tensor2d(features.map(f => {
+      if (f[4] > 3 || f[3] > 500) return [1, 0, 0]; 
+      if (f[0] > 10 || f[3] > 200) return [0, 1, 0]; 
+      return [0, 0, 1];
+    }));
+
+    await model.fit(xs, ys, {
+      epochs: 50,
+      batchSize: 32
+    });
+
+    const violationPredictions = await Promise.all(violationMetadata.map(async (employee, index) => {
+      const input = tf.tensor2d([normalizedFeatures[index]]);
+      const prediction = model.predict(input);
+      const predictionArray = (await prediction.array())[0];
+      input.dispose();
+      prediction.dispose();
+
+      const riskLevels = ['High Risk', 'Medium Risk', 'Low Risk'];
+      const predictedIndex = predictionArray.indexOf(Math.max(...predictionArray));
+
+      return {
+        ...employee,
+        riskLevel: riskLevels[predictedIndex],
+        riskConfidence: `${(predictionArray[predictedIndex] * 100).toFixed(2)}%`
+      };
+    }));
+
+    xs.dispose();
+    ys.dispose();
+
+    res.status(200).json({ success: true, violations: violationPredictions });
   } catch (err) {
-    console.error("Error in retention prediction:", err.message);
+    console.error("Error in violation prediction:", err.message);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
