@@ -3,7 +3,6 @@ import { generateServiceToken } from "../middlewares/gatewayTokenGenerator.js";
 import { Batch } from '../models/batchModel.js';
 import { EmployeeLeave } from "../models/employeeLeaveModel.js";
 import { Attendance } from "../models/attendanceModel.js";
-import { AttendanceHistory } from "../models/attendanceHistory.js";
 
 export const getLeavesFromHr1 = async (req, res) => {
     try {
@@ -86,62 +85,38 @@ async function generateBatchId() {
 export const getAttendanceFromHr1 = async (req, res) => {
     try {
         const serviceToken = generateServiceToken();
-
+  
         const response = await axios.get(
             `${process.env.API_GATEWAY_URL}/hr1/get-time-tracking`,
             {
                 headers: { Authorization: `Bearer ${serviceToken}` },
             }
         );
+    
         const attendanceData = response.data;
-
-        const usersResponse = await axios.get(
-            `${process.env.API_GATEWAY_URL}/admin/get-accounts`,
-            {
-                headers: { Authorization: `Bearer ${serviceToken}` },
-            }
-        );
-        const users = usersResponse.data.filter(user => user.role === "Employee");
-
         const batchId = await generateBatchId();
-
-        for (const user of users) {
-            const { _id: employee_id, firstName, lastName, position } = user;
-
-            const existingAttendance = await Attendance.findOne({ employee_id });
-            if (existingAttendance) {
-                console.log(`Attendance for employee ID ${employee_id} already exists. Skipping...`);
+  
+        for (const record of attendanceData) {
+            const { _id } = record;
+  
+            // Check for existing attendance with the same time tracking ID (_id)
+            const existingAttendanceById = await Attendance.findOne({ _id });
+            if (existingAttendanceById) {
+                console.log(`Attendance with ID ${_id} already exists. Skipping...`);
                 continue;
             }
-
+  
             const newAttendance = new Attendance({
-                employee_id,
-                employee_firstname: firstName || "N/A",
-                employee_lastname: lastName || "N/A",
-                position: position || "N/A",
-                time_in: null,
-                time_out: null,
-                total_hours: "N/A",
-                overtime_hours: "N/A",
-                entry_type: "N/A",
+                ...record,
                 batch_id: batchId,
-                isFinalized: false,
-                isHoliday: false,
             });
-
+  
             await newAttendance.save();
         }
-
-        const finalizedRecords = await Attendance.find({ isFinalized: true });
-        for (const record of finalizedRecords) {
-            const historyRecord = new AttendanceHistory(record.toObject());
-            await historyRecord.save();
-            await Attendance.deleteOne({ _id: record._id });
-        }
-
-        res.status(200).json({ success: true, message: "Attendance processed successfully." });
+  
+        res.status(200).json({ success: true, attendanceData });
     } catch (error) {
-        console.error("Error fetching and saving attendance:", error.message);
+        console.error("Error fetching and saving data:", error.message);
         res.status(500).json({ message: "Internal server error" });
     }
 };
