@@ -17,7 +17,7 @@ export const getLeavesFromHr1 = async (req, res) => {
         const leaveRecords = response.data.data; 
   
         for (const leave of leaveRecords) {
-            const { employee_id, leave_id, leave_type, employee_firstname, employee_lastname } = leave;
+            const { employee_id, leave_id, leave_type, employee_firstname, employee_lastname, start_date, end_date } = leave;
   
             const existingLeave = await EmployeeLeave.findOne({ employee_id, "leaves.leave_id": leave_id });
   
@@ -47,7 +47,7 @@ export const getLeavesFromHr1 = async (req, res) => {
             }
             behavior.leave_types[leave_type] += 1;
   
-            behavior.leaves.push({ leave_id, leave_type });
+            behavior.leaves.push({ leave_id, leave_type, start_date, end_date }); // Save start_date and end_date
   
             await behavior.save();
         }
@@ -131,7 +131,7 @@ export const getLeavesAndAttendance = async (req, res) => {
         const leaveRecords = leavesResponse.data.data;
 
         for (const leave of leaveRecords) {
-            const { employee_id, leave_id, leave_type, employee_firstname, employee_lastname } = leave;
+            const { employee_id, leave_id, leave_type, employee_firstname, employee_lastname, start_date, end_date } = leave;
 
             const existingLeave = await EmployeeLeave.findOne({ employee_id, "leaves.leave_id": leave_id });
 
@@ -161,7 +161,7 @@ export const getLeavesAndAttendance = async (req, res) => {
             }
             behavior.leave_types[leave_type] += 1;
 
-            behavior.leaves.push({ leave_id, leave_type });
+            behavior.leaves.push({ leave_id, leave_type, start_date, end_date }); // Save start_date and end_date
 
             await behavior.save();
         }
@@ -211,8 +211,21 @@ export const getBehavioralAnalytics = async (req, res) => {
 
         const analytics = leaveData.map((leaveRecord) => {
             const employeeAttendance = attendanceData.filter(
-                (attendance) => attendance.employee_id === leaveRecord.employee_id
+                (attendance) => attendance.employee_id.toString() === leaveRecord.employee_id.toString()
             );
+
+            const totalTimeIns = employeeAttendance.filter(record => record.time_in).length;
+
+            const leaveDurations = leaveRecord.leaves.map(leave => {
+                const startDate = new Date(leave.start_date);
+                const endDate = new Date(leave.end_date);
+                const durationInDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1; // Include both start and end dates
+                return {
+                    leave_id: leave.leave_id,
+                    leave_type: leave.leave_type,
+                    durationInDays,
+                };
+            });
 
             return {
                 employee_id: leaveRecord.employee_id,
@@ -220,9 +233,11 @@ export const getBehavioralAnalytics = async (req, res) => {
                 leaveAnalytics: {
                     totalLeaves: leaveRecord.leave_count,
                     leaveTypes: leaveRecord.leave_types,
+                    leaveDurations,
                 },
                 attendanceAnalytics: {
                     totalAttendanceRecords: employeeAttendance.length,
+                    totalTimeIns,
                 },
             };
         });

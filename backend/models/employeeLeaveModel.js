@@ -14,6 +14,8 @@ const employeeLeaveSchema = new mongoose.Schema({
         {
             leave_id: { type: String, required: true }, 
             leave_type: { type: String, required: true },
+            start_date: { type: Date, required: true }, // Added start_date
+            end_date: { type: Date, required: true },   // Added end_date
             isAlreadyAdded: { type: Boolean, default: false }
         }
     ],

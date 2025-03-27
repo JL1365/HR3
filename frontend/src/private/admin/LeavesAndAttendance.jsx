@@ -51,7 +51,7 @@ function LeavesAndAttendance() {
                                 <tr>
                                     <th className="p-2 md:p-3 text-left">Employee Name</th>
                                     <th className="p-2 md:p-3 text-left">Total Leaves</th>
-                                    <th className="p-2 md:p-3 text-left">Leave Types</th>
+                                    <th className="p-2 md:p-3 text-left">Leave Durations</th>
                                     <th className="p-2 md:p-3 text-left">Total Attendance Records</th>
                                 </tr>
                             </thead>
@@ -72,13 +72,11 @@ function LeavesAndAttendance() {
                                                 {employee.leaveAnalytics.totalLeaves}
                                             </td>
                                             <td className="p-2 md:p-3 text-left text-xs md:text-sm">
-                                                <ul>
-                                                    {Object.entries(employee.leaveAnalytics.leaveTypes).map(([type, count]) => (
-                                                        <li key={type}>
-                                                            {type}: {count}
-                                                        </li>
-                                                    ))}
-                                                </ul>
+                                                {employee.leaveAnalytics.leaveDurations.map((leave, i) => (
+                                                    <div key={i}>
+                                                        {leave.leave_type}: {leave.durationInDays} days
+                                                    </div>
+                                                ))}
                                             </td>
                                             <td className="p-2 md:p-3 text-left text-xs md:text-sm">
                                                 {employee.attendanceAnalytics.totalAttendanceRecords}
