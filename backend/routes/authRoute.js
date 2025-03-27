@@ -1,5 +1,5 @@
 import express from 'express';
-import { checkAuth, getAllUsers, adminLogin, employeeLogin, logoutAccount, getAllPositions, getAllLoginActivities, getPageVisits, getAllPageVisits, logPageVisit } from '../controllers/authController.js';
+import { checkAuth, getAllUsers, adminLogin, employeeLogin, logoutAccount, getAllPositions, getAllLoginActivities, getPageVisits, getAllPageVisits, logPageVisit, getMyProfileInfo } from '../controllers/authController.js';
 import { verifyToken } from '../middlewares/verifyToken.js';
 
 const authRoute = express();
@@ -14,5 +14,6 @@ authRoute.get("/get-login-activities", getAllLoginActivities);
 authRoute.post("/log-page-visit",verifyToken ,logPageVisit);
 authRoute.get("/get-page-visits", getPageVisits);
 authRoute.get("/get-all-page-visits", getAllPageVisits);
+authRoute.get("/get-my-profile-info",verifyToken, getMyProfileInfo);
 
 export default authRoute;

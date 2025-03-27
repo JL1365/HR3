@@ -360,3 +360,33 @@ export const getAllPageVisits = async (req, res) => {
         return res.status(500).json({ success: false, message: "Server error" });
     }
 };
+export const getMyProfileInfo = async (req, res) => {
+    try {
+        console.log("Received User in Backend:", req.user);
+        
+        if (!req.user) {
+            console.log("No user in request");
+            return res.status(401).json({ message: "User not authenticated!" });
+        }
+
+        const serviceToken = generateServiceToken();
+        const response = await axios.get(
+            `${process.env.API_GATEWAY_URL}/admin/get-accounts`,
+            { headers: { Authorization: `Bearer ${serviceToken}` } }
+        );
+
+        console.log("Total Users Fetched:", response.data.length);
+        const user = response.data.find((u) => String(u._id) === String(req.user.userId));
+
+        console.log("Found User:", user);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found!" });
+        }
+
+        return res.status(200).json({ user });
+    } catch (error) {
+        console.error("Detailed Error Fetching Profile:", error);
+        return res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+};

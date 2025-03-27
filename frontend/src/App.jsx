@@ -37,6 +37,7 @@ import MySalaryStructure from "./private/employee/MySalaryStructure";
 import Grievance from "./private/admin/Grievance";
 import Audit from "./private/admin/Audit";
 import EmployeeBehaviorPredictor from "./private/admin/PredictiveAnalytics";
+import Profile from "./components/Profile";
 // import EmployeeViolation from "./private/admin/EmployeeViolation";
 
 function App() {
@@ -49,6 +50,7 @@ function App() {
 
       <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
         <Route element={<PrivateLayout />}>
+        <Route path="/profile" element={<Profile />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/compensation-planning" element={<CompensationPlanning />} />
           <Route path="/compensation" element={<CompensationBenefit />} />
@@ -77,6 +79,7 @@ function App() {
 
       <Route element={<ProtectedRoute allowedRoles={["Employee"]} />}>
         <Route element={<PrivateLayout />}>
+        <Route path="/my-profile" element={<Profile />} />
           <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
           <Route path="/my-salary-structure" element={<MySalaryStructure />} />
           <Route path="/my-violations" element={<MyViolations />} />

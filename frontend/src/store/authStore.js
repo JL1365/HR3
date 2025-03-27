@@ -88,5 +88,18 @@ export const useAuthStore  = create ((set) => ({
         } catch (error) {
             console.error("Error fetching login activities:", error);
         }
+    },
+
+    getMyProfileInfo: async () => {
+        try {
+            const response = await axiosInstance.get("/auth/get-my-profile-info");
+            console.log("Profile Info Response:", response.data.user); // Debug log
+            set({ user: response.data.user });
+        } catch (error) {
+            console.error("Detailed Error Fetching Profile:", error);
+            console.error("Error Response:", error.response?.data);
+            // Optionally set user to null or handle the error state
+            set({ user: null });
+        }
     }
 }));
