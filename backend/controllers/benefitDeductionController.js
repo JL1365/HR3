@@ -3,6 +3,7 @@ import { generateServiceToken } from "../middlewares/gatewayTokenGenerator.js";
 import { BenefitRequest } from "../models/benefitRequestModel.js";
 import { BenefitDeduction } from "../models/benefitDeductionModel.js";
 import { BenefitDeductionHistory } from "../models/benefitDeductionHistory.js";
+import { Notification } from "../models/notificationModel.js";
 
 export const addUserDeduction = async (req, res) => {
   try {
@@ -34,7 +35,8 @@ export const addUserDeduction = async (req, res) => {
       _id: benefitRequestId,
       userId,
       status: "Approved", 
-    });
+    }).populate("compensationBenefitId", "benefitName");
+
     if (!benefitRequest) {
       return res.status(400).json({
         message: "You cannot add a deduction because the benefit request is not approved.",
@@ -66,7 +68,13 @@ export const addUserDeduction = async (req, res) => {
       await deductionHistory.save();
     }
 
-    res.status(201).json({message: "Deduction added successfully.",deduction: newDeduction,deductionHistory});
+    const notificationMessage = `A deduction of ${numericAmount} has been applied for the benefit: ${benefitRequest.compensationBenefitId.benefitName}.`;
+    await Notification.create({
+      userId,
+      message: notificationMessage,
+    });
+
+    res.status(201).json({message: "Deduction added successfully and notification sent.",deduction: newDeduction,deductionHistory});
   } catch (error) {
     console.error(`Error in adding user deduction: ${error.message}`);
     res.status(500).json({ message: "Internal server error" });

@@ -136,7 +136,6 @@ function SalaryComputation() {
       await finalizePayroll(batchId);
       toast.success("Payroll finalized successfully.");
       
-      // Reload data after finalization
       await fetchGrossSalary();
       await fetchNetSalary();
     } catch (error) {
@@ -169,7 +168,7 @@ const renderTable = (data, type) => {
                 <th>Benefits Deductions</th>
                 <th>Incentive Amount</th>
                 <th>Paid Leave Amount</th>
-                <th>Deductible Amount</th>
+                <th>Violation Deduction</th>
                 <th>Net Salary</th>
               </>
             )}
@@ -434,7 +433,7 @@ const renderTable = (data, type) => {
           whileTap={{ scale: 0.95 }}
           onClick={handleFinalizePayroll}
           className="btn btn-primary mt-4"
-          disabled={isFinalizing || !batchId}
+          disabled={isFinalizing || !batchId || batchId === "N/A"}
         >
           {isFinalizing ? "Finalizing..." : "Finalize Payroll"}
         </motion.button>
@@ -650,7 +649,7 @@ const renderTable = (data, type) => {
                           <p>No benefit deductions found.</p>
                         )}
 
-                        <h4 className="font-semibold mb-2 mt-4">Deductible Amounts</h4>
+                        <h4 className="font-semibold mb-2 mt-4">Violation Deduction Amount</h4>
                         {openModalData.deductibleDetails?.length > 0 ? (
                           <table className="table table-zebra w-full">
                             <thead>
@@ -766,7 +765,7 @@ const renderTable = (data, type) => {
                               <td>-{openModalData.benefitsDeductionsAmount}</td>
                             </tr>
                             <tr>
-                              <td>Deductible Amount</td>
+                              <td>Violation Deduction Amount</td>
                               <td>-{openModalData.deductibleAmount}</td>
                             </tr>
                             <tr>

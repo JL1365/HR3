@@ -35,37 +35,83 @@ function NetSalary() {
             <h1 className="text-3xl font-bold text-gray-800 mb-6">Net Salary Overview</h1>
 
             {userPayroll ? (
-                <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={openModal}
-                    className="bg-white shadow-lg rounded-2xl p-6 cursor-pointer transition-all duration-300 border border-gray-100 hover:shadow-xl"
-                >
-                    <div className="mb-4">
-                        <p className="text-sm text-gray-500">Employee ID</p>
-                        <p className="text-lg font-medium text-gray-800">{userPayroll.employee_id}</p>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <p className="text-sm text-gray-500">First Name</p>
-                            <p className="font-semibold">{userPayroll.employee_firstname}</p>
+                userPayroll.dailyWorkHours?.length > 0 ? (
+                    <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={openModal}
+                        className="bg-white shadow-lg rounded-2xl p-6 cursor-pointer transition-all duration-300 border border-gray-100 hover:shadow-xl"
+                    >
+                        <div className="mb-4">
+                            <p className="text-sm text-gray-500">Employee ID</p>
+                            <p className="text-lg font-medium text-gray-800">{userPayroll.employee_id}</p>
                         </div>
-                        <div>
-                            <p className="text-sm text-gray-500">Last Name</p>
-                            <p className="font-semibold">{userPayroll.employee_lastname}</p>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <p className="text-sm text-gray-500">First Name</p>
+                                <p className="font-semibold">{userPayroll.employee_firstname}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Last Name</p>
+                                <p className="font-semibold">{userPayroll.employee_lastname}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Position</p>
+                                <p className="font-semibold">{userPayroll.position}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Net Salary</p>
+                                <p className="text-green-600 font-bold text-lg">
+                                    ₱{userPayroll.netSalary ? userPayroll.netSalary.toLocaleString() : 0}
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-sm text-gray-500">Position</p>
-                            <p className="font-semibold">{userPayroll.position}</p>
+                    </motion.div>
+                ) : (
+                    <motion.div
+                        className="bg-white shadow-lg rounded-2xl p-6 transition-all duration-300 border border-gray-100"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        <h2 className="text-xl font-semibold text-gray-800 mb-4">No Attendance Data</h2>
+                        <p className="text-gray-600 mb-4">
+                            While there is no attendance data available, the following amounts have been calculated:
+                        </p>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <p className="text-sm text-gray-500">Paid Leave Amount</p>
+                                <p className="text-green-600 font-bold">
+                                    ₱{userPayroll?.paidLeaveAmount ? userPayroll.paidLeaveAmount.toLocaleString() : 0}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Incentive Amount</p>
+                                <p className="text-green-600 font-bold">
+                                    ₱{userPayroll?.incentiveAmount ? userPayroll.incentiveAmount.toLocaleString() : 0}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Deductions Amount</p>
+                                <p className="text-red-600 font-bold">
+                                    ₱{userPayroll?.benefitsDeductionsAmount ? userPayroll.benefitsDeductionsAmount.toLocaleString() : 0}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Deductible Amount</p>
+                                <p className="text-red-600 font-bold">
+                                    ₱{userPayroll?.deductibleAmount ? userPayroll.deductibleAmount.toLocaleString() : 0}
+                                </p>
+                            </div>
                         </div>
-                        <div>
+                        <div className="mt-4">
                             <p className="text-sm text-gray-500">Net Salary</p>
                             <p className="text-green-600 font-bold text-lg">
-                                ₱{userPayroll.netSalary ? userPayroll.netSalary.toLocaleString() : 0}
+                                ₱{userPayroll?.netSalary ? userPayroll.netSalary.toLocaleString() : 0}
                             </p>
                         </div>
-                    </div>
-                </motion.div>
+                    </motion.div>
+                )
             ) : (
                 <p className="text-gray-600">No data available.</p>
             )}

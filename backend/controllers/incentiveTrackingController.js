@@ -1,4 +1,5 @@
 import { generateServiceToken } from "../middlewares/gatewayTokenGenerator.js";
+import { Notification } from "../models/notificationModel.js";
 
 import { Incentive } from "../models/incentiveModel.js";
 import { IncentiveTracking } from "../models/incentiveTrackingModel.js";
@@ -43,7 +44,18 @@ export const createIncentiveTracking = async (req, res) => {
         });
 
         await newTracking.save();
-        return res.status(201).json({ success: true, message: "Incentive recorded successfully!", data: newTracking });
+
+        const notificationMessage = `You have been assigned an incentive: ${incentiveExists.incentiveName} with an amount of ${amount}.`;
+        await Notification.create({
+            userId,
+            message: notificationMessage,
+        });
+
+        return res.status(201).json({
+            success: true,
+            message: "Incentive recorded successfully and notification sent!",
+            data: newTracking,
+        });
     } catch (error) {
         console.error("Error creating incentive tracking:", error);
         return res.status(500).json({ success: false, message: "Server error", error: error.message });

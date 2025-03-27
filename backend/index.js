@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import path from 'path';
+import http from 'http';
+import {Server} from 'socket.io'; 
 
 import { connectDB } from './configs/db.js';
 
@@ -26,6 +28,7 @@ import adminDashboardRoute from './routes/adminDashboardRoute.js';
 import employeeDasboardRoute from './routes/employeeDashboardRoute.js';
 import predictiveRoute from './routes/predictiveRoute.js';
 import auditRoute from './routes/auditRoute.js';
+import notificationRoute from './routes/notificationRoute.js';
 
 dotenv.config();
 connectDB();
@@ -34,6 +37,18 @@ const __dirname = path.resolve();
 
 const app = express();
 const PORT = process.env.PORT;
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+    cors: {
+        origin: process.env.NODE_ENV === "production" 
+            ? "https://hr3-jjm-manufacturing-1p4f.onrender.com" 
+            : "http://localhost:5173",
+        methods: ["GET", "POST"],
+        credentials: true,
+    }
+});
 
 app.use(express.json());
 app.use(cookieParser());
@@ -72,13 +87,21 @@ app.use("/api/predictive",predictiveRoute);
 
 app.use("/api/audit",auditRoute);
 
+app.use("/api/notification",notificationRoute);
+
 app.use(express.static(path.join(__dirname, "/frontend/dist")));
 
 app.get("*", (req, res) => {
 	res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
 });
 
+io.on('connection', (socket) => {
+    
+    socket.on('disconnect', () => {
+    });
+});
 
+export { io };
 app.listen(PORT,() => {
     console.log(`Server is running at PORT: ${PORT}`);
 });

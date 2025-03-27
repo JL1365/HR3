@@ -3,6 +3,7 @@ import { BenefitRequest } from "../models/benefitRequestModel.js";
 import upload from '../configs/multerConfig.js';
 import { CompensationBenefit } from "../models/compensationBenefitModel.js";
 import axios from 'axios'
+import { Notification } from "../models/notificationModel.js";
 
 export const applyBenefit = async (req, res) => {
   try {
@@ -23,8 +24,8 @@ export const applyBenefit = async (req, res) => {
     );
 
     const users = response.data;
-    const employeeExists = users.find(user => String(user._id) === userId);
-    if (!employeeExists) {
+    const employee = users.find(user => String(user._id) === userId);
+    if (!employee) {
       return res.status(404).json({ message: "User not found in the system." });
     }
 
@@ -75,6 +76,13 @@ export const applyBenefit = async (req, res) => {
     });
 
     await newRequest.save();
+
+    const admins = users.filter(user => user.role === "Admin");
+    const notifications = admins.map(admin => ({
+      userId: admin._id,
+      message: `${employee.firstName} ${employee.lastName} applied for ${benefit.benefitName}`,
+    }));
+    await Notification.insertMany(notifications);
 
     res.status(201).json({
       message: "Benefit request submitted successfully",

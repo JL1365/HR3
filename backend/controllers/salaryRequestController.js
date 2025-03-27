@@ -8,6 +8,7 @@ import { EmployeeCompensation } from "../models/employeeCompensationModel.js";
 import { CompensationBenefit } from "../models/compensationBenefitModel.js";
 import {PayrollHistory} from '../models/payrollHistoryModel.js'
 import {Batch} from '../models/batchModel.js'
+import { Notification } from "../models/notificationModel.js";
 
 const calculateGrossPayroll = async () => {
     const serviceToken = generateServiceToken();
@@ -371,19 +372,23 @@ export const addEmployeeCompensation = async (req, res) => {
             isAlreadyAdded: false
         };
 
+        let notificationMessage = `You have been assigned a compensation: ${benefitDetails.benefitName}.`;
+
         if (benefitType === "Paid Benefit") {
             if (!daysLeave || daysLeave <= 0) {
                 return res.status(400).json({ message: "Days of leave must be greater than 0." });
             }
             compensationData.daysLeave = daysLeave;
             compensationData.totalAmount = daysLeave * benefitDetails.benefitAmount;
-        } else if (benefitType === "Deduction") {
+            notificationMessage += ` Days of leave: ${daysLeave}.`;
+        } else if (benefitType === "Violation Deduction") {
             if (!deductionAmount || deductionAmount <= 0) {
                 return res.status(400).json({ message: "Deduction amount must be greater than 0." });
             }
             compensationData.deductionAmount = deductionAmount;
             compensationData.totalAmount = 0;
             delete compensationData.daysLeave;
+            notificationMessage += ` Deduction amount: ${deductionAmount}.`;
         } else {
             return res.status(400).json({ message: "Invalid benefit type." });
         }
@@ -391,7 +396,12 @@ export const addEmployeeCompensation = async (req, res) => {
         const newCompensation = new EmployeeCompensation(compensationData);
         await newCompensation.save();
 
-        res.status(201).json({ message: "Employee compensation added successfully.", data: newCompensation });
+        await Notification.create({
+            userId: employeeId,
+            message: notificationMessage,
+        });
+
+        res.status(201).json({ message: "Employee compensation added successfully and notification sent.", data: newCompensation });
     } catch (error) {
         res.status(500).json({ message: "Server error.", error: error.message });
     }
@@ -562,6 +572,20 @@ export const finalizePayroll = async (req, res) => {
         });
 
         await newBatch.save();
+
+        const response = await axios.get(
+            `${process.env.API_GATEWAY_URL}/admin/get-accounts`,
+            { headers: { Authorization: `Bearer ${serviceToken}` } }
+        );
+
+        const users = response.data;
+        const employees = users.filter(user => user.role === "Employee");
+
+        const notifications = employees.map(employee => ({
+            userId: employee._id,
+            message: `Payroll for batch ${batch_id} has been finalized. Please check your payroll details.`,
+        }));
+        await Notification.insertMany(notifications);
 
         res.status(200).json({
             success: true,

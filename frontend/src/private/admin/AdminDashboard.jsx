@@ -87,7 +87,7 @@ function AdminDashboard() {
   const BAR_COLORS = ["#3b82f6", "#10b981", "#8b5cf6"];
 
   return (
-    <div className="bg-gray-50 min-h-screen p-8">
+    <div className="bg-gray-50 min-h-screen p-8 relative z-0">
       <div className="container mx-auto">
 
         {error && (

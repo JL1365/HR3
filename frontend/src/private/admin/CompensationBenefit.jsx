@@ -354,7 +354,7 @@ function CompensationBenefit() {
                   <option value="">Select Benefit Type</option>
                   <option value="Paid Benefit">Paid Benefit</option>
                   <option value="Deductible Benefit">Deductible Benefit</option>
-                  <option value="Deduction">Deduction</option>
+                  <option value="Violation Deduction">Violation Deduction</option>
                 </select>
               </div>
 
@@ -458,7 +458,7 @@ function CompensationBenefit() {
                   <option value="">Select Benefit Type</option>
                   <option value="Paid Benefit">Paid Benefit</option>
                   <option value="Deductible Benefit">Deductible Benefit</option>
-                  <option value="Deduction">Deduction</option>
+                  <option value="Violation Deduction">Violation Deduction</option>
                 </select>
               </div>
 
@@ -528,7 +528,7 @@ function CompensationBenefit() {
 
       {renderTable(filterPlansByType("Paid Benefit"), "Paid Benefits")}
       {renderTable(filterPlansByType("Deductible Benefit"), "Deductible Benefits")}
-      {renderTable(filterPlansByType("Deduction"), "Deductions")}
+      {renderTable(filterPlansByType("Violation Deduction"), "Violation Deductions")}
 
       <motion.div 
         initial={{ opacity: 0 }}
