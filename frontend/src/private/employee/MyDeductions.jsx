@@ -3,8 +3,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useBenefitDeductiontStore } from "../../store/benefitDeductionStore";
+import usePageTracking from "../../hooks/usePageTracking";
 
 function MyDeductions() {
+  usePageTracking("My Deductions");
   const {
     myDeductions = [],
     fetchMyDeductions,
@@ -14,7 +16,7 @@ function MyDeductions() {
   const [deductionsPerPage] = useState(10);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBenefit, setSelectedBenefit] = useState(null);
-
+  
   useEffect(() => {
     fetchMyDeductions();
   }, []);

@@ -3,8 +3,10 @@ import { useViolationStore } from '../../store/violationStore';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
+import usePageTracking from '../../hooks/usePageTracking';
 
 function MyViolations() {
+  usePageTracking("My Violations");
   const { myViolations, getMyViolations, isLoading, error } = useViolationStore();
   const [currentPage, setCurrentPage] = useState(1);
   const violationsPerPage = 10;

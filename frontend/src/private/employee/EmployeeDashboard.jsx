@@ -16,8 +16,10 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import axios from 'axios';
+import usePageTracking from '../../hooks/usePageTracking';
 
 function EmployeeDashboard() {
+  usePageTracking('Employee Dashboard');
   const {
     userCount,
     appliedRequestCount,

@@ -3,8 +3,10 @@ import { useIncentiveTrackingStore } from "../../store/incentiveTrackingStore";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { motion } from "framer-motion";
+import usePageTracking from "../../hooks/usePageTracking";
 
 function IncentiveHistory() {
+  usePageTracking("Incentive History");
   const { myIncentives, fetchMyIncentives, loading } = useIncentiveTrackingStore();
 
   useEffect(() => {

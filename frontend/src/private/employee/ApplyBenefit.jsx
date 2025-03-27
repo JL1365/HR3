@@ -4,8 +4,10 @@ import { useCompensationBenefitStore } from '../../store/compensationBenefitStor
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { motion } from 'framer-motion';
+import usePageTracking from '../../hooks/usePageTracking';
 
 function ApplyBenefit() {
+    usePageTracking('Apply Benefit');
     const { myApplyRequests, fetchMyApplyRequests, applyBenefit, error } = useBenefitRequestStore();
     const { benefits, fetchBenefits, loading } = useCompensationBenefitStore();
 
