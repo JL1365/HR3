@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const attendanceSchema = new mongoose.Schema({
+const attendanceHistorySchema = new mongoose.Schema({
   employee_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Employee',
@@ -34,16 +34,15 @@ const attendanceSchema = new mongoose.Schema({
   },
   entry_type: {
     type: String,
-    enum: ['Manual Entry', 'System Entry','N/A'],
-
+    enum: ['Manual Entry', 'System Entry', 'N/A'],
   },
   batch_id: { 
     type: String,
     required: true,
   },
   isFinalized: { type: Boolean, default: false },
-  isHoliday:{type:Boolean ,default:false},
+  isHoliday: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 }, { timestamps: true });
 
-export const Attendance = mongoose.model('Attendance', attendanceSchema);
+export const AttendanceHistory = mongoose.model('AttendanceHistory', attendanceHistorySchema);

@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useAttendanceStore } from '../../store/attendanceStore';
-
 import { motion } from 'framer-motion';
 
 function Attendance() {
-    const { attendanceData, leaveData, fetchAttendanceData, fetchLeaveData } = useAttendanceStore();
+    const { attendanceData = [], leaveData = [], fetchAttendanceData, fetchLeaveData } = useAttendanceStore(); // Default to empty arrays
     const [currentAttendancePage, setCurrentAttendancePage] = useState(1);
     const [currentLeavePage, setCurrentLeavePage] = useState(1);
     const recordsPerPage = 10;
@@ -70,7 +69,7 @@ function Attendance() {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentAttendance && currentAttendance.map(record => (
+                        {currentAttendance.map(record => (
                             <motion.tr
                                 key={record._id}
                                 className="border-t"
@@ -136,7 +135,7 @@ function Attendance() {
                     </tr>
                 </thead>
                 <tbody>
-                    {currentLeave && currentLeave.map((leave) => (
+                    {currentLeave.map((leave) => (
                         <motion.tr
                             key={leave.leave_id}
                             initial={{ opacity: 0, y: 20 }}
