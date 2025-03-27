@@ -17,15 +17,17 @@ export const getAllUsers = async (req, res) => {
             }
         );
 
-        const users = response.data; 
+        const users = response.data;
 
-        if (!users || users.length === 0) {
-            return res.status(404).json({ message: "No users found!" });
+        const employees = users.filter(user => user.role === "Employee");
+
+        if (!employees || employees.length === 0) {
+            return res.status(404).json({ message: "No employees found!" });
         }
 
-        return res.status(200).json({ message: "Fetching users successfully!", users });
+        return res.status(200).json({ message: "Fetching employees successfully!", users: employees });
     } catch (error) {
-        console.error(`Error in getting users: ${error.message}`);
+        console.error(`Error in getting employees: ${error.message}`);
         return res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };
