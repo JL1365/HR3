@@ -79,6 +79,11 @@ const AdminSidebar = forwardRef(({ isSidebarOpen }, ref) => {
        href: "/behavioral-analytics",
     },
     {
+      name: "Predictive Analytics",
+      icon: TrendingUp,
+       href: "/predictive-analytics",
+    },
+    {
       name: "Audit",
       icon: ClipboardList,
        href: "/audit",

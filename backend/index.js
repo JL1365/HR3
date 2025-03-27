@@ -24,6 +24,7 @@ import salaryRequestRoute from './routes/salaryRequestRoute.js';
 import integrationRoute from './routes/integrationRoute.js';
 import adminDashboardRoute from './routes/adminDashboardRoute.js';
 import employeeDasboardRoute from './routes/employeeDashboardRoute.js';
+import predictiveRoute from './routes/predictiveRoute.js';
 import auditRoute from './routes/auditRoute.js';
 
 dotenv.config();
@@ -66,6 +67,8 @@ app.use("/api/integration",integrationRoute);
 
 app.use("/api/adminDashboard",adminDashboardRoute);
 app.use("/api/employeeDashboard",employeeDasboardRoute);
+
+app.use("/api/predictive",predictiveRoute);
 
 app.use("/api/audit",auditRoute);
 
