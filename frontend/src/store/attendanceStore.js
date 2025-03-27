@@ -4,6 +4,7 @@ import { axiosInstance } from "../lib/axios.js";
 export const useAttendanceStore = create((set) => ({
   attendanceData: [],
   leaveData: [],
+  behavioralAnalytics: null,
   error: null,
 
   fetchAttendanceData: async () => {
@@ -23,6 +24,16 @@ export const useAttendanceStore = create((set) => ({
     } catch (error) {
       console.error('Error fetching leave data:', error);
       set({ error: 'Error fetching leave data' });
+    }
+  },
+
+  fetchBehavioralAnalytics: async () => {
+    try {
+      const response = await axiosInstance.get('/attendance/get-behavioral-analytics');
+      set({ behavioralAnalytics: response.data.analytics });
+    } catch (error) {
+      console.error('Error fetching behavioral analytics:', error);
+      set({ error: 'Error fetching behavioral analytics' });
     }
   },
 

@@ -332,14 +332,31 @@ export const getPageVisits = async (req, res) => {
     }
   };
   
-  export const getAllPageVisits = async (req, res) => {
+export const getAllPageVisits = async (req, res) => {
     try {
-      const allPageVisits = await PageVisit.find()
-        .lean();
-  
-      return res.status(200).json({ success: true, data: allPageVisits });
+        const allPageVisits = await PageVisit.find().lean();
+
+        const userIds = [...new Set(allPageVisits.map((visit) => visit.user_id))];
+        const serviceToken = generateServiceToken();
+
+        const response = await axios.get(`${process.env.API_GATEWAY_URL}/admin/get-accounts`, {
+            headers: { Authorization: `Bearer ${serviceToken}` },
+        });
+
+        const users = response.data;
+
+        const visitsWithNames = allPageVisits.map((visit) => {
+            const user = users.find((u) => String(u._id) === String(visit.user_id));
+            return {
+                ...visit,
+                firstName: user?.firstName || 'Unknown',
+                lastName: user?.lastName || 'Unknown',
+            };
+        });
+
+        return res.status(200).json({ success: true, data: visitsWithNames });
     } catch (err) {
-      console.error("Error fetching login activities:", err.message);
-      return res.status(500).json({ success: false, message: "Server error" });
+        console.error("Error fetching page visits:", err.message);
+        return res.status(500).json({ success: false, message: "Server error" });
     }
 };

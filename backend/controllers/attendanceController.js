@@ -195,3 +195,44 @@ export const getLeavesAndAttendance = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
+export const getBehavioralAnalytics = async (req, res) => {
+    try {
+        const leaveData = await EmployeeLeave.find();
+        const attendanceData = await Attendance.find();
+
+        if (!leaveData || leaveData.length === 0) {
+            return res.status(404).json({ message: "No leave data found" });
+        }
+
+        if (!attendanceData || attendanceData.length === 0) {
+            return res.status(404).json({ message: "No attendance data found" });
+        }
+
+        const analytics = leaveData.map((leaveRecord) => {
+            const employeeAttendance = attendanceData.filter(
+                (attendance) => attendance.employee_id === leaveRecord.employee_id
+            );
+
+            return {
+                employee_id: leaveRecord.employee_id,
+                employee_name: `${leaveRecord.employee_firstname} ${leaveRecord.employee_lastname}`,
+                leaveAnalytics: {
+                    totalLeaves: leaveRecord.leave_count,
+                    leaveTypes: leaveRecord.leave_types,
+                },
+                attendanceAnalytics: {
+                    totalAttendanceRecords: employeeAttendance.length,
+                },
+            };
+        });
+
+        res.status(200).json({
+            success: true,
+            analytics,
+        });
+    } catch (error) {
+        console.error("Error fetching behavioral analytics:", error.message);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
