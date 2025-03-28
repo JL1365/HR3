@@ -11,6 +11,10 @@ const PrivateLayout = () => {
   const { user } = useAuthStore();
 
   const pageTitles = {
+    "/profile": "Profile",
+    "/my-profile": "Profile",
+    "/settings": "Setting",
+    "/my-settings": "Setting",
     "/admin-dashboard": "DASHBOARD",
     "/compensation-planning": "Compensation planning",
     "/compensation-benefit": "Compensation benefit",

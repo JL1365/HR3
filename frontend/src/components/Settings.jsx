@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuthStore } from "../store/authStore";
+import { motion } from "framer-motion";
 
 function Settings() {
     const { user, toggleMFA } = useAuthStore();
@@ -24,23 +25,48 @@ function Settings() {
     };
 
     return (
-        <div>
-            <h1>Settings</h1>
-            <div>
-                <h2>Multi-Factor Authentication</h2>
-                <p>Enhance your account security by enabling multi-factor authentication.</p>
-                <label>
-                    <input
+        <motion.div
+            className="p-6 bg-base-200 rounded-lg shadow-md"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+        >
+            <h1 className="text-2xl font-bold mb-4">Settings</h1>
+            <motion.div
+                className="space-y-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+            >
+                <h2 className="text-lg font-semibold">Multi-Factor Authentication</h2>
+                <p className="text-sm text-gray-600">
+                    Enhance your account security by enabling multi-factor authentication.
+                </p>
+                <label className="flex items-center space-x-3">
+                    <motion.input
                         type="checkbox"
+                        className="toggle toggle-primary"
                         checked={enableMFA}
                         onChange={handleToggleMFA}
                         disabled={loading}
+                        whileTap={{ scale: 0.9 }}
                     />
-                    {loading ? "Processing..." : enableMFA ? "Enabled" : "Disabled"}
+                    <span className="text-sm">
+                        {loading ? "Processing..." : enableMFA ? "Enabled" : "Disabled"}
+                    </span>
                 </label>
-                {message && <p>{message}</p>}
-            </div>
-        </div>
+                {message && (
+                    <motion.p
+                        className="text-sm text-info"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        {message}
+                    </motion.p>
+                )}
+            </motion.div>
+        </motion.div>
     );
 }
 
