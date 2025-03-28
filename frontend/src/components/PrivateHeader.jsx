@@ -8,7 +8,8 @@ import io from "socket.io-client";
 const socketURL =
   import.meta.env.MODE === "development"
     ? "http://localhost:7687"
-    : window.location.origin;
+    : "https://backend-hr3.jjm-manufacturing.com";
+
 
 const socket = io(socketURL, { withCredentials: true });
 

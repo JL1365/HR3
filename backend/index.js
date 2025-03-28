@@ -41,7 +41,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: process.env.NODE_ENV === "production" 
-            ? "https://hr3-jjm-manufacturing-1p4f.onrender.com" 
+            ? "https://hr3.jjm-manufacturing.com" 
             : "http://localhost:5173",
         methods: ["GET", "POST"],
         credentials: true,
