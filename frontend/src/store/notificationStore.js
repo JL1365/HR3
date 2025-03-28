@@ -23,4 +23,9 @@ export const useNotificationStore = create((set) => ({
       console.error("Error marking notification as read:", error.message);
     }
   },
+  addRealTimeNotification: (notification) => {
+    set((state) => ({
+      notifications: [notification, ...state.notifications],
+    }));
+  },
 }));

@@ -3,6 +3,14 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { useNotificationStore } from "../store/notificationStore";
+import io from "socket.io-client";
+
+const socketURL =
+  import.meta.env.MODE === "development"
+    ? "http://localhost:7687"
+    : window.location.origin;
+
+const socket = io(socketURL, { withCredentials: true });
 
 const PrivateHeader = ({ title, toggleSidebar, isSidebarOpen }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -12,7 +20,7 @@ const PrivateHeader = ({ title, toggleSidebar, isSidebarOpen }) => {
   const notifRef = useRef(null);
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuthStore();
-  const { notifications, fetchNotifications, markAsRead } = useNotificationStore();
+  const { notifications, fetchNotifications, markAsRead, addRealTimeNotification } = useNotificationStore();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -44,6 +52,27 @@ const PrivateHeader = ({ title, toggleSidebar, isSidebarOpen }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Socket connected:", socket.id);
+    });
+
+    socket.on("deductionAdded", (data) => {
+      console.log("Real-time deduction notification:", data);
+      addRealTimeNotification({
+        _id: Date.now(), // Temporary unique ID for real-time notifications
+        message: data.message,
+        read: false,
+        timeElapsed: "Just now",
+      });
+    });
+
+    return () => {
+      socket.off("connect");
+      socket.off("deductionAdded");
+    };
+  }, [socket, addRealTimeNotification]);
 
   const handleLogout = async () => {
     const confirmLogout = window.confirm("Are you sure you want to log out?");

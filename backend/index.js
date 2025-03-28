@@ -94,7 +94,8 @@ io.on('connection', (socket) => {
     });
 });
 
-export { io };
-app.listen(PORT,() => {
+export { io }; // Export the socket instance
+
+server.listen(PORT, () => {
     console.log(`Server is running at PORT: ${PORT}`);
 });
