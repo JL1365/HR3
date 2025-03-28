@@ -19,7 +19,7 @@ const ProtectedRoute = ({ allowedRoles }) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/employee-login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   if (!allowedRoles.includes(user?.role)) {

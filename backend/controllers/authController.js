@@ -88,6 +88,23 @@ export const adminLogin = async (req, res) => {
             return res.status(400).json({ message: "Invalid email or password" });
         }
 
+        const mfaRecord = await MFA.findOne({ userId: user._id });
+        if (mfaRecord && mfaRecord.multiFactorEnabled) {
+            const otp = await sendOTP(user.email);
+
+            const otpExpiration = new Date(Date.now() + 5 * 60 * 1000);
+            await MFA.updateOne(
+                { userId: user._id },
+                { otp, otpExpiration }
+            );
+
+            return res.status(200).json({
+                message: "OTP sent to your email. Please verify to complete login.",
+                userId: user._id,
+                mfaEnabled: true,
+            });
+        }
+
         const token = generateTokenAndSetCookie(res, user);
 
         const loginRecord = await LoginActivity.findOne({ user_id: user._id });
@@ -120,7 +137,7 @@ export const adminLogin = async (req, res) => {
             });
         }
 
-        return res.status(200).json({ token, user });
+        return res.status(200).json({ token, user, mfaEnabled: false });
     } catch (error) {
         console.error("Error during admin login:", error.message);
         return res.status(500).json({ message: "Internal Server error" });

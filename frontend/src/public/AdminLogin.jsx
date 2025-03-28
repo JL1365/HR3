@@ -10,15 +10,22 @@ function AdminLogin() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const adminLogin = useAuthStore((state) => state.adminLogin);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setError("");
         const result = await adminLogin({ email, password });
+        setLoading(false);
         if (result.success) {
-            console.log("Login successful, redirecting...");
-            navigate("/employee-dashboard");
+            if (result.mfaEnabled) {
+                navigate("/verify-otp"); // Redirect only when MFA is enabled
+            } else {
+                navigate("/employee-dashboard");
+            }
         } else {
             setError(result.message || "Invalid email or password.");
         }
@@ -26,6 +33,14 @@ function AdminLogin() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-base-500 bg-green-100 bg-opacity-25">
+            {loading && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="flex flex-col items-center">
+                        <div className="loader border-t-4 border-white rounded-full w-12 h-12 animate-spin"></div>
+                        <p className="text-white text-sm mt-2">Processing...</p>
+                    </div>
+                </div>
+            )}
             <div className="bg-white rounded-lg shadow-[0_10px_20px_rgba(0,0,0,0.25)] p-10 w-full max-w-sm">
                 <div className="flex justify-center gap-x-2 pb-2">
                     <img
@@ -89,8 +104,12 @@ function AdminLogin() {
                         </div>
                     </div>
 
-                    <button className="btn btn-primary w-full bg-green-600 text-white hover:bg-green-700 py-3 rounded transition duration-200">
-                        Login
+                    <button
+                        type="submit"
+                        className="btn btn-primary w-full bg-green-600 text-white hover:bg-green-700 py-3 rounded transition duration-200"
+                        disabled={loading}
+                    >
+                        {loading ? "Processing..." : "Login"}
                     </button>
                 </form>
             </div>

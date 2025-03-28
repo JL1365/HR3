@@ -123,15 +123,6 @@ function EmployeeLogin() {
                         </label>
                     </div>
 
-                    <div className="text-right">
-                        <Link
-                            to="/forgot-password"
-                            className="text-xs text-blue-600 hover:underline"
-                        >
-                            Forgot Password?
-                        </Link>
-                    </div>
-
                     <button
                         type="submit"
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 rounded-md transition-transform duration-200 transform hover:scale-105 flex items-center justify-center"
