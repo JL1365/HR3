@@ -4,12 +4,11 @@ import { motion } from 'framer-motion';
 import { 
   Users, 
   FileText, 
-  DollarSign, 
   Award, 
   Clock, 
   CreditCard 
 } from 'lucide-react';
-
+import { TbCurrencyPeso } from "react-icons/tb";
 import {
   PieChart, Pie, Cell,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -117,7 +116,7 @@ function AdminDashboard() {
             color="text-green-500" 
           />
           <DashboardCard 
-            icon={DollarSign} 
+            icon={TbCurrencyPeso} 
             title="Total Deductions" 
             value={formatCurrency(totalDeductions)} 
             color="text-red-500" 

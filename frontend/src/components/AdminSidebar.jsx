@@ -4,8 +4,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { motion, AnimatePresence } from "framer-motion";
 
-import {LayoutDashboard,Briefcase,ChevronDown,ChevronRight, Plus, Gift, DollarSign, TrendingUp, ClipboardList,Eye} from "lucide-react";
-
+import {LayoutDashboard,Briefcase,ChevronDown,ChevronRight, Plus, Gift, TrendingUp, ClipboardList,Eye} from "lucide-react";
+import { TbCurrencyPeso } from "react-icons/tb";
 import jjmLogo from "../assets/jjmlogo.jpg";
 
 const AdminSidebar = forwardRef(({ isSidebarOpen }, ref) => {
@@ -66,7 +66,7 @@ const AdminSidebar = forwardRef(({ isSidebarOpen }, ref) => {
     },
     {
       name: "Payroll Processing",
-      icon: DollarSign,
+      icon:TbCurrencyPeso,
       subItems: [
         { name: "Attendance", href: "/attendance-overview" },
         { name: "Salary Computation", href: "/salary-computation" },

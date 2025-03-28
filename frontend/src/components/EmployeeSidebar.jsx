@@ -11,8 +11,8 @@ import {
   ChevronRight,
   Plus,
   Gift,
-  DollarSign,
 } from "lucide-react";
+import { TbCurrencyPeso } from "react-icons/tb";
 
 import jjmLogo from "../assets/jjmlogo.jpg";
 
@@ -71,7 +71,7 @@ const EmployeeSidebar = forwardRef(({ isSidebarOpen }, ref) => {
     },
     {
       name: "My Salary info",
-      icon: DollarSign,
+      icon: TbCurrencyPeso,
        href: "/my-salary-info",
     },
   ];

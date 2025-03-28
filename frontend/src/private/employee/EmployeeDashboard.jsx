@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import {
   Users,
   FileText,
-  DollarSign,
   Award,
   Clock,
   CreditCard
@@ -17,7 +16,7 @@ import {
 } from 'recharts';
 import axios from 'axios';
 import usePageTracking from '../../hooks/usePageTracking';
-
+import { TbCurrencyPeso } from "react-icons/tb";
 function EmployeeDashboard() {
   usePageTracking('Employee Dashboard');
   const {
@@ -113,7 +112,7 @@ function EmployeeDashboard() {
             color="text-green-500"
           />
           <DashboardCard
-            icon={DollarSign}
+            icon={TbCurrencyPeso}
             title="Total Deductions"
             value={formatCurrency(totalDeductions)}
             color="text-red-500"

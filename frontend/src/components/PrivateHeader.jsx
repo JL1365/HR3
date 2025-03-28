@@ -129,6 +129,16 @@ const PrivateHeader = ({ title, toggleSidebar, isSidebarOpen }) => {
       });
     });
 
+    // socket.on("updatedBudgetRequest", (data) => {
+    //   console.log("Real-time benefit application notification received:", data);
+    //   addRealTimeNotification({
+    //     _id: Date.now(),
+    //     message: data.message,
+    //     read: false,
+    //     timeElapsed: "Just now",
+    //   });
+    // });
+
     return () => {
       socket.off("connect");
       socket.off("deductionAdded");
@@ -138,6 +148,7 @@ const PrivateHeader = ({ title, toggleSidebar, isSidebarOpen }) => {
       socket.off("benefitApplied");
       socket.off("newViolationAdded");
       socket.off("newEmployeeCompensation");
+      // socket.off("updatedBudgetRequest");
     };
   }, [socket, addRealTimeNotification]);
 
