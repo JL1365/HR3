@@ -5,6 +5,9 @@ import { LoginActivity } from '../models/loginActivityModel.js';
 import { generateServiceToken } from '../middlewares/gatewayTokenGenerator.js';
 import { generateTokenAndSetCookie } from '../utils/generateTokenAndSetCookie.js';
 import { PageVisit } from '../models/pageVisitModel.js';
+import nodemailer from 'nodemailer';
+import { MFA } from '../models/MFAModel.js';
+import crypto from 'crypto';
 
 export const getAllUsers = async (req, res) => {
     try {
@@ -124,6 +127,28 @@ export const adminLogin = async (req, res) => {
     }
 };
 
+export const sendOTP = async (email) => {
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+        },
+    });
+
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Your OTP for Login',
+        text: `Your OTP for login is: ${otp}. It will expire in 5 minutes.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    return otp;
+};
+
 export const employeeLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -177,6 +202,22 @@ export const employeeLogin = async (req, res) => {
             return res.status(400).json({ message: "Invalid email or password" });
         }
 
+        const mfaRecord = await MFA.findOne({ userId: user._id });
+        if (mfaRecord && mfaRecord.multiFactorEnabled) {
+            const otp = await sendOTP(user.email);
+
+            const otpExpiration = new Date(Date.now() + 5 * 60 * 1000);
+            await MFA.updateOne(
+                { userId: user._id },
+                { otp, otpExpiration }
+            );
+
+            return res.status(200).json({
+                message: "OTP sent to your email. Please verify to complete login.",
+                userId: user._id,
+            });
+        }
+
         const token = generateTokenAndSetCookie(res, user);
 
         const loginRecord = await LoginActivity.findOne({ user_id: user._id });
@@ -215,7 +256,43 @@ export const employeeLogin = async (req, res) => {
         return res.status(500).json({ message: "Internal Server error" });
     }
 };
-  
+
+export const verifyOTP = async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+
+        const mfaRecord = await MFA.findOne({ email });
+        if (!mfaRecord || mfaRecord.otp !== otp) {
+            return res.status(400).json({ message: "Invalid or expired OTP" });
+        }
+
+        if (new Date() > mfaRecord.otpExpiration) {
+            return res.status(400).json({ message: "OTP has expired" });
+        }
+
+        await MFA.updateOne({ email }, { $unset: { otp: "", otpExpiration: "" } });
+
+        const serviceToken = generateServiceToken();
+        const response = await axios.get(
+            `${process.env.API_GATEWAY_URL}/admin/get-accounts`,
+            { headers: { Authorization: `Bearer ${serviceToken}` } }
+        );
+
+        const user = response.data.find((u) => u.email === email);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const token = generateTokenAndSetCookie(res, user);
+
+        return res.status(200).json({ message: "OTP verified successfully", token, user });
+    } catch (error) {
+        console.error("Error verifying OTP:", error.message);
+        return res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+};
+
 export const checkAuth = (req, res) => {
     if (!req.user) {
         return res.status(401).json({ message: "User not authenticated!" });
@@ -390,3 +467,68 @@ export const getMyProfileInfo = async (req, res) => {
         return res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };
+
+export const toggleMultiFactor = async (req, res) => {
+    try {
+        const userId = req.user && req.user.userId ? String(req.user.userId) : null;
+        if (!userId) {
+            return res.status(401).json({ message: 'User not authenticated' });
+        }
+
+        const { enableMFA } = req.body;
+
+        if (typeof enableMFA !== "boolean") {
+            return res.status(400).json({ message: "Invalid input for enabling/disabling MFA" });
+        }
+
+        const serviceToken = generateServiceToken();
+        const response = await axios.get(
+            `${process.env.API_GATEWAY_URL}/admin/get-accounts`,
+            { headers: { Authorization: `Bearer ${serviceToken}` } }
+        );
+
+        const user = response.data.find((u) => String(u._id) === String(req.user.userId));
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found!" });
+        }
+
+        const mfaRecord = await MFA.findOneAndUpdate(
+            { userId: userId },
+            { 
+                email: user.email, 
+                multiFactorEnabled: enableMFA, 
+                updatedAt: new Date() 
+            },
+            { upsert: true, new: true }
+        );
+
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+            },
+        });
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: user.email,
+            subject: 'Multi-Factor Authentication Update',
+            text: `Hello ${user.firstName},\n\nMulti-factor authentication has been ${
+                enableMFA ? 'enabled' : 'disabled'
+            } for your account.\n\nIf you did not make this change, please contact support immediately.\n\nBest regards,\nYour Team`,
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        return res.status(200).json({
+            message: `Multi-factor authentication has been ${enableMFA ? "enabled" : "disabled"} successfully.`,
+            mfaRecord,
+        });
+    } catch (error) {
+        console.error("Error toggling multi-factor authentication:", error.message);
+        return res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+};
+
