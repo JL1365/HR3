@@ -135,9 +135,6 @@ function Audit() {
         setSelectedResponse(response);
     };
 
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
-
     return (
         <motion.div
             className="p-4 max-w-6xl mx-auto"
