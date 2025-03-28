@@ -111,7 +111,8 @@ const PrivateHeader = ({ title, toggleSidebar, isSidebarOpen }) => {
                       }`}
                       onClick={() => handleMarkAsRead(notification._id)}
                     >
-                      {notification.message}
+                      <div>{notification.message}</div>
+                      <div className="text-xs text-gray-400">{notification.timeElapsed}</div>
                     </li>
                   ))}
                   {notifications.length === 0 && (

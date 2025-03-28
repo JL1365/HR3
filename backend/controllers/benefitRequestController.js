@@ -185,7 +185,13 @@ export const updateApplyRequestStatus = async (req, res) => {
       id,
       { status },
       { new: true }
-    );
+    ).populate("compensationBenefitId", "benefitName");
+
+    const notificationMessage = `Your request for ${updatedRequest.compensationBenefitId.benefitName} has been ${status}.`;
+    await Notification.create({
+      userId: currentRequest.userId,
+      message: notificationMessage,
+    });
 
     res.status(200).json({message: "Benefit request status updated successfully.",updatedRequest,});
   } catch (error) {
