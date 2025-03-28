@@ -4,6 +4,10 @@ import { verifyToken } from '../middlewares/verifyToken.js';
 
 const authRoute = express();
 
+authRoute.get('/csrf-token', (req, res) => {
+    res.json({ csrfToken: req.csrfToken() });
+});
+
 authRoute.get("/get-all-users", getAllUsers);
 authRoute.post("/admin-login", adminLogin);
 authRoute.post("/employee-login", employeeLogin);

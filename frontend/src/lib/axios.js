@@ -9,3 +9,13 @@ export const axiosInstance = axios.create({
         : "https://backend-hr3.jjm-manufacturing.com/api",
   withCredentials: true,
 });
+
+axiosInstance.interceptors.request.use(async (config) => {
+  if (!config.headers['csrf-token']) {
+    const response = await axios.get(`${axiosInstance.defaults.baseURL}/auth/csrf-token`, {
+      withCredentials: true,
+    });
+    config.headers['csrf-token'] = response.data.csrfToken;
+  }
+  return config;
+});
