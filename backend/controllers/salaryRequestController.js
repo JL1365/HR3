@@ -396,7 +396,10 @@ export const addEmployeeCompensation = async (req, res) => {
 
         const newCompensation = new EmployeeCompensation(compensationData);
         await newCompensation.save();
-
+        io.emit("newEmployeeCompensation", {
+          userId:employeeId,
+          message: notificationMessage,
+        });
         await Notification.create({
             userId: employeeId,
             message: notificationMessage,

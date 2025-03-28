@@ -4,6 +4,8 @@ import { generateServiceToken } from '../middlewares/gatewayTokenGenerator.js';
 
 import { PenaltyLevel } from '../models/penaltyModel.js';
 import { Violation } from '../models/violationModel.js';
+import { Notification } from "../models/notificationModel.js";
+import { io } from "../index.js";
 
 export const createEmployeeViolation = async (req, res) => {
   try {
@@ -42,7 +44,16 @@ export const createEmployeeViolation = async (req, res) => {
     });
 
     await newViolation.save();
+    io.emit("newViolationAdded", {
+      userId,
+      message: ` You are having a violation .`,
+    });
 
+        const notificationMessage = `You are having violation.`;
+        await Notification.create({
+          userId,
+          message: notificationMessage,
+        });
     return res.status(201).json({ message: 'Violation created successfully', violation: newViolation });
   } catch (error) {
     console.log(`Error in creating employee violation : ${error.message}`)

@@ -237,7 +237,13 @@ function CompensationBenefit() {
         <table className="table-auto w-full pb-5 text-sm">
           <thead className="bg-white text-gray-500 border-b">
             <tr>
-              <th className="p-3 text-left">Benefit Name</th>
+              <th className="p-3 text-left">
+                {title === "Paid Benefits"
+                  ? "Paid Benefit Name"
+                  : title === "Deductible Benefits"
+                  ? "Deductible Benefit Name"
+                  : "Violation Deduction Name"}
+              </th>
               <th className="p-3 text-left">Benefit Type</th>
               <th className="p-3 text-left">Benefit Amount</th>
               <th className="p-3 text-left">Is Available?</th>
