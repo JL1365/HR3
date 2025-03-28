@@ -142,17 +142,22 @@ function EmployeeDashboard() {
         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-white rounded-xl shadow p-6">
             <h2 className="text-lg font-semibold mb-4">Payroll Summary</h2>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={400}>
               <PieChart>
                 <Pie
                   data={pieData}
                   cx="50%"
                   cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) =>
-                    `${name}: ${(percent * 100).toFixed(0)}%`
-                  }
+                  label={({ name, value }) => {
+                    const total = pieData.reduce((acc, item) => acc + item.value, 0);
+                    const percentage = ((value / total) * 100).toFixed(2);
+                    return `${name}: ${percentage}%`;
+                  }}
+                  labelLine
+                  labelPosition="outside"
                   outerRadius={100}
+                  innerRadius={60}
+                  paddingAngle={5}
                   fill="#8884d8"
                   dataKey="value"
                 >
@@ -160,22 +165,25 @@ function EmployeeDashboard() {
                     <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip />
-                <Legend />
+                <Tooltip formatter={(value) => {
+                  const total = pieData.reduce((acc, item) => acc + item.value, 0);
+                  return `${((value / total) * 100).toFixed(2)}%`;
+                }} />
+                <Legend layout="horizontal" verticalAlign="bottom" align="center" />
               </PieChart>
             </ResponsiveContainer>
           </div>
 
           <div className="bg-white rounded-xl shadow p-6">
             <h2 className="text-lg font-semibold mb-4">Employee Activities</h2>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={barData}>
+            <ResponsiveContainer width="100%" height={350}>
+              <BarChart data={barData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis allowDecimals={false} />
                 <Tooltip />
-                <Legend />
-                <Bar dataKey="count" fill="#3b82f6">
+                <Legend layout="horizontal" verticalAlign="bottom" align="center" />
+                <Bar dataKey="count" fill="#3b82f6" barSize={30}>
                   {barData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={BAR_COLORS[index % BAR_COLORS.length]} />
                   ))}
