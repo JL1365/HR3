@@ -45,7 +45,7 @@ export const getMyRequest = async (req, res) => {
     try {
         const audits = await Audit.find();
         if (!audits || audits.length === 0) {
-            return res.status(404).json({ message: "No audit requests found!" });
+            return res.status(404).json({ message: "No audit requests found!", audits: [] });
         }
         return res.status(200).json({ message: "Fetching audit requests successfully!", audits });
     } catch (error) {

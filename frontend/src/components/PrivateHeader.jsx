@@ -1,6 +1,6 @@
 import { Search, User, Bell, Menu, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { useNotificationStore } from "../store/notificationStore";
 
@@ -133,8 +133,12 @@ const PrivateHeader = ({ title, toggleSidebar, isSidebarOpen }) => {
             {isDropdownOpen && (
               <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg border border-gray-300 z-50">
                 <ul className="py-2 text-sm text-gray-700">
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
+                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                    <Link to={user?.role === "Admin" ? "/profile" : "/my-profile"}>Profile</Link>
+                  </li>
+                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                    <a href="/settings">Settings</a>
+                  </li>
                   <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600" onClick={handleLogout}>Log Out</li>
                 </ul>
               </div>

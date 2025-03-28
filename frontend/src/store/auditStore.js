@@ -12,7 +12,11 @@ export const useAuditStore = create((set) => ({
       const response = await axiosInstance.get('/audit/get-all-audits');
       set({ audits: response.data.auditData, loading: false });
     } catch (error) {
-      set({ error: error.message, loading: false });
+      if (error.response && error.response.status === 404) {
+        set({ audits: [], loading: false });
+      } else {
+        set({ error: error.message, loading: false });
+      }
     }
   },
 
@@ -35,7 +39,8 @@ export const useAuditStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       const response = await axiosInstance.get('/audit/get-my-request');
-      return response.data;
+      set({ myRequests: response.data.audits, loading: false });
+      return response.data.audits;
     } catch (error) {
       set({ error: error.message, loading: false });
       throw error;

@@ -1,4 +1,3 @@
-// models/Audit.js
 import mongoose from 'mongoose';
 
 const auditSchema = new mongoose.Schema(

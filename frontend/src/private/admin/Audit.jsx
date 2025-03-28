@@ -22,18 +22,29 @@ function Audit() {
 
     const handleFetchMyRequests = async () => {
         try {
+            console.log('Fetching my requests...');
             const response = await fetchMyRequests();
-            setMyRequests(response.audits);
+            console.log('My Requests Response:', response);
+            setMyRequests(response);
         } catch (err) {
+            console.error('Error fetching requests:', err);
             toast.error('Failed to fetch your audit requests.');
         }
     };
     
 
     useEffect(() => {
-        fetchAudits();
-        handleFetchMyRequests();
-    }, [fetchAudits]);
+        const initializePage = async () => {
+          try {
+            await fetchAudits(); 
+            await handleFetchMyRequests();
+          } catch (error) {
+            console.error('Initialization error:', error);
+          }
+        };
+      
+        initializePage();
+      }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -137,7 +148,31 @@ function Audit() {
 <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
         
             {audits.length === 0 ? (
-                <p>No audits found</p>
+                <div className="overflow-x-auto rounded-lg shadow">
+                    <motion.table
+                        className="table-auto w-full pb-5 text-sm"
+                        variants={tableVariants}
+                        initial="hidden"
+                        animate="visible"
+                    >
+                        <thead className="bg-white text-gray-500 border-b">
+                            <tr>
+                                <th className="p-3 text-left">Department</th>
+                                <th className="p-3 text-left">Description</th>
+                                <th className="p-3 text-left">Tasks</th>
+                                <th className="p-3 text-left">Responses</th>
+                                <th className="p-3 text-left">Completed At</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                            <tr>
+                                <td colSpan="5" className="text-center py-4 text-gray-500">
+                                    No audits found
+                                </td>
+                            </tr>
+                        </tbody>
+                    </motion.table>
+                </div>
             ) : (
                 <div className="overflow-x-auto rounded-lg shadow">
                     <motion.table
@@ -437,27 +472,29 @@ function Audit() {
                 transition={{ delay: 0.3 }}
                 className="flex justify-between mt-4"
             ></motion.div>
-                <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="btn btn-primary text-xs md:text-sm"
-                    onClick={prevPage}
-                    disabled={currentPage === 1}
-                >
-                    Previous
-                </motion.button>
-                <span className="text-gray-700 text-xs md:text-sm">
-                    Page {currentPage}
-                </span>
-                <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="btn btn-primary text-xs md:text-sm"
-                    onClick={nextPage}
-                    disabled={indexOfLastAudit >= audits.length}
-                >
-                    Next
-                </motion.button>
+               <div className="flex justify-between mt-4">
+    <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="btn btn-primary text-xs md:text-sm"
+        onClick={prevPage}
+        disabled={currentPage === 1}
+    >
+        Previous
+    </motion.button>
+    <span className="text-gray-700 text-xs md:text-sm">
+        Page {currentPage}
+    </span>
+    <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="btn btn-primary text-xs md:text-sm"
+        onClick={nextPage}
+        disabled={indexOfLastAudit >= audits.length}
+    >
+        Next
+    </motion.button>
+</div>
             </motion.div>
     );
 }
