@@ -578,10 +578,29 @@ export const toggleMultiFactor = async (req, res) => {
 
         return res.status(200).json({
             message: `Multi-factor authentication has been ${enableMFA ? "enabled" : "disabled"} successfully.`,
-            mfaRecord,
+            mfaRecord, // Return the updated MFA record
         });
     } catch (error) {
         console.error("Error toggling multi-factor authentication:", error.message);
+        return res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+};
+
+export const getMyMFAStatus = async (req, res) => {
+    try {
+        const userId = req.user && req.user.userId ? String(req.user.userId) : null;
+        if (!userId) {
+            return res.status(401).json({ message: "User not authenticated" });
+        }
+
+        const mfaRecord = await MFA.findOne({ userId });
+        if (!mfaRecord) {
+            return res.status(404).json({ message: "MFA status not found" });
+        }
+
+        return res.status(200).json({ multiFactorEnabled: mfaRecord.multiFactorEnabled });
+    } catch (error) {
+        console.error("Error fetching MFA status:", error.message);
         return res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };

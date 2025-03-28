@@ -104,7 +104,7 @@ function EmployeeViolation() {
             <table className="min-w-full table-auto text-sm">
               <thead className="bg-white text-gray-500 border-b">
                 <tr>
-                  <th className="p-2 md:p-3 text-left">User</th>
+                  <th className="p-2 md:p-3 text-left">Employee name</th>
                   <th className="p-2 md:p-3 text-left">Penalty Level</th>
                   <th className="p-2 md:p-3 text-left">Violation Date</th>
                   <th className="p-2 md:p-3 text-left">Sanctions</th>

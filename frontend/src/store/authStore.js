@@ -114,5 +114,18 @@ export const useAuthStore  = create ((set) => ({
             console.error("Failed to toggle MFA:", error.response?.data?.message || error.message);
             return { success: false, message: error.response?.data?.message || "Failed to toggle MFA" };
         }
+    },
+
+    getMyMFAStatus: async () => {
+        try {
+            const response = await axiosInstance.get("/auth/get-my-mfa-status");
+            set((state) => ({
+                user: { ...state.user, multiFactorEnabled: response.data.multiFactorEnabled },
+            }));
+            return { success: true, multiFactorEnabled: response.data.multiFactorEnabled };
+        } catch (error) {
+            console.error("Failed to fetch MFA status:", error.response?.data?.message || error.message);
+            return { success: false, message: error.response?.data?.message || "Failed to fetch MFA status" };
+        }
     }
 }));
