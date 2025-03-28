@@ -158,8 +158,7 @@ const renderTable = (data, type) => {
       <table className="table w-full table-zebra" ref={type === 'gross' ? grossTableRef : netTableRef}>
         <thead>
           <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
+            <th>Employee Name</th>
             <th>Total Work Hours</th>
             <th>Total Overtime Hours</th>
             <th>Gross Salary</th>
@@ -184,8 +183,7 @@ const renderTable = (data, type) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <td>{employee.employee_firstname}</td>
-                <td>{employee.employee_lastname}</td>
+                <td>{employee.employee_firstname} {employee.employee_lastname}</td>
                 <td>{employee.totalWorkHours}</td>
                 <td>{employee.totalOvertimeHours}</td>
                 <td>{employee.grossSalary}</td>

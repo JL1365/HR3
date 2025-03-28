@@ -96,21 +96,19 @@ function PageVisits() {
       <h2>All Page Visits</h2>
       {loading ? <p>Loading...</p> : (
         <div>
-          <table className="min-w-full table-auto text-sm">
+          <table className="min-w-full table-auto text-xs md:text-sm">
             <thead className="bg-white text-gray-500 border-b">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-neutral uppercase tracking-wider">First Name</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-neutral uppercase tracking-wider">Last Name</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-neutral uppercase tracking-wider">Total Visits</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-neutral uppercase tracking-wider">Actions</th>
+                <th className="px-2 md:px-6 py-2 md:py-4 text-left">Employee name</th>
+                <th className="px-2 md:px-6 py-2 md:py-4 text-left">Total Visits</th>
+                <th className="px-2 md:px-6 py-2 md:py-4 text-left">Actions</th>
               </tr>
             </thead>
             <tbody>
               {currentVisits.length > 0 ? (
                 currentVisits.map(([userId, visits]) => (
                   <tr key={userId} className="hover:bg-gray-300 hover:text-white">
-                    <td className="px-6 py-4 text-left text-xs font-semibold text-neutral uppercase tracking-wider">{visits[0]?.firstName || "Unknown"}</td>
-                    <td className="px-6 py-4 text-left text-xs font-semibold text-neutral uppercase tracking-wider">{visits[0]?.lastName || "Unknown"}</td>
+                    <td className="px-6 py-4 text-left text-xs font-semibold text-neutral uppercase tracking-wider">{visits[0]?.firstName || "Unknown"}{visits[0]?.lastName || "Unknown"}</td>
                     <td className="px-6 py-4 text-left text-xs font-semibold text-neutral uppercase tracking-wider">{visits.length}</td>
                     <td className="px-6 py-4 text-left text-xs font-semibold text-neutral uppercase tracking-wider">
                       <motion.button
@@ -131,22 +129,22 @@ function PageVisits() {
               )}
             </tbody>
           </table>
-          <div className="flex justify-center mt-4">
+          <div className="flex flex-col md:flex-row justify-center items-center mt-4 gap-2">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => handlePageChange("prev")}
-              className="mx-1 px-3 py-1 border rounded bg-white text-black"
+              className="mx-1 px-3 py-1 border rounded bg-white text-black w-full md:w-auto"
               disabled={currentPage === 1}
             >
               Previous
             </motion.button>
-            <span className="mx-2">{currentPage} of {totalPages}</span>
+            <span className="mx-2 text-xs md:text-sm">{currentPage} of {totalPages}</span>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => handlePageChange("next")}
-              className="mx-1 px-3 py-1 border rounded bg-white text-black"
+              className="mx-1 px-3 py-1 border rounded bg-white text-black w-full md:w-auto"
               disabled={currentPage === totalPages}
             >
               Next
@@ -209,7 +207,7 @@ function PageVisits() {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.3 }}
-            className="bg-white p-6 rounded shadow-lg"
+            className="bg-white p-4 md:p-6 rounded shadow-lg w-full max-w-xs md:max-w-lg"
           >
             <h2 className="text-xl mb-4">Page Visit Details</h2>
             <div className="overflow-x-auto">

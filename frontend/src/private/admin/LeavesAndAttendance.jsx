@@ -46,13 +46,13 @@ function LeavesAndAttendance() {
             >
                 <div className="min-w-full inline-block align-middle">
                     <div className="overflow-hidden">
-                        <table className="min-w-full table-auto text-sm">
+                        <table className="min-w-full table-auto text-sm md:text-base">
                             <thead className="bg-white text-gray-500 border-b">
                                 <tr>
-                                    <th className="p-2 md:p-3 text-left">Employee Name</th>
-                                    <th className="p-2 md:p-3 text-left">Total Leaves</th>
-                                    <th className="p-2 md:p-3 text-left">Leave Durations</th>
-                                    <th className="p-2 md:p-3 text-left">Total Attendance Records</th>
+                                    <th className="p-2 md:p-3 text-left text-xs md:text-sm">Employee Name</th>
+                                    <th className="p-2 md:p-3 text-left text-xs md:text-sm">Total Leaves</th>
+                                    <th className="p-2 md:p-3 text-left text-xs md:text-sm">Leave Durations</th>
+                                    <th className="p-2 md:p-3 text-left text-xs md:text-sm">Total Attendance Records</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white text-neutral-500 border-b">
@@ -104,12 +104,12 @@ function LeavesAndAttendance() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="flex justify-between mt-4"
+                className="flex flex-col md:flex-row justify-between items-center mt-4 gap-2"
             >
                 <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="btn btn-primary text-xs md:text-sm"
+                    className="btn btn-primary text-xs md:text-sm w-full md:w-auto"
                     onClick={handlePageChange.bind(null, 'prev')}
                     disabled={currentPage === 1}
                 >
@@ -121,7 +121,7 @@ function LeavesAndAttendance() {
                 <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="btn btn-primary text-xs md:text-sm"
+                    className="btn btn-primary text-xs md:text-sm w-full md:w-auto"
                     onClick={handlePageChange.bind(null, 'next')}
                     disabled={currentPage === totalPages}
                 >

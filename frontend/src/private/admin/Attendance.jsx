@@ -59,8 +59,7 @@ function Attendance() {
                         <table className="min-w-full table-auto text-sm">
                             <thead className="bg-white text-gray-500 border-b">
                                 <tr>
-                                    <th className="p-2 md:p-3 text-left">First Name</th>
-                                    <th className="p-2 md:p-3 text-left">Last Name</th>
+                                    <th className="p-2 md:p-3 text-left">Employee name</th>
                                     <th className="p-2 md:p-3 text-left">Position</th>
                                     <th className="p-2 md:p-3 text-left">Time In</th>
                                     <th className="p-2 md:p-3 text-left">Time Out</th>
@@ -81,11 +80,9 @@ function Attendance() {
                                             transition={{ duration: 0.3, delay: index * 0.05 }}
                                         >
                                             <td className="p-2 md:p-3 text-left text-xs md:text-sm">
-                                                {record.employee_firstname}
+                                                {record.employee_firstname}  {record.employee_lastname}
                                             </td>
-                                            <td className="p-2 md:p-3 text-left text-xs md:text-sm">
-                                                {record.employee_lastname}
-                                            </td>
+                              
                                             <td className="p-2 md:p-3 text-left text-xs md:text-sm">
                                                 {record.position}
                                             </td>
@@ -158,7 +155,7 @@ function Attendance() {
                         <table className="min-w-full table-auto text-sm">
                             <thead className="bg-white text-gray-500 border-b">
                                 <tr>
-                                    <th className="p-2 md:p-3 text-left">Name</th>
+                                    <th className="p-2 md:p-3 text-left">Employee name</th>
                                     <th className="p-2 md:p-3 text-left">Department</th>
                                     <th className="p-2 md:p-3 text-left">Leave Type</th>
                                     <th className="p-2 md:p-3 text-left">Start Date</th>

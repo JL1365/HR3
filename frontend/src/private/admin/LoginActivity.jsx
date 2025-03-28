@@ -93,11 +93,10 @@ function LoginActivity() {
       >
         <div className="min-w-full inline-block align-middle">
           <div className="overflow-hidden">
-            <table className="min-w-full table-auto text-sm">
+            <table className="min-w-full table-auto text-xs md:text-sm">
               <thead className="bg-white text-gray-500 border-b">
                 <tr>
-                  <th className="p-2 md:p-3 text-left">First Name</th>
-                  <th className="p-2 md:p-3 text-left">Last Name</th>
+                  <th className="p-2 md:p-3 text-left">Employee name</th>
                   <th className="p-2 md:p-3 text-left">Email</th>
                   <th className="p-2 md:p-3 text-left">Role</th>
                   <th className="p-2 md:p-3 text-left">Position</th>
@@ -118,10 +117,7 @@ function LoginActivity() {
                       transition={{ duration: 0.3, delay: index * 0.05 }}
                     >
                       <td className="p-2 md:p-3 text-left text-xs md:text-sm">
-                        {activity.firstName}
-                      </td>
-                      <td className="p-2 md:p-3 text-left text-xs md:text-sm">
-                        {activity.lastName}
+                        {activity.firstName} {activity.lastName}
                       </td>
                       <td className="p-2 md:p-3 text-left text-xs md:text-sm">
                         {activity.email}
@@ -165,16 +161,11 @@ function LoginActivity() {
           </div>
         </div>
       </motion.div>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="flex justify-between mt-4"
-      >
+      <div className="flex flex-col md:flex-row justify-between items-center mt-4 gap-2">
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="btn btn-primary text-xs md:text-sm"
+          className="btn btn-primary text-xs md:text-sm w-full md:w-auto"
           onClick={handlePageChange.bind(null, "prev")}
           disabled={currentPage === 1}
         >
@@ -186,13 +177,13 @@ function LoginActivity() {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="btn btn-primary text-xs md:text-sm"
+          className="btn btn-primary text-xs md:text-sm w-full md:w-auto"
           onClick={handlePageChange.bind(null, "next")}
           disabled={indexOfLastActivity >= combinedLoginActivities.length}
         >
           Next
         </motion.button>
-      </motion.div>
+      </div>
 
       <h3 className="text-lg font-semibold mb-2 mt-6">Login Activities Chart</h3>
       <ResponsiveContainer width="100%" height={400}>
@@ -218,27 +209,27 @@ function LoginActivity() {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.3 }}
-            className="bg-white p-4 md:p-6 rounded-lg w-full max-w-md md:max-w-lg"
+            className="bg-white p-4 md:p-6 rounded-lg w-full max-w-md md:max-w-2xl lg:max-w-3xl"
           >
-            <h2 className="text-xl font-semibold mb-4">Login History</h2>
+            <h2 className="text-lg md:text-xl font-semibold mb-4">Login History</h2>
             <div className="space-y-3">
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
+                <table className="min-w-full divide-y divide-gray-200 text-xs md:text-sm">
                   <thead className="bg-gray-50">
                     <tr className="bg-gray-200">
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-neutral uppercase tracking-wider">Timestamp</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-neutral uppercase tracking-wider">IP Address</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-neutral uppercase tracking-wider">Device</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-neutral uppercase tracking-wider">Status</th>
+                      <th className="px-4 md:px-6 py-2 md:py-4 text-left font-semibold text-neutral uppercase tracking-wider">Timestamp</th>
+                      <th className="px-4 md:px-6 py-2 md:py-4 text-left font-semibold text-neutral uppercase tracking-wider">IP Address</th>
+                      <th className="px-4 md:px-6 py-2 md:py-4 text-left font-semibold text-neutral uppercase tracking-wider">Device</th>
+                      <th className="px-4 md:px-6 py-2 md:py-4 text-left font-semibold text-neutral uppercase tracking-wider">Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     {currentHistory.map((history, index) => (
                       <tr key={index} className="hover:bg-gray-300 hover:text-white">
-                        <td className="px-6 py-4 text-left text-xs font-semibold text-neutral uppercase tracking-wider">{new Date(history.timestamp).toLocaleString()}</td>
-                        <td className="px-6 py-4 text-left text-xs font-semibold text-neutral uppercase tracking-wider">{history.ipAddress}</td>
-                        <td className="px-6 py-4 text-left text-xs font-semibold text-neutral uppercase tracking-wider">{history.device}</td>
-                        <td className={`px-6 py-4 text-left text-xs font-semibold text-green uppercase tracking-wider ${history.status === "Success" ? "text-green-600 font-bold" : "text-red-600 font-bold"}`}>
+                        <td className="px-4 md:px-6 py-2 md:py-4 text-left">{new Date(history.timestamp).toLocaleString()}</td>
+                        <td className="px-4 md:px-6 py-2 md:py-4 text-left">{history.ipAddress}</td>
+                        <td className="px-4 md:px-6 py-2 md:py-4 text-left">{history.device}</td>
+                        <td className={`px-4 md:px-6 py-2 md:py-4 text-left ${history.status === "Success" ? "text-green-600 font-bold" : "text-red-600 font-bold"}`}>
                           {history.status}
                         </td>
                       </tr>
@@ -272,7 +263,7 @@ function LoginActivity() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleCloseModal}
-              className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 w-full"
             >
               Close
             </motion.button>

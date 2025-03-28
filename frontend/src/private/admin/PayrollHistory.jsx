@@ -187,7 +187,7 @@ function PayrollHistory() {
               <table className="min-w-full table-auto text-sm payroll-table">
                 <thead className="bg-white text-gray-500 border-b">
                   <tr>
-                    <th className="p-2 md:p-3 text-left">Employee</th>
+                    <th className="p-2 md:p-3 text-left">Employee name</th>
                     <th className="p-2 md:p-3 text-left">Position</th>
                     <th className="p-2 md:p-3 text-left">Total Work Hours</th>
                     <th className="p-2 md:p-3 text-left">
