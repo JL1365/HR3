@@ -1,4 +1,5 @@
 import { Notification } from "../models/notificationModel.js";
+import mongoose from "mongoose"; // Import mongoose for ObjectId validation
 
 export const getNotificationsByRole = async (req, res) => {
     try {
@@ -39,6 +40,10 @@ export const markNotificationAsRead = async (req, res) => {
 
         if (!userId) {
             return res.status(401).json({ message: "User not authenticated" });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(notificationId)) {
+            return res.status(400).json({ message: "Invalid notification ID" });
         }
 
         const notification = await Notification.findOneAndUpdate(

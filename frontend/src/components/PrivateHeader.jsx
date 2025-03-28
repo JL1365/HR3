@@ -81,7 +81,7 @@ const PrivateHeader = ({ title, toggleSidebar, isSidebarOpen }) => {
     socket.on("requestStatusUpdated", (data) => {
       console.log("Real-time request status update:", data);
       addRealTimeNotification({
-        _id: Date.now(), // Temporary unique ID for real-time notifications
+        _id: Date.now(),
         message: data.message,
         read: false,
         timeElapsed: "Just now",
@@ -91,7 +91,7 @@ const PrivateHeader = ({ title, toggleSidebar, isSidebarOpen }) => {
     socket.on("payrollFinalized", (data) => {
       console.log("Real-time payroll finalized notification:", data);
       addRealTimeNotification({
-        _id: Date.now(), // Temporary unique ID for real-time notifications
+        _id: Date.now(),
         message: data.message,
         read: false,
         timeElapsed: "Just now",
@@ -120,6 +120,10 @@ const PrivateHeader = ({ title, toggleSidebar, isSidebarOpen }) => {
   const unreadCount = notifications.filter((notification) => !notification.read).length;
 
   const handleMarkAsRead = (notificationId) => {
+    if (!notificationId) {
+      console.error("Invalid notification ID");
+      return;
+    }
     markAsRead(notificationId);
   };
 
