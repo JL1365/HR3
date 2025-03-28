@@ -173,7 +173,7 @@ function Penalty() {
         Create Penalty Level
       </motion.button>
       {loading && <p>Loading penalty levels...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+      {/* {error && <p className="text-red-500">{error}</p>} */}
 
       <motion.div
         initial={{ y: 20, opacity: 0 }}

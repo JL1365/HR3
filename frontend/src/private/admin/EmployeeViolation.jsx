@@ -91,7 +91,7 @@ function EmployeeViolation() {
         Add Employee Violation
       </motion.button>
       {isLoading && <p>Loading violations...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+      {/* {error && <p className="text-red-500">{error}</p>} */}
 
       <motion.div
         initial={{ y: 20, opacity: 0 }}
