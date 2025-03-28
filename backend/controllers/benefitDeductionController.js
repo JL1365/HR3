@@ -4,7 +4,7 @@ import { BenefitRequest } from "../models/benefitRequestModel.js";
 import { BenefitDeduction } from "../models/benefitDeductionModel.js";
 import { BenefitDeductionHistory } from "../models/benefitDeductionHistory.js";
 import { Notification } from "../models/notificationModel.js";
-import { io } from "../index.js"; // Import the socket instance
+import { io } from "../index.js";
 
 export const addUserDeduction = async (req, res) => {
   try {
@@ -52,7 +52,6 @@ export const addUserDeduction = async (req, res) => {
 
     await newDeduction.save();
 
-    // Emit a real-time event for the new deduction
     io.emit("deductionAdded", {
       userId,
       message: `A deduction of ${numericAmount} has been applied for the benefit: ${benefitRequest.compensationBenefitId.benefitName}.`,

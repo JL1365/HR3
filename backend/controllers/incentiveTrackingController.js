@@ -4,8 +4,8 @@ import { Notification } from "../models/notificationModel.js";
 import { Incentive } from "../models/incentiveModel.js";
 import { IncentiveTracking } from "../models/incentiveTrackingModel.js";
 
-
 import axios from 'axios'; 
+import { io } from "../index.js"; 
 
 export const createIncentiveTracking = async (req, res) => {
     try {
@@ -47,6 +47,11 @@ export const createIncentiveTracking = async (req, res) => {
 
         const notificationMessage = `You have been assigned an incentive: ${incentiveExists.incentiveName} with an amount of ${amount}.`;
         await Notification.create({
+            userId,
+            message: notificationMessage,
+        });
+
+        io.emit("incentiveAssigned", {
             userId,
             message: notificationMessage,
         });

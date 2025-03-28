@@ -4,6 +4,7 @@ import upload from '../configs/multerConfig.js';
 import { CompensationBenefit } from "../models/compensationBenefitModel.js";
 import axios from 'axios'
 import { Notification } from "../models/notificationModel.js";
+import { io } from "../index.js";
 
 export const applyBenefit = async (req, res) => {
   try {
@@ -189,6 +190,12 @@ export const updateApplyRequestStatus = async (req, res) => {
 
     const notificationMessage = `Your request for ${updatedRequest.compensationBenefitId.benefitName} has been ${status}.`;
     await Notification.create({
+      userId: currentRequest.userId,
+      message: notificationMessage,
+    });
+
+    // Emit a real-time event for the updated request status
+    io.emit("requestStatusUpdated", {
       userId: currentRequest.userId,
       message: notificationMessage,
     });

@@ -68,9 +68,42 @@ const PrivateHeader = ({ title, toggleSidebar, isSidebarOpen }) => {
       });
     });
 
+    socket.on("incentiveAssigned", (data) => {
+      console.log("Real-time incentive notification:", data);
+      addRealTimeNotification({
+        _id: Date.now(), // Temporary unique ID for real-time notifications
+        message: data.message,
+        read: false,
+        timeElapsed: "Just now",
+      });
+    });
+
+    socket.on("requestStatusUpdated", (data) => {
+      console.log("Real-time request status update:", data);
+      addRealTimeNotification({
+        _id: Date.now(), // Temporary unique ID for real-time notifications
+        message: data.message,
+        read: false,
+        timeElapsed: "Just now",
+      });
+    });
+
+    socket.on("payrollFinalized", (data) => {
+      console.log("Real-time payroll finalized notification:", data);
+      addRealTimeNotification({
+        _id: Date.now(), // Temporary unique ID for real-time notifications
+        message: data.message,
+        read: false,
+        timeElapsed: "Just now",
+      });
+    });
+
     return () => {
       socket.off("connect");
       socket.off("deductionAdded");
+      socket.off("incentiveAssigned");
+      socket.off("requestStatusUpdated");
+      socket.off("payrollFinalized");
     };
   }, [socket, addRealTimeNotification]);
 
