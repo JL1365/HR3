@@ -9,19 +9,35 @@ const normalizeData = (data) => {
   return data.map(value => (value - min) / (max - min));
 };
 
+const mapAttendanceToEmployees = (employees, attendanceRecords) => {
+  const attendanceMap = {};
+  attendanceRecords.forEach(record => {
+    const employeeId = record.employee_id.toString();
+    if (!attendanceMap[employeeId]) {
+      attendanceMap[employeeId] = [];
+    }
+    attendanceMap[employeeId].push(record);
+  });
+
+  return employees.map(employee => ({
+    ...employee.toObject(),
+    attendance: attendanceMap[employee.employee_id.toString()] || []
+  }));
+};
+
 export const predictEmployeeBehavior = async (req, res) => {
   try {
     const employees = await EmployeeLeave.find({});
     const attendanceRecords = await Attendance.find({});
 
+    const mappedEmployees = mapAttendanceToEmployees(employees, attendanceRecords);
+
     const features = [];
     const labels = [];
     const employeeMetadata = [];
 
-    employees.forEach(employee => {
-      const employeeAttendance = attendanceRecords.filter(
-        record => record.employee_id.toString() === employee.employee_id.toString()
-      );
+    mappedEmployees.forEach(employee => {
+      const employeeAttendance = employee.attendance;
 
       const totalLeaves = employee.leave_count || 0;
       const leaveTypesUsed = employee.leaves?.map(leave => leave.leave_type) || [];
@@ -167,9 +183,15 @@ export const predictIncentiveEligibility = async (req, res) => {
       input.dispose();
       prediction.dispose();
 
+      // Calculate predicted incentive amount
+      const predictedAmount = isEligible
+        ? (employee.totalAttendance * 10) + (employee.holidaysWorked * 50) + (employee.totalOvertimeHours * 20)
+        : 0;
+
       return {
         ...employee,
         isEligible,
+        predictedAmount: isEligible ? predictedAmount.toFixed(2) : null,
         eligibilityReason: isEligible
           ? 'High attendance, significant holiday work, low leave usage, and high overtime hours'
           : 'Does not meet attendance, holiday work, leave, or overtime criteria'

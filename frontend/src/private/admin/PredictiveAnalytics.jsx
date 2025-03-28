@@ -102,6 +102,8 @@ const PredictiveAnalytics = () => {
                     <th className="p-2 md:p-3 text-left">Total Leaves</th>
                     <th className="p-2 md:p-3 text-left">Overtime Hours</th>
                     <th className="p-2 md:p-3 text-left">Incentive Eligible</th>
+                    <th className="p-2 md:p-3 text-left">Predicted Amount</th>
+                    <th className="p-2 md:p-3 text-left">Reason</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white text-neutral-500 border-b">
@@ -119,6 +121,10 @@ const PredictiveAnalytics = () => {
                           <X className="text-red-500 mx-auto" />
                         )}
                       </td>
+                      <td className="p-2 md:p-3 text-left">
+                        {employee.isEligible ? `₱${employee.predictedAmount}` : 'N/A'}
+                      </td>
+                      <td className="p-2 md:p-3 text-left">{employee.eligibilityReason}</td>
                     </tr>
                   ))}
                 </tbody>

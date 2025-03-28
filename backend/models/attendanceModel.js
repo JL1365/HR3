@@ -5,6 +5,7 @@ const attendanceSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Employee',
     required: true,
+    index: true, // Added index for faster lookups
   },
   employee_firstname: {
     type: String,
@@ -31,6 +32,12 @@ const attendanceSchema = new mongoose.Schema({
   overtime_hours: {
     type: String,
     default: '0h 0m',
+    validate: {
+      validator: function (v) {
+        return /^\d+h \d+m$/.test(v); // Ensure format is "Xh Ym"
+      },
+      message: props => `${props.value} is not a valid overtime format!`
+    }
   },
   minutes_late: {
     type: Number,
