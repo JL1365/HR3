@@ -304,6 +304,42 @@ export const verifyOTP = async (req, res) => {
 
         const token = generateTokenAndSetCookie(res, user);
 
+        const userAgent = useragent.parse(req.headers["user-agent"]);
+        const ipAddress =
+            process.env.NODE_ENV === "production"
+                ? req.headers["x-forwarded-for"]?.split(",")[0] || "Unknown"
+                : req.socket.remoteAddress || "Unknown";
+
+        const loginRecord = await LoginActivity.findOne({ user_id: user._id });
+
+        if (loginRecord) {
+            loginRecord.loginCount += 1;
+            loginRecord.lastLogin = new Date();
+            loginRecord.failedLoginAttempts = 0;
+            loginRecord.deviceInfo = userAgent.toString();
+            loginRecord.loginHistory.push({
+                ipAddress,
+                device: userAgent.toString(),
+                status: "Success",
+            });
+            await loginRecord.save();
+        } else {
+            await LoginActivity.create({
+                user_id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                role: user.role,
+                position: user.position,
+                Hr: user.Hr,
+                loginCount: 1,
+                lastLogin: new Date(),
+                failedLoginAttempts: 0,
+                deviceInfo: userAgent.toString(),
+                loginHistory: [{ ipAddress, device: userAgent.toString(), status: "Success" }],
+            });
+        }
+
         return res.status(200).json({ message: "OTP verified successfully", token, user });
     } catch (error) {
         console.error("Error verifying OTP:", error.message);

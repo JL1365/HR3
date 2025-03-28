@@ -22,7 +22,7 @@ function AdminLogin() {
         setLoading(false);
         if (result.success) {
             if (result.mfaEnabled) {
-                navigate("/verify-otp"); // Redirect only when MFA is enabled
+                navigate("/verify-otp");
             } else {
                 navigate("/employee-dashboard");
             }
