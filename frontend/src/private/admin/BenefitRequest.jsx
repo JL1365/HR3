@@ -3,11 +3,20 @@ import { motion } from "framer-motion";
 import { useBenefitRequestStore } from "../../store/benefitRequestStore";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import io from "socket.io-client";
+
+const socketURL =
+  import.meta.env.MODE === "development"
+    ? "http://localhost:7687"
+    : window.location.origin;
+
+const socket = io(socketURL, { withCredentials: true });
 
 function BenefitRequest() {
   const {
     allBenefitRequests,
     fetchAllBenefitRequest,
+    setBenefitRequests,
     loading,
     error,
     clearError,
@@ -18,6 +27,32 @@ function BenefitRequest() {
   useEffect(() => {
     fetchAllBenefitRequest();
   }, [fetchAllBenefitRequest]);
+
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Socket connected:", socket.id);
+    });
+
+    socket.on("benefitApplied", (data) => {
+      console.log("Real-time benefit application received:", data);
+      setBenefitRequests((prevRequests) => [data, ...prevRequests]);
+    });
+
+    socket.on("requestStatusUpdated", (data) => {
+      console.log("Real-time request status update received:", data);
+      setBenefitRequests((prevRequests) =>
+        prevRequests.map((request) =>
+          request._id === data.requestId ? { ...request, status: data.status } : request
+        )
+      );
+    });
+
+    return () => {
+      socket.off("connect");
+      socket.off("benefitApplied");
+      socket.off("requestStatusUpdated");
+    };
+  }, [setBenefitRequests]);
 
   const tableVariants = {
     hidden: { opacity: 0 },
@@ -97,12 +132,13 @@ function BenefitRequest() {
     }
   };
 
-  const pendingRequests = allBenefitRequests.filter(
-    (req) => req.status !== "Approved" && req.status !== "Denied"
-  );
-  const finalizedRequests = allBenefitRequests.filter(
-    (req) => req.status === "Approved" || req.status === "Denied"
-  );
+  const pendingRequests = Array.isArray(allBenefitRequests)
+    ? allBenefitRequests.filter((req) => req.status !== "Approved" && req.status !== "Denied")
+    : [];
+
+  const finalizedRequests = Array.isArray(allBenefitRequests)
+    ? allBenefitRequests.filter((req) => req.status === "Approved" || req.status === "Denied")
+    : [];
   const [selectedRequest, setSelectedRequest] = useState(null);
   return (
     <motion.div
@@ -187,23 +223,6 @@ function BenefitRequest() {
                 </a>
               )}
             </div>
-            <div className="mt-4 flex gap-2">
-              <button
-                onClick={() =>
-                  handleUpdateStatus(selectedRequest._id, "Approved")
-                }
-                className="bg-green-500 text-white px-3 py-1 rounded"
-              >
-                Approve
-              </button>
-              <button
-                onClick={() =>
-                  handleUpdateStatus(selectedRequest._id, "Denied")
-                }
-                className="bg-red-500 text-white px-3 py-1 rounded"
-              >
-                Deny
-              </button>
               <button
                 onClick={() => setSelectedRequest(null)}
                 className="bg-gray-500 text-white px-3 py-1 rounded"
@@ -212,7 +231,6 @@ function BenefitRequest() {
               </button>
             </div>
           </div>
-        </div>
       )}
 
       {loading && (

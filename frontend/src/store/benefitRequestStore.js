@@ -7,11 +7,12 @@ export const useBenefitRequestStore = create((set, get) => ({
         set({ loading: true, error: null });
         try {
             const response = await axiosInstance.get("/benefitRequest/get-all-applied-requests");
-            set({ allBenefitRequests: response.data.data || [], loading: false });
+            const data = Array.isArray(response.data.data) ? response.data.data : [];
+            set({ allBenefitRequests: data, loading: false });
         } catch (error) {
-            console.error("Error fetching  benefit request:", error);
+            console.error("Error fetching benefit requests:", error);
             set({ 
-                error: error.response?.data?.message || "Failed to fetch  benefit requests", 
+                error: error.response?.data?.message || "Failed to fetch benefit requests", 
                 loading: false 
             });
         }
@@ -52,6 +53,11 @@ export const useBenefitRequestStore = create((set, get) => ({
         } catch (error) {
             set({ error: error.response?.data?.message || "Failed to apply for benefit" });
         }
+    },
+
+    setBenefitRequests: (updatedRequests) => {
+        const data = Array.isArray(updatedRequests) ? updatedRequests : [];
+        set({ allBenefitRequests: data });
     },
 
     clearError: () => set({ error: null }),

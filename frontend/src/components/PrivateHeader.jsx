@@ -61,7 +61,7 @@ const PrivateHeader = ({ title, toggleSidebar, isSidebarOpen }) => {
     socket.on("deductionAdded", (data) => {
       console.log("Real-time deduction notification:", data);
       addRealTimeNotification({
-        _id: Date.now(), // Temporary unique ID for real-time notifications
+        _id: Date.now(), 
         message: data.message,
         read: false,
         timeElapsed: "Just now",
@@ -71,7 +71,7 @@ const PrivateHeader = ({ title, toggleSidebar, isSidebarOpen }) => {
     socket.on("incentiveAssigned", (data) => {
       console.log("Real-time incentive notification:", data);
       addRealTimeNotification({
-        _id: Date.now(), // Temporary unique ID for real-time notifications
+        _id: Date.now(),
         message: data.message,
         read: false,
         timeElapsed: "Just now",
@@ -99,7 +99,7 @@ const PrivateHeader = ({ title, toggleSidebar, isSidebarOpen }) => {
     });
 
     socket.on("benefitApplied", (data) => {
-      console.log("Real-time benefit application notification received:", data); // Log the received event
+      console.log("Real-time benefit application notification received:", data);
       addRealTimeNotification({
         _id: Date.now(),
         message: data.message,

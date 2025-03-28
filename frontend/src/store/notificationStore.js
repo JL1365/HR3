@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios.js";
-import mongoose from "mongoose"; // Import mongoose for ObjectId validation
+import mongoose from "mongoose";
 
 export const useNotificationStore = create((set) => ({
   notifications: [],
@@ -14,7 +14,6 @@ export const useNotificationStore = create((set) => ({
   },
   markAsRead: async (notificationId) => {
     try {
-      // Validate notificationId before making the request
       if (!mongoose.Types.ObjectId.isValid(notificationId)) {
         console.error("Invalid notification ID:", notificationId);
         return;

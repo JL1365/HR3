@@ -1,5 +1,5 @@
 import { Notification } from "../models/notificationModel.js";
-import mongoose from "mongoose"; // Import mongoose for ObjectId validation
+import mongoose from "mongoose";
 
 export const getNotificationsByRole = async (req, res) => {
     try {

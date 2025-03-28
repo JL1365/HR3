@@ -9,7 +9,7 @@ import { CompensationBenefit } from "../models/compensationBenefitModel.js";
 import {PayrollHistory} from '../models/payrollHistoryModel.js'
 import {Batch} from '../models/batchModel.js'
 import { Notification } from "../models/notificationModel.js";
-import { io } from "../index.js"; // Import the socket instance
+import { io } from "../index.js";
 
 const calculateGrossPayroll = async () => {
     const serviceToken = generateServiceToken();
@@ -588,7 +588,6 @@ export const finalizePayroll = async (req, res) => {
         }));
         await Notification.insertMany(notifications);
 
-        // Emit a real-time event for the finalized payroll
         io.emit("payrollFinalized", {
             batchId: batch_id,
             message: `Payroll for batch ${batch_id} has been finalized.`,
