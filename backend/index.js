@@ -2,7 +2,6 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import path from 'path';
 import http from 'http';
 import {Server} from 'socket.io'; 
 
@@ -33,7 +32,6 @@ import notificationRoute from './routes/notificationRoute.js';
 dotenv.config();
 connectDB();
 
-const __dirname = path.resolve();
 
 const app = express();
 const PORT = process.env.PORT;
@@ -89,11 +87,6 @@ app.use("/api/audit",auditRoute);
 
 app.use("/api/notification",notificationRoute);
 
-app.use(express.static(path.join(__dirname, "/frontend/dist")));
-
-app.get("*", (req, res) => {
-	res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
-});
 
 io.on('connection', (socket) => {
     
