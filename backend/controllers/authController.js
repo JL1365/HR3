@@ -215,6 +215,7 @@ export const employeeLogin = async (req, res) => {
             return res.status(200).json({
                 message: "OTP sent to your email. Please verify to complete login.",
                 userId: user._id,
+                mfaEnabled: true,
             });
         }
 
@@ -250,7 +251,7 @@ export const employeeLogin = async (req, res) => {
             });
         }
 
-        return res.status(200).json({ token, user });
+        return res.status(200).json({ token, user, mfaEnabled: false });
     } catch (error) {
         console.error("Error during employee login:", error.message);
         return res.status(500).json({ message: "Internal Server error" });

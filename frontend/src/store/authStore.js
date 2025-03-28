@@ -27,10 +27,10 @@ export const useAuthStore  = create ((set) => ({
         try {
             console.log("Login payload:", { email, password });
             const response = await axiosInstance.post("/auth/employee-login", { email, password });
-            const { user, token } = response.data;
+            const { user, token, mfaEnabled } = response.data;
 
-            set({ user, token, isAuthenticated: true });
-            return { success: true };
+            set({ user, token, isAuthenticated: !mfaEnabled });
+            return { success: true, mfaEnabled };
         } catch (error) {
             console.error("Login failed:", error.response?.data?.message || error.message);
             return { success: false, message: error.response?.data?.message || "Login failed" };
@@ -100,6 +100,19 @@ export const useAuthStore  = create ((set) => ({
             console.error("Error Response:", error.response?.data);
             // Optionally set user to null or handle the error state
             set({ user: null });
+        }
+    },
+
+    toggleMFA: async (enableMFA) => {
+        try {
+            const response = await axiosInstance.post("/auth/toggle-mfa", { enableMFA });
+            set((state) => ({
+                user: { ...state.user, multiFactorEnabled: enableMFA },
+            }));
+            return { success: true, message: response.data.message };
+        } catch (error) {
+            console.error("Failed to toggle MFA:", error.response?.data?.message || error.message);
+            return { success: false, message: error.response?.data?.message || "Failed to toggle MFA" };
         }
     }
 }));

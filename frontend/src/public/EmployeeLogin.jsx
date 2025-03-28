@@ -24,7 +24,11 @@ function EmployeeLogin() {
         const result = await employeeLogin({ email: formData.employee_email, password: formData.employee_password });
         setLoading(false);
         if (result.success) {
-            navigate("/employee-dashboard");
+            if (result.mfaEnabled) {
+                navigate("/verify-otp");
+            } else {
+                navigate("/employee-dashboard");
+            }
         } else {
             setError(result.message || "Invalid email or password.");
         }
