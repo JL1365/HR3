@@ -98,12 +98,23 @@ const PrivateHeader = ({ title, toggleSidebar, isSidebarOpen }) => {
       });
     });
 
+    socket.on("benefitApplied", (data) => {
+      console.log("Real-time benefit application notification received:", data); // Log the received event
+      addRealTimeNotification({
+        _id: Date.now(),
+        message: data.message,
+        read: false,
+        timeElapsed: "Just now",
+      });
+    });
+
     return () => {
       socket.off("connect");
       socket.off("deductionAdded");
       socket.off("incentiveAssigned");
       socket.off("requestStatusUpdated");
       socket.off("payrollFinalized");
+      socket.off("benefitApplied");
     };
   }, [socket, addRealTimeNotification]);
 

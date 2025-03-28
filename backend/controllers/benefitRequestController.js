@@ -85,6 +85,14 @@ export const applyBenefit = async (req, res) => {
     }));
     await Notification.insertMany(notifications);
 
+    // Emit a real-time event for the applied benefit
+    const eventData = {
+      userId,
+      message: `${employee.firstName} ${employee.lastName} applied for ${benefit.benefitName}`,
+    };
+    io.emit("benefitApplied", eventData);
+    console.log("Real-time event emitted: benefitApplied", eventData); // Log the emitted event
+
     res.status(201).json({
       message: "Benefit request submitted successfully",
       requestId: newRequest._id,
