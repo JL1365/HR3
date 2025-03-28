@@ -54,6 +54,20 @@ export const useBenefitDeductiontStore = create((set, get) => ({
           };
         }
       },
+
+    updateUserDeduction: async ({ id, amount }) => {
+        try {
+            const response = await axiosInstance.put(`/benefitDeduction/update-user-deduction/${id}`, { amount });
+            await get().fetchAllBenefitDeductions();
+            return { success: true, message: response.data.message };
+        } catch (error) {
+            console.error("Error updating user deduction:", error);
+            return {
+                success: false,
+                message: error.response?.data?.message || "Failed to update deduction",
+            };
+        }
+    },
       
   
     clearError: () => set({ error: null }),

@@ -11,6 +11,7 @@ function BenefitDeduction() {
     allDeductions = [],
     fetchAllBenefitDeductions,
     addUserDeduction,
+    updateUserDeduction,
     loading,
   } = useBenefitDeductiontStore();
 
@@ -23,6 +24,9 @@ function BenefitDeduction() {
   const [userDeductions, setUserDeductions] = useState([]);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedDeduction, setSelectedDeduction] = useState(null);
+  const [editAmount, setEditAmount] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(10);
   
@@ -85,6 +89,44 @@ function BenefitDeduction() {
     setSelectedUser(user._id);
     setIsUserModalOpen(true);
     setCurrentDeductionPage(1); 
+  };
+
+  const handleEditClick = (deduction) => {
+    setSelectedDeduction(deduction);
+    setEditAmount(deduction.amount);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateDeduction = async (e) => {
+    e.preventDefault();
+    if (!selectedDeduction || !editAmount || isNaN(editAmount)) {
+      toast.error("Please provide a valid amount.");
+      return;
+    }
+
+    try {
+      const result = await updateUserDeduction({
+        id: selectedDeduction._id,
+        amount: parseFloat(editAmount),
+      });
+
+      if (result.success) {
+        setIsEditModalOpen(false);
+        setIsUserModalOpen(false);
+        setSelectedDeduction(null);
+        toast.success("Deduction updated successfully!");
+        fetchAllBenefitDeductions();
+      } else {
+        toast.error(result.message || "Error updating deduction.");
+      }
+    } catch (error) {
+    const errorMessage = error.response?.data?.message || 
+                                     error.message || 
+                                     "Failed to save incentive tracking!";
+                
+            
+                toast.error(errorMessage);
+    }
   };
 
   const uniqueUsersMap = new Map();
@@ -326,12 +368,13 @@ function BenefitDeduction() {
                       <th className="px-4 py-3">Benefit Name</th>
                       <th className="px-4 py-3">Amount</th>
                       <th className="px-4 py-3">Date</th>
+                      <th className="px-4 py-3">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {userDeductions.length === 0 ? (
                       <tr>
-                        <td colSpan="3" className="text-center py-4 text-gray-500">
+                        <td colSpan="4" className="text-center py-4 text-gray-500">
                           No deductions found for this user
                         </td>
                       </tr>
@@ -350,6 +393,14 @@ function BenefitDeduction() {
                           <td className="px-4 py-3">₱{deduction.amount}</td>
                           <td className="px-4 py-3">
                             {new Date(deduction.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="px-4 py-3">
+                            <button
+                              onClick={() => handleEditClick(deduction)}
+                              className="text-blue-500 hover:underline"
+                            >
+                              Edit
+                            </button>
                           </td>
                         </motion.tr>
                       ))
@@ -512,6 +563,64 @@ function BenefitDeduction() {
                     ) : (
                       "Add Deduction"
                     )}
+                  </motion.button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isEditModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="bg-white rounded-lg shadow-lg w-full max-w-lg"
+            >
+              <div className="p-4 border-b flex justify-between items-center">
+                <h3 className="font-bold text-lg">Edit Deduction</h3>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="btn btn-sm btn-circle"
+                >
+                  ✕
+                </motion.button>
+              </div>
+              <form onSubmit={handleUpdateDeduction} className="p-4 space-y-4">
+                <div>
+                  <label className="block mb-1 font-medium">Amount</label>
+                  <input
+                    type="number"
+                    className="input input-bordered w-full"
+                    value={editAmount}
+                    onChange={(e) => setEditAmount(e.target.value)}
+                    placeholder="Enter new amount"
+                    required
+                  />
+                </div>
+                <div className="pt-2 flex justify-end space-x-2">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    type="button"
+                    onClick={() => setIsEditModalOpen(false)}
+                    className="btn btn-outline"
+                  >
+                    Cancel
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={loading}
+                  >
+                    {loading ? "Updating..." : "Update"}
                   </motion.button>
                 </div>
               </form>

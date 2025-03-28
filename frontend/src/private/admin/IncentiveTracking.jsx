@@ -41,7 +41,11 @@ function IncentiveTracking() {
             await deleteIncentiveTracking(id);
             toast.success("Item deleted successfully!");
         } catch (error) {
-            toast.error("Failed to delete item");
+            const errorMessage = error.response?.data?.message || 
+                                 error.message || 
+                                 "Failed to delete item";
+            
+            toast.error(errorMessage);
         }
     };
 
@@ -73,7 +77,13 @@ function IncentiveTracking() {
             fetchIncentiveTrackings();
             setIsOpenModal(false);
         } catch (error) {
-            toast.error("Failed to save incentive tracking!");
+            // Extract error message from the response
+            const errorMessage = error.response?.data?.message || 
+                                 error.message || 
+                                 "Failed to save incentive tracking!";
+            
+        
+            toast.error(errorMessage);
         }
     };
 
