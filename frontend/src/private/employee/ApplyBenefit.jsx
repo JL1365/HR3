@@ -13,6 +13,7 @@ function ApplyBenefit() {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false); // Add local state for loading
     const requestsPerPage = 10;
     const indexOfLastRequest = currentPage * requestsPerPage;
     const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
@@ -64,6 +65,7 @@ function ApplyBenefit() {
             }
         }
 
+        setIsSubmitting(true); // Set loading to true
         applyBenefit(formData)
             .then(() => {
                 toast.success("Benefit applied successfully!");
@@ -74,6 +76,9 @@ function ApplyBenefit() {
                                      err.message || 
                                      "Failed to apply for the benefit!";
                 toast.error(errorMessage);
+            })
+            .finally(() => {
+                setIsSubmitting(false); // Set loading to false
             });
     };
 
@@ -145,7 +150,14 @@ function ApplyBenefit() {
                                     Cancel
                                 </button>
                                 <button type="submit" className="btn btn-primary">
-                                    Apply
+                                {isSubmitting ? ( // Use isSubmitting for the loading state
+                      <span className="flex items-center">
+                        <div className="animate-spin mr-2 h-4 w-4 border-t-2 border-b-2 border-white rounded-full"></div>
+                        Processing...
+                      </span>
+                    ) : (
+                      "Apply"
+                    )}
                                 </button>
                             </div>
                         </form>
