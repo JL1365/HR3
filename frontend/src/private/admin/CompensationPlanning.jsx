@@ -103,7 +103,12 @@ function CompensationPlanning() {
         benefits: [{ benefitType: "", deductionsAmount: 0 }],
       });
     } catch (err) {
-      console.error("Error in compensation plan operation:", err);
+      const errorMessage = error.response?.data?.message || 
+      error.message || 
+      "Failed to save incentive tracking!";
+
+
+toast.error(errorMessage);
     }
   };
 

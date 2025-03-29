@@ -56,7 +56,6 @@ function ThirteenMonth() {
               <th style="border: 1px solid #ddd; padding: 8px;">Batch ID</th>
               <th style="border: 1px solid #ddd; padding: 8px;">Payroll Date</th>
               <th style="border: 1px solid #ddd; padding: 8px;">Gross Salary</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">Net Salary</th>
               <th style="border: 1px solid #ddd; padding: 8px;">Daily Work Hours</th>
             </tr>
           </thead>
@@ -68,7 +67,6 @@ function ThirteenMonth() {
                 <td style="border: 1px solid #ddd; padding: 8px;">${batch.batch_id}</td>
                 <td style="border: 1px solid #ddd; padding: 8px;">${new Date(batch.payroll_date).toLocaleDateString()}</td>
                 <td style="border: 1px solid #ddd; padding: 8px;">₱${batch.grossSalary.toLocaleString()}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">₱${batch.netSalary.toLocaleString()}</td>
                 <td style="border: 1px solid #ddd; padding: 8px;">
                   ${batch.dailyWorkHours
                     .map(
@@ -150,7 +148,6 @@ function ThirteenMonth() {
                   <th style="border: 1px solid #ddd; padding: 8px;">Batch ID</th>
                   <th style="border: 1px solid #ddd; padding: 8px;">Payroll Date</th>
                   <th style="border: 1px solid #ddd; padding: 8px;">Gross Salary</th>
-                  <th style="border: 1px solid #ddd; padding: 8px;">Net Salary</th>
                   <th style="border: 1px solid #ddd; padding: 8px;">Total Days in Batch</th>
                   <th style="border: 1px solid #ddd; padding: 8px;">13th Month Pay</th>
                 </tr>
@@ -163,7 +160,6 @@ function ThirteenMonth() {
                     <td style="border: 1px solid #ddd; padding: 8px;">${batch.batch_id}</td>
                     <td style="border: 1px solid #ddd; padding: 8px;">${new Date(batch.payroll_date).toLocaleDateString()}</td>
                     <td style="border: 1px solid #ddd; padding: 8px;">₱${batch.grossSalary.toLocaleString()}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">₱${batch.netSalary.toLocaleString()}</td>
                     <td style="border: 1px solid #ddd; padding: 8px;">${batch.totalDaysInBatch}</td>
                     <td style="border: 1px solid #ddd; padding: 8px;">₱${batch.thirteenthMonthPay.toLocaleString()}</td>
                   </tr>
@@ -308,7 +304,6 @@ function ThirteenMonth() {
                       <th>Batch ID</th>
                       <th>Payroll Date</th>
                       <th>Gross Salary</th>
-                      <th>Net Salary</th>
                       <th>Total Days in Batch</th>
                       <th>13th Month Pay</th>
                       <th>Daily Work Hours</th>
@@ -325,7 +320,6 @@ function ThirteenMonth() {
                           <td>{batch.batch_id}</td>
                           <td>{new Date(batch.payroll_date).toLocaleDateString()}</td>
                           <td>₱{batch.grossSalary.toLocaleString()}</td>
-                          <td>₱{batch.netSalary.toLocaleString()}</td>
                           <td>{batch.totalDaysInBatch}</td>
                           <td>₱{batch.thirteenthMonthPay.toLocaleString()}</td>
                           <td>

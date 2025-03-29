@@ -315,7 +315,7 @@ const renderTable = (data, type) => {
           <table className="table w-full table-zebra mt-4">
             <thead>
               <tr>
-                <th colSpan="3">Deductible Amounts</th>
+                <th colSpan="3">Violation Deduction Amount</th>
               </tr>
               <tr>
                 <th>Benefit Name</th>
@@ -653,7 +653,7 @@ const renderTable = (data, type) => {
                           <table className="table table-zebra w-full">
                             <thead>
                               <tr>
-                                <th>Benefit Name</th>
+                                <th>Violation Deduction Amount</th>
                                 <th>Amount</th>
                                 <th>Date</th>
                               </tr>

@@ -13,7 +13,7 @@ const employeeCompensationSchema = new mongoose.Schema({
     },
     benefitType: {
         type: String,
-        enum: ["Paid Benefit", "Deductible Benefit","Deduction"],
+        enum: ["Paid Benefit", "Deductible Benefit","Violation Deduction"],
         required: true
     },
     daysLeave: { 

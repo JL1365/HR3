@@ -74,8 +74,8 @@ function AddEmployeeCompensation() {
     const filteredBenefits = benefits.filter(benefit => {
         if (formData.benefitType === "Paid Benefit") {
             return benefit.benefitType === "Paid Benefit" && !benefit.isNeedRequest;
-        } else if (formData.benefitType === "Deduction") {
-            return benefit.benefitType === "Deduction";
+        } else if (formData.benefitType === "Violation Deduction") {
+            return benefit.benefitType === "Violation Deduction";
         }
         return false;
     });
@@ -134,7 +134,7 @@ function AddEmployeeCompensation() {
                                 >
                                     <option value="">Select Benefit Type</option>
                                     <option value="Paid Benefit">Paid Benefit</option>
-                                    <option value="Deduction">Deduction</option>
+                                    <option value="Violation Deduction">Violation Deduction</option>
                                 </select>
                             </div>
                             {formData.benefitType && (
@@ -170,7 +170,7 @@ function AddEmployeeCompensation() {
                                     />
                                 </div>
                             )}
-                            {formData.benefitType === "Deduction" && (
+                            {formData.benefitType === "Violation Deduction" && (
                                 <div className="mb-4">
                                     <label className="block text-sm font-medium text-gray-700">Deduction Amount</label>
                                     <div className="relative rounded-md shadow-sm">
@@ -247,7 +247,9 @@ function AddEmployeeCompensation() {
                                                 {compensation.benefitType}
                                             </td>
                                             <td className="p-2 md:p-3 text-left text-xs md:text-sm">
-                                                {compensation.totalAmount}
+                                                {compensation.benefitType === "Paid Benefit" 
+                                                    ? `${compensation.daysLeave} Days` 
+                                                    : `₱${compensation.deductionAmount}`}
                                             </td>
                                             <td className="p-2 md:p-3 text-left text-xs md:text-sm">
                                                 {new Date(compensation.createdAt).toLocaleDateString()}

@@ -225,7 +225,7 @@ function LoginActivity() {
                   </thead>
                   <tbody>
                     {currentHistory.map((history, index) => (
-                      <tr key={index} className="hover:bg-gray-300 hover:text-white">
+                      <tr key={index} className="hover:bg-gray-300 hover:text-neutral">
                         <td className="px-4 md:px-6 py-2 md:py-4 text-left">{new Date(history.timestamp).toLocaleString()}</td>
                         <td className="px-4 md:px-6 py-2 md:py-4 text-left">{history.ipAddress}</td>
                         <td className="px-4 md:px-6 py-2 md:py-4 text-left">{history.device}</td>

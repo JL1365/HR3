@@ -40,7 +40,6 @@ export const calculate13MonthPay = async (req, res) => {
               batch_id: "$batch_id",
               payroll_date: "$payroll_date",
               grossSalary: "$grossSalary",
-              netSalary: "$netSalary",
               dailyWorkHours: "$dailyWorkHours",
               totalDaysInBatch: {
                 $size: {

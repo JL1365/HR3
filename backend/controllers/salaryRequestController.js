@@ -210,7 +210,7 @@ const calculateNetPayroll = async () => {
                 createdAt: compensation.createdAt
             });
             compensationDetailMap[key].paidLeaveTotal += compensation.totalAmount || 0;
-        } else if (compensation.benefitType === "Deduction") {
+        } else if (compensation.benefitType === "Violation Deduction") {
             compensationDetailMap[key].deductibleItems.push({
                 id: compensation._id,
                 benefitId: compensation.benefit?._id || "",
