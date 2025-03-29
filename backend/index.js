@@ -29,6 +29,7 @@ import employeeDasboardRoute from './routes/employeeDashboardRoute.js';
 import predictiveRoute from './routes/predictiveRoute.js';
 import auditRoute from './routes/auditRoute.js';
 import notificationRoute from './routes/notificationRoute.js';
+import thirteenMonthRoute from './routes/thirteenMonthRoute.js';
 
 dotenv.config();
 connectDB();
@@ -87,6 +88,8 @@ app.use("/api/predictive",csrf,predictiveRoute);
 app.use("/api/audit",csrf,auditRoute);
 
 app.use("/api/notification",csrf,notificationRoute);
+
+app.use("/api/thirteenMonth",csrf,thirteenMonthRoute);
 
 app.use((req, res, next) => {
     if(req.method === "POST"){

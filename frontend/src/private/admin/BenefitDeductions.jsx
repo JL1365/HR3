@@ -375,7 +375,7 @@ function BenefitDeduction() {
                     {userDeductions.length === 0 ? (
                       <tr>
                         <td colSpan="4" className="text-center py-4 text-gray-500">
-                          No deductions found for this user
+                          No deductions found for this employee
                         </td>
                       </tr>
                     ) : (
@@ -469,7 +469,7 @@ function BenefitDeduction() {
               className="bg-white rounded-lg shadow-lg w-full max-w-lg"
             >
               <div className="p-4 border-b flex justify-between items-center">
-                <h3 className="font-bold text-lg">Add User Deduction</h3>
+                <h3 className="font-bold text-lg">Add Employee Deduction</h3>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -482,7 +482,7 @@ function BenefitDeduction() {
               
               <form onSubmit={handleAddDeduction} className="p-4 space-y-4">
                 <div>
-                  <label className="block mb-1 font-medium">Select User</label>
+                  <label className="block mb-1 font-medium">Select Employee</label>
                   <select
                     className="select select-bordered w-full"
                     value={selectedUser}

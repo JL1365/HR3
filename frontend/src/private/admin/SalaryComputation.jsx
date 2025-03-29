@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { motion, AnimatePresence } from "framer-motion";
 import PayrollHistory from './PayrollHistory';
 import jjmLogo from '../../assets/jjmlogo.jpg'
+import ThirteenMonth from './thirteenMonth';
 function SalaryComputation() {
   const {
     grossSalaryData,
@@ -790,6 +791,7 @@ const renderTable = (data, type) => {
         )}
       </AnimatePresence>
       <PayrollHistory />
+      <ThirteenMonth />
     </motion.div>
   );
 }

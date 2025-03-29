@@ -1,6 +1,6 @@
 import express from 'express'
 
-import {getAllEmployeeBenefitDetails, getUploadedDocuments, uploadDocument, calculate13MonthPay } from '../controllers/benefitController.js';
+import {getAllEmployeeBenefitDetails, getUploadedDocuments, uploadDocument } from '../controllers/benefitController.js';
 
 import upload from '../configs/multerConfig.js';
 
@@ -11,6 +11,5 @@ benefitRoute.get("/get-all-employee-benefit-details", getAllEmployeeBenefitDetai
 benefitRoute.post("/send-benefit-documents",upload.single('documentFile'),uploadDocument);
 benefitRoute.get("/get-uploaded-documents", getUploadedDocuments);
 
-benefitRoute.get("/calculate-13-month", calculate13MonthPay);
 
 export default benefitRoute;
