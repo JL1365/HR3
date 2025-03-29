@@ -169,7 +169,7 @@ export const getAllAppliedRequest = async (req, res) => {
 export const updateApplyRequestStatus = async (req, res) => {
   try {
     const { id } = req.params; 
-    const { status } = req.body;
+    const { status, comment } = req.body;
 
     const validStatuses = ["Approved", "Denied", "Pending"];
     const finalStatuses = ["Approved", "Denied"];
@@ -180,18 +180,29 @@ export const updateApplyRequestStatus = async (req, res) => {
       });
     }
 
+    if (status === "Denied" && (!comment || comment.trim() === "")) {
+      return res.status(400).json({
+        message: "Comment is required when denying a request.",
+      });
+    }
+
     const currentRequest = await BenefitRequest.findById(id);
     if (!currentRequest) {
       return res.status(404).json({ message: "Benefit request not found." });
     }
 
     if (finalStatuses.includes(currentRequest.status)) {
-      return res.status(400).json({message: `Cannot change status from ${currentRequest.status}. It has already been finalized.`,});
+      return res.status(400).json({
+        message: `Cannot change status from ${currentRequest.status}. It has already been finalized.`,
+      });
     }
 
     const updatedRequest = await BenefitRequest.findByIdAndUpdate(
       id,
-      { status },
+      { 
+        status, 
+        comment: status === "Approved" ? "Request approved successfully." : comment 
+      },
       { new: true }
     ).populate("compensationBenefitId", "benefitName");
 
@@ -206,7 +217,10 @@ export const updateApplyRequestStatus = async (req, res) => {
       message: notificationMessage,
     });
 
-    res.status(200).json({message: "Benefit request status updated successfully.",updatedRequest,});
+    res.status(200).json({
+      message: "Benefit request status updated successfully.",
+      updatedRequest,
+    });
   } catch (error) {
     console.error(`Error in Updating request status: ${error.message}`);
     res.status(500).json({ message: "Internal server error" });

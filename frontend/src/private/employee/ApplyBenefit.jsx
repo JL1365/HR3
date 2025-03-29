@@ -26,12 +26,55 @@ function ApplyBenefit() {
     const handleApply = (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
+
+        const selectedBenefitId = formData.get("compensationBenefitId");
+        const frontIdFile = formData.get("frontId");
+        const backIdFile = formData.get("backId");
+
+        if (!selectedBenefitId) {
+            toast.error("Please select a benefit.");
+            return;
+        }
+
+        const selectedBenefit = benefits.find(benefit => benefit._id === selectedBenefitId);
+        if (!selectedBenefit) {
+            toast.error("Selected benefit is invalid.");
+            return;
+        }
+
+        const existingRequest = myApplyRequests.find(
+            request => request.compensationBenefitId?._id === selectedBenefitId
+        );
+
+        if (existingRequest) {
+            if (existingRequest.status === "Pending") {
+                toast.error("You already have a pending request for this benefit.");
+                return;
+            }
+            if (existingRequest.status === "Approved") {
+                toast.error("You are already approved for this benefit.");
+                return;
+            }
+        }
+
+        if (selectedBenefit.isNeedRequest) {
+            if (!frontIdFile || !backIdFile) {
+                toast.error("Please upload both front and back ID images.");
+                return;
+            }
+        }
+
         applyBenefit(formData)
             .then(() => {
                 toast.success("Benefit applied successfully!");
                 setIsApplyModalOpen(false);
             })
-            .catch((err) => toast.error(err.message || "Failed to apply for benefit"));
+            .catch((err) => {
+                const errorMessage = err.response?.data?.message || 
+                                     err.message || 
+                                     "Failed to apply for the benefit!";
+                toast.error(errorMessage);
+            });
     };
 
     const nextPage = () => {
@@ -121,6 +164,7 @@ function ApplyBenefit() {
                             <tr>
                                 <th className="p-3 text-left">Benefit Name</th>
                                 <th className="p-3 text-left">Status</th>
+                                <th className="p-3 text-left">Comment</th>
                             </tr>
                         </thead>
                         <tbody className="bg-white text-neutral-500 border-b">
@@ -132,6 +176,9 @@ function ApplyBenefit() {
                                         </td>
                                         <td className="p-3 border-b">
                                             {request.status}
+                                        </td>
+                                        <td className="p-3 border-b">
+                                            {request.comment}
                                         </td>
                                     </tr>
                                 ))

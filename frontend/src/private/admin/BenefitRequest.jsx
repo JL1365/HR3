@@ -23,6 +23,9 @@ function BenefitRequest() {
     updateBenefitRequestStatus,
   } = useBenefitRequestStore();
   const [imageTooltip, setImageTooltip] = useState(null);
+  const [isDenyModalOpen, setIsDenyModalOpen] = useState(false);
+  const [denyComment, setDenyComment] = useState("");
+  const [denyRequestId, setDenyRequestId] = useState(null);
 
   useEffect(() => {
     fetchAllBenefitRequest();
@@ -107,6 +110,22 @@ function BenefitRequest() {
     }
   };
 
+  const handleDenyRequest = async () => {
+    if (!denyComment.trim()) {
+      toast.error("Comment is required to deny a request.");
+      return;
+    }
+    try {
+      await updateBenefitRequestStatus(denyRequestId, { status: "Denied", comment: denyComment });
+      toast.success("Request denied successfully!");
+      setIsDenyModalOpen(false);
+      setDenyComment("");
+      setDenyRequestId(null);
+    } catch (error) {
+      toast.error("Failed to deny the request.");
+    }
+  };
+
   const [currentPage, setCurrentPage] = useState(1);
   const plansPerPage = 10;
 
@@ -167,7 +186,10 @@ function BenefitRequest() {
                 Approve
               </button>
               <button
-                onClick={() => handleUpdateStatus(request._id, "Denied")}
+                onClick={() => {
+                  setIsDenyModalOpen(true);
+                  setDenyRequestId(request._id);
+                }}
                 className="bg-red-500 text-white px-3 py-1 rounded"
               >
                 Deny
@@ -231,6 +253,32 @@ function BenefitRequest() {
               </button>
             </div>
           </div>
+      )}
+
+      {isDenyModalOpen && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-lg w-96">
+            <h2 className="text-xl font-semibold mb-4">Deny Request</h2>
+            <textarea
+              className="w-full p-2 border rounded"
+              rows="4"
+              placeholder="Enter reason for denial"
+              value={denyComment}
+              onChange={(e) => setDenyComment(e.target.value)}
+            ></textarea>
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setIsDenyModalOpen(false)}
+                className="btn btn-secondary mr-2"
+              >
+                Cancel
+              </button>
+              <button onClick={handleDenyRequest} className="btn btn-primary">
+                Deny
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {loading && (

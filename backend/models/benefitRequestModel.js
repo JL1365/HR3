@@ -20,7 +20,11 @@ const benefitRequestSchema = new mongoose.Schema(
       type:String,
       enum:["Approved","Denied","Pending"],
       default:"Pending"
-    }
+    },
+    comment: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );

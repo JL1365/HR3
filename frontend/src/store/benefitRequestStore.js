@@ -18,9 +18,12 @@ export const useBenefitRequestStore = create((set, get) => ({
         }
     },
 
-    updateBenefitRequestStatus: async (id, newStatus) => {
+    updateBenefitRequestStatus: async (id, { status, comment }) => {
         try {
-          await axiosInstance.put(`/benefitRequest/update-apply-request-status/${id}`, newStatus);
+          await axiosInstance.put(`/benefitRequest/update-apply-request-status/${id}`, { 
+            status, 
+            comment: status === "Approved" ? "Request approved successfully." : comment 
+          });
           get().fetchAllBenefitRequest(); 
         } catch (error) {
           set({ error: error.response?.data?.message || "Failed to update request status" });
