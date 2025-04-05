@@ -46,7 +46,7 @@ export const adminLogin = async (req, res) => {
                 : req.socket.remoteAddress || "Unknown";
 
         const response = await axios.get(
-            `${process.env.API_GATEWAY_URL}/admin/get-accounts`,
+            `https://backend-hr1.jjm-manufacturing.com/api/admin/getData`,
             { headers: { Authorization: `Bearer ${serviceToken}` } }
         );
 
@@ -177,7 +177,7 @@ export const employeeLogin = async (req, res) => {
                 : req.socket.remoteAddress || "Unknown";
 
         const response = await axios.get(
-            `${process.env.API_GATEWAY_URL}/admin/get-accounts`,
+            `https://backend-hr1.jjm-manufacturing.com/api/admin/getData`,
             { headers: { Authorization: `Bearer ${serviceToken}` } }
         );
 

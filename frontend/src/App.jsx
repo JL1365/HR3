@@ -51,7 +51,7 @@ function App() {
         <Route path="/verify-otp" element={<VerifyOtp />} />
       </Route>
 
-      <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
+      <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
         <Route element={<PrivateLayout />}>
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />

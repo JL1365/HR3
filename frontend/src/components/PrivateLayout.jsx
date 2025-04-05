@@ -74,7 +74,7 @@ const PrivateLayout = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray">
-      {user?.role === "Admin" ? (
+      {user?.role === "admin" ? (
         <AdminSidebar ref={sidebarRef} isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       ) : (
         <EmployeeSidebar ref={sidebarRef} isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />

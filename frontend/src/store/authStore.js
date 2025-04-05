@@ -12,7 +12,7 @@ export const useAuthStore  = create ((set) => ({
     adminLogin: async ({ email, password }) => {
         try {
             console.log("Login payload:", { email, password });
-            const response = await axiosInstance.post("/auth/admin-login", { email, password });
+            const response = await axiosInstance.post("/auth/testLog-admin", { email, password });
             const { user, token, mfaEnabled } = response.data;
 
             set({ user, token, isAuthenticated: !mfaEnabled });

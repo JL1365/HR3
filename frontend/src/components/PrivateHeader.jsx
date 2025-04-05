@@ -156,7 +156,7 @@ const PrivateHeader = ({ title, toggleSidebar, isSidebarOpen }) => {
     const confirmLogout = window.confirm("Are you sure you want to log out?");
     if (!confirmLogout) return;
 
-    const redirectPath = user?.role === "Admin" ? "/admin-login" : "/employee-login";
+    const redirectPath = user?.role === "admin" ? "/admin-login" : "/employee-login";
 
     logout();
     navigate(redirectPath);
@@ -246,13 +246,13 @@ const PrivateHeader = ({ title, toggleSidebar, isSidebarOpen }) => {
               <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg border border-gray-300 z-50">
                 <ul className="py-2 text-sm text-gray-700">
                   <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  <Link to={user?.role === "Admin" ? "/profile" : user?.role === "Employee" ? "/my-profile" : "/"}>
+                  <Link to={user?.role === "admin" ? "/profile" : user?.role === "Employee" ? "/my-profile" : "/"}>
   Profile
 </Link>
 
                   </li>
                   <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  <Link to={user?.role === "Admin" ? "/settings" : "/my-settings"}>Setting</Link>
+                  <Link to={user?.role === "admin" ? "/settings" : "/my-settings"}>Setting</Link>
                   </li>
                   <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600" onClick={handleLogout}>Log Out</li>
                 </ul>

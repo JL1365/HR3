@@ -4,7 +4,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import http from 'http';
 import {Server} from 'socket.io'; 
-import csrfProtection from 'csurf';
+// import csrfProtection from 'csurf';
 
 import { connectDB } from './configs/db.js';
 
@@ -37,7 +37,7 @@ connectDB();
 
 const app = express();
 const PORT = process.env.PORT;
-const csrf = csrfProtection({ cookie: true });
+// const csrf = csrfProtection({ cookie: true });
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -63,43 +63,43 @@ app.use(cors({
     allowedHeaders: ["Content-Type", "Authorization","csrf-token"], 
 }));
 
-app.use("/api/auth",csrf,authRoute)
-app.use("/api/compensation",csrf,compensationPlanningRoute)
-app.use("/api/compensationBenefit",csrf,compensationBenefitRoute)
-app.use("/api/penalty",csrf,penaltyRoute)
-app.use("/api/violation",csrf,violationRoute)
-app.use("/api/benefit",csrf,benefitRoute)
-app.use("/api/benefitRequest",csrf,benefitRequestRoute);
-app.use("/api/benefitDeduction",csrf,benefitDeductionRoute);
+app.use("/api/auth",authRoute)
+app.use("/api/compensation",compensationPlanningRoute)
+app.use("/api/compensationBenefit",compensationBenefitRoute)
+app.use("/api/penalty",penaltyRoute)
+app.use("/api/violation",violationRoute)
+app.use("/api/benefit",benefitRoute)
+app.use("/api/benefitRequest",benefitRequestRoute);
+app.use("/api/benefitDeduction",benefitDeductionRoute);
 
-app.use("/api/incentive",csrf,incentiveRoute)
-app.use("/api/incentiveTracking",csrf,incentiveTrackingRoute);
+app.use("/api/incentive",incentiveRoute)
+app.use("/api/incentiveTracking",incentiveTrackingRoute);
 
-app.use("/api/attendance",csrf,attendanceRoute);
-app.use("/api/salaryRequest",csrf,salaryRequestRoute);
+app.use("/api/attendance",attendanceRoute);
+app.use("/api/salaryRequest",salaryRequestRoute);
 
-app.use("/api/integration",csrf,integrationRoute);
+app.use("/api/integration",integrationRoute);
 
-app.use("/api/adminDashboard",csrf,adminDashboardRoute);
-app.use("/api/employeeDashboard",csrf,employeeDasboardRoute);
+app.use("/api/adminDashboard",adminDashboardRoute);
+app.use("/api/employeeDashboard",employeeDasboardRoute);
 
-app.use("/api/predictive",csrf,predictiveRoute);
+app.use("/api/predictive",predictiveRoute);
 
-app.use("/api/audit",csrf,auditRoute);
+app.use("/api/audit",auditRoute);
 
-app.use("/api/notification",csrf,notificationRoute);
+app.use("/api/notification",notificationRoute);
 
-app.use("/api/thirteenMonth",csrf,thirteenMonthRoute);
+app.use("/api/thirteenMonth",thirteenMonthRoute);
 
-app.use((req, res, next) => {
-    if(req.method === "POST"){
-        const csrfToken = req.headers['csrf-token'];
-        if(!csrfToken || csrfToken !== req.csrfToken()){
-            return res.status(403).json({success:false,message:'Invalid CSRF token'});
-        }
-    }
-    next();
-});
+// app.use((req, res, next) => {
+//     if(req.method === "POST"){
+//         const csrfToken = req.headers['csrf-token'];
+//         if(!csrfToken || csrfToken !== req.csrfToken()){
+//             return res.status(403).json({success:false,message:'Invalid CSRF token'});
+//         }
+//     }
+//     next();
+// });
 
 io.on('connection', (socket) => {
     

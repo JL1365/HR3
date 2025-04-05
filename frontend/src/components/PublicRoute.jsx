@@ -21,7 +21,7 @@ const PublicRoute = () => {
   if (isAuthenticated) {
     return (
       <Navigate
-        to={user?.role === "Admin" ? "/admin-dashboard" : "/employee-dashboard"}
+        to={user?.role === "admin" ? "/admin-dashboard" : "/employee-dashboard"}
         replace
       />
     );
